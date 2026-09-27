@@ -1,0 +1,199 @@
+#    ShipWars: Client Main Page Configuration File
+#
+#	This file contains the configuration and apperance of
+#	the XShipWars client's pages. These pages are displayed on
+#	the client's viewscreen.
+#
+#	Note: Specified image file paths that are not absolute will
+#	have ImagesDir (specified in the client configuration)
+#	prefixed to it.
+#
+#
+#	Format of this file is as follows:
+#
+#	BackgroundImage = s	Specifies the path to the background
+#				image.
+#
+#	BackgroundStyle = i	Specifies the style of the background
+#				(not implmented yet, set value to 0 for
+#				now).
+#
+#	BeginLabel		Marks the beginning of a label
+#                               configuration block.
+#
+#	EndLabel		Marks the end of a label configuration
+#                               block.
+#
+#
+#	Label configuration block members:
+#
+#	HintMessage = s		Specifies the hint message for the
+#				label. Not defining a hint message
+#				implies that no hint message be
+#				displayed for the label in question.
+#
+#	ImageUnarmed = s	Specifies the path to the unarmed
+#				image. This value must be defined
+#				properly for every label.
+#
+#	ImageUnarmedX = i	Specifies the x position of the unarmed
+#				label image. Units can be in pixels
+#				or percent.  If specifying percent, the
+#				value must end with a '%' character
+#				(ie 35%).
+#
+#	ImageUnarmedY = i	Specifies the y position of the unarmed
+#				label image. Units can be in pixels
+#				or percent.  If specifying percent, the
+#				value must end with a '%' character 
+#				(ie 35%).
+#
+#	ImageArmed = s		Same as ImageUnarmed except defining for
+#				the armed label.
+#
+#	ImageArmedX = i		Same as ImageUnarmedX except defining for
+#				the armed label.
+#
+#	ImageArmedY = i		Same as ImageUnarmedY except defining for
+#                               the armed label.
+#
+#	ImageHighlighted = s	Same as ImageUnarmed except defining for
+#                               the highlighted label.
+#
+#	ImageHighlightedX = i	Same as ImageUnarmedX except defining for
+#                               the highlighted label.
+#
+#	ImageHighlightedY = i	Same as ImageUnarmedY except defining for
+#                               the highlighted label.
+#
+#	AllowTransparency	Specifies that any pixel that is pure
+#				black (color value RGB 0, 0, 0) be
+#				transparent.
+#
+#	ActionCode = i		Specifies the action to be performed
+#				when this label is clicked on. Valid
+#				action values are as follows:
+#
+#	10	Map file browser to run server.
+#	11	Map file browser to load OCS names file.
+#	12	Map file browser to load ISRefs file.
+#	13	Map file browser to load sound scheme file.
+#
+#	100	Map the universe list window.
+#	101	Connect to last universe (same login name and pw).
+#	102	Global refresh.
+#	103	Toggle auto interval.
+#	104	Disconnect from universe (not useful).
+#
+#	301	Syncronize timming.
+#	302	Cycle displayed labels on viewscreen.
+#	303	Show client memory stats.
+#	304	Map the options window.
+#	305	Map the keymap window.
+#	306	Comferm exit.
+#	307	Exit.
+#
+#
+
+# ############################################################################
+#
+#	Background Image
+#
+BackgroundImage = main.page/background.tga
+BackgroundStyle = 0
+
+
+# ############################################################################
+#
+#	Labels
+#
+
+
+# Title
+BeginLabel
+    ImageUnarmed = main.page/title1.tga
+    ImageUnarmedX = 11%
+    ImageUnarmedY = 24%
+    AllowTransparency
+EndLabel
+
+
+# Connect
+BeginLabel
+    HintMessage = Connect to a universe
+
+    ImageUnarmed = main.page/connect0.tga
+    ImageUnarmedX = 17%
+    ImageUnarmedY = 72%
+
+    ImageHighlighted = main.page/connect1.tga
+    ImageHighlightedX = 17%
+    ImageHighlightedY = 72%
+
+    ImageArmed = main.page/connect2.tga
+    ImageArmedX = 17%
+    ImageArmedY = 72%
+
+    AllowTransparency
+    ActionCode = 100
+EndLabel
+
+# Connect Last
+BeginLabel
+    HintMessage = Connect to last universe
+
+    ImageUnarmed = main.page/connectlast0.tga
+    ImageUnarmedX = 35%
+    ImageUnarmedY = 72%
+
+    ImageHighlighted = main.page/connectlast1.tga
+    ImageHighlightedX = 35%
+    ImageHighlightedY = 72%
+
+    ImageArmed = main.page/connectlast2.tga
+    ImageArmedX = 35%
+    ImageArmedY = 72%
+
+    AllowTransparency
+    ActionCode = 101
+EndLabel
+
+# Options
+BeginLabel
+    HintMessage = Modify options
+
+    ImageUnarmed = main.page/options0.tga
+    ImageUnarmedX = 53%
+    ImageUnarmedY = 72%
+    
+    ImageHighlighted = main.page/options1.tga
+    ImageHighlightedX = 53%
+    ImageHighlightedY = 72%
+
+    ImageArmed = main.page/options2.tga
+    ImageArmedX = 53%
+    ImageArmedY = 72%           
+
+    AllowTransparency
+    ActionCode = 304
+EndLabel
+
+# Exit
+BeginLabel
+    HintMessage = Exit XShipWars
+
+    ImageUnarmed = main.page/exit0.tga
+    ImageUnarmedX = 72%
+    ImageUnarmedY = 72%
+
+    ImageHighlighted = main.page/exit1.tga
+    ImageHighlightedX = 72%
+    ImageHighlightedY = 72%
+
+    ImageArmed = main.page/exit2.tga
+    ImageArmedX = 72%
+    ImageArmedY = 72%
+
+    AllowTransparency
+    ActionCode = 307
+EndLabel

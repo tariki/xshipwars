@@ -1,0 +1,138 @@
+#    ShipWars: Client Destroyed Page Configuration File
+#
+#	This file contains the configuration and apperance of
+#	the XShipWars client's pages. These pages are displayed on
+#	the client's viewscreen.
+#
+#	Note: Specified image file paths that are not absolute will
+#	have ImagesDir (specified in the client configuration)
+#	prefixed to it.
+#
+#
+#	Format of this file is as follows:
+#
+#	BackgroundImage = s	Specifies the path to the background
+#				image.
+#
+#	BackgroundStyle = i	Specifies the style of the background
+#				(not implmented yet, set value to 0 for
+#				now).
+#
+#	BeginLabel		Marks the beginning of a label
+#                               configuration block.
+#
+#	EndLabel		Marks the end of a label configuration
+#                               block.
+#
+#
+#	Label configuration block members:
+#
+#	HintMessage = s		Specifies the hint message for the
+#				label. Not defining a hint message
+#				implies that no hint message be
+#				displayed for the label in question.
+#
+#	ImageUnarmed = s	Specifies the path to the unarmed
+#				image. This value must be defined
+#				properly for every label.
+#
+#	ImageUnarmedX = i	Specifies the x position of the unarmed
+#				label image. Units can be in pixels
+#				or percent.  If specifying percent, the
+#				value must end with a '%' character
+#				(ie 35%).
+#
+#	ImageUnarmedY = i	Specifies the y position of the unarmed
+#				label image. Units can be in pixels
+#				or percent.  If specifying percent, the
+#				value must end with a '%' character 
+#				(ie 35%).
+#
+#	ImageArmed = s		Same as ImageUnarmed except defining for
+#				the armed label.
+#
+#	ImageArmedX = i		Same as ImageUnarmedX except defining for
+#				the armed label.
+#
+#	ImageArmedY = i		Same as ImageUnarmedY except defining for
+#                               the armed label.
+#
+#	ImageHighlighted = s	Same as ImageUnarmed except defining for
+#                               the highlighted label.
+#
+#	ImageHighlightedX = i	Same as ImageUnarmedX except defining for
+#                               the highlighted label.
+#
+#	ImageHighlightedY = i	Same as ImageUnarmedY except defining for
+#                               the highlighted label.
+#
+#	AllowTransparency	Specifies that any pixel that is pure
+#				black (color value RGB 0, 0, 0) be
+#				transparent.
+#
+#	ActionCode = i		Specifies the action to be performed
+#				when this label is clicked on. Valid
+#				action values are as follows:
+#
+#	10	Map file browser to run server.
+#	11	Map file browser to load OCS names file.
+#	12	Map file browser to load ISRefs file.
+#	13	Map file browser to load sound scheme file.
+#
+#	100	Map the universe list window.
+#	101	Connect to last universe (same login name and pw).
+#	102	Global refresh.
+#	103	Toggle auto interval.
+#	104	Disconnect from universe (not useful).
+#
+#	301	Syncronize timming.
+#	302	Cycle displayed labels on viewscreen.
+#	303	Show client memory stats.
+#	304	Map the options window.
+#	305	Map the keymap window.
+#	306	Comferm exit.
+#	307	Exit.
+#
+#
+
+# ############################################################################
+#
+#	Background Image
+#
+BackgroundImage = destroyed.page/background.tga
+BackgroundStyle = 0
+
+
+# ############################################################################
+#
+#	Labels
+#
+
+# Title
+BeginLabel
+    ImageUnarmed = destroyed.page/title.tga
+    ImageUnarmedX = 15%
+    ImageUnarmedY = 30%
+
+    AllowTransparency
+EndLabel
+
+# Continue
+BeginLabel
+    ImageUnarmed = destroyed.page/continue0.tga
+    ImageUnarmedX = 32%
+    ImageUnarmedY = 86%
+
+    ImageHighlighted = destroyed.page/continue1.tga
+    ImageHighlightedX = 32%
+    ImageHighlightedY = 86%
+
+    ImageArmed = destroyed.page/continue2.tga
+    ImageArmedX = 32%
+    ImageArmedY = 86%
+
+    AllowTransparency
+    ActionCode = 1000
+EndLabel
+    
+

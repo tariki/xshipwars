@@ -1,0 +1,201 @@
+#   ShipWars: Object Create Script Names
+#
+#	This is a list of names (and data/information) corresponding
+#	to each `thing' (ie weapons) reffered to by a object create
+#	script code.
+#
+#	Purpose is to determine and give name and information about
+#	something who has a reffering object create script code (such
+#	as weapons).
+#
+#	Important: Do not confuse this file with the server's .ocs files,
+#	they are related but NOT the same.
+#
+#
+#       Format of this file is as follows:
+#
+#	BeginOCSNEntry		Marks the beginning of an OCSN (Object
+#				Create Script Names) configuration block.
+#
+#	EndOCSNEntry		Marks the end of an OCSN configuration
+#				block.
+#
+#
+#	OCSNEntry configuration block members:
+#
+#	Code = i		Specifies the matching OCS (Object
+#				Create Script) code.
+#
+#	Name = s		Specifies the name for this OCS.
+#
+#	IconImage = s		Specifies a path to an image dipicting
+#				this OCS visually as an icon. If
+#				the path is not absolute then the
+#				ImagesDir (specified in the client
+#				configuration) will be prepended to it.
+#				Not specifying this member implies
+#				no associated icon image.
+#
+
+BeginOCSNEntry
+    Code = 1
+    Name = Default
+EndOCSNEntry
+
+
+
+# ############################################################################
+#
+#   Weapons
+#
+
+# NULL Weapon
+BeginOCSNEntry
+    Code = 20
+    Name = NULL Weapon
+EndOCSNEntry
+
+
+# Stream Phazer: Yellow
+BeginOCSNEntry
+    Code = 21
+    Name = Stream Phazer
+EndOCSNEntry
+
+# Stream Phazer: Orange
+BeginOCSNEntry
+    Code = 22
+    Name = Stream Phazer
+EndOCSNEntry
+
+# Stream Phazer: Purple
+BeginOCSNEntry
+    Code = 23
+    Name = Stream Phazer
+EndOCSNEntry
+
+
+# Pulse Phazer: Single fire
+BeginOCSNEntry
+    Code = 25
+    Name = Pulse Phazer
+EndOCSNEntry
+
+# Pulse Phazer: Double fire
+BeginOCSNEntry
+    Code = 26
+    Name = Pulse Phazer 2
+EndOCSNEntry
+
+
+# Stream Disruptor
+BeginOCSNEntry
+    Code = 30
+    Name = Stream Disruptor
+EndOCSNEntry  
+
+# Pulse Disruptor: Single fire
+BeginOCSNEntry
+    Code = 31
+    Name = Pulse Disruptor
+EndOCSNEntry
+
+# Pulse Disruptor: Double fire
+BeginOCSNEntry
+    Code = 32
+    Name = Pulse Disruptor 2
+EndOCSNEntry
+
+# Polaron Beam: Single fire
+BeginOCSNEntry
+    Code = 33
+    Name = Polaron Pulse
+EndOCSNEntry
+
+# Polaron Beam: Double fire
+BeginOCSNEntry
+    Code = 34
+    Name = Polaron Pulse 2
+EndOCSNEntry
+
+
+# Expanding Sphere Phazer
+BeginOCSNEntry
+    Code = 40
+    Name = Expanding Sphere
+EndOCSNEntry
+
+# Species 8472 Energy Conductor Weapon
+BeginOCSNEntry
+    Code = 41
+    Name = Energy Conductor
+EndOCSNEntry
+
+# Bolt Plasma
+BeginOCSNEntry
+    Code = 42
+    Name = Bolt Plasma
+EndOCSNEntry
+
+# Cutting Beam
+BeginOCSNEntry
+    Code = 43
+    Name = Cutting Beam
+EndOCSNEntry
+
+# Primary Energy Weapon
+BeginOCSNEntry
+    Code = 44
+    Name = Pri Energy Weapon
+EndOCSNEntry
+
+# Polaron Beam
+BeginOCSNEntry
+    Code = 45
+    Name = Polaron Beam
+EndOCSNEntry
+
+
+
+# Photon Torpedo: Single fire
+BeginOCSNEntry
+    Code = 50
+    Name = Photon Torp
+EndOCSNEntry
+
+# Photon Torpedo: Double fire
+BeginOCSNEntry
+    Code = 51
+    Name = Photon Torp 2
+EndOCSNEntry
+
+# Plasma Torpedo: Single fire
+BeginOCSNEntry
+    Code = 55
+    Name = Plasma Torp
+EndOCSNEntry
+
+# Quantom Torpedo: Single fire
+BeginOCSNEntry
+    Code = 60
+    Name = Quantom Torp
+EndOCSNEntry
+
+
+# APC (Atmospheric Penetrating Cruise) Warhead
+BeginOCSNEntry
+    Code = 80
+    Name = APC Warhead
+EndOCSNEntry
+
+#  Photon Mine
+BeginOCSNEntry
+    Code = 90
+    Name =  Photon Mine
+EndOCSNEntry
+
+#  Figther Drone
+BeginOCSNEntry
+    Code = 200 
+    Name =  Figther Drone
+EndOCSNEntry

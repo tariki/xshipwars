@@ -1,0 +1,1317 @@
+#    ShipWars: Graphics and Videos Referance File
+#
+#	This file contains a list of graphics and video referances
+#	(isrefs) that correspond to a graphic or video file.
+#
+#	Note: Isref 0 is considered the default, a non-existant or bad
+#	isref inherits its data.
+#
+#
+#       Format of this file is as follows:
+#
+#	BeginISRefEntry = i	Marks the beginning of an ISRef (Image
+#                               Set Referance) configuration block for
+#				isref number i.
+#
+#	EndISRefEntry		Marks the end of an ISRef configuration
+#                               block.
+#
+#
+#       ISRefEntry configuration block members:
+#
+#	FileName = s	Specifies the path to the image file associated
+#			with this isref. The image format needs to be a
+#			24 or 32 bit depth standard Targa file. If the
+#			path is not absolute then the ImagesDir (specified
+#			in the client configuration) will be prefixed
+#			to it.
+#
+#	MergeMode = s	Specifies a code to determine the mathimatical
+#			operation to be performed when blitting the image
+#			to its destination buffer. Available values are:
+#
+#		Normal		Use direct assign (default).
+#		Additive	Add source value to target value.
+#		Subtractive	Subtract source value from target value.
+#
+#	HasTransparency		Specifies a hint to indicate the
+#				image has transparent pixels (any pixel
+#				of value 0, pitch black, is considered
+#				transparent).
+#
+#	FrameDeterminat = s	Specifies which criteria to use to
+#				determine which frame to draw. Available
+#				values are:
+#
+#		ByHeading	Determine by current heading (default).
+#		ByAnimation	Determine by current animation frame.
+#
+#
+#	LayerPlacement = s	Specifies which visual layer to draw
+#				this object in. Available values are:
+#
+#		Foreground		Foreground (default).
+#		BackgroundTiled		Background tiled (scrolled).
+#		BackgroundStatic	Background (static).
+#
+#
+#	Effects = mask		Specifies any special effects to be
+#				performed, this values need to be or'ed
+#				togeather with the | operator.
+#
+#		StarGlow
+#		FadeInGlow
+#		FadeOutGlow
+#
+#
+#	TotalFrames = ui	Specifies the total number of frames in
+#				the image, must be 1 or greater.
+#
+#
+#	LoadNow		Specifies to load this image on start up.
+#			This must be specified last in the configuration
+#			block.
+#
+#
+#	NoImage		Specifies that this isref has no image and thus no
+#			image will be attempted to be loaded when it is
+#			requested.
+#
+#
+#	StayLoaded	Specifies that this isref should remain loaded
+#			even when no objects or resources referance it.
+#			It is also not to be unloaded during memory
+#			reclaiming.  It will only be unloaded when a
+#			new isref file is loaded or when the program
+#			exits.
+#
+#
+#
+#
+
+
+# ############################################################################
+#
+#                              System Graphics
+#
+
+#   Isref number 0 is considered the 'default' image, when an object requests
+#   an image set number that is not defined or not loadable, then this
+#   image will be used.
+#
+#   If isref number 0 is not defined, then the program must use an internal
+#   default image.
+#
+#BeginISRefEntry = 0
+#    FileName = defaults/unknown.tga
+#    MergeMode = Normal
+#    HasTransparency
+#    FrameDeterminat = ByHeading
+#    LayerPlacement = Foreground
+#    Magnification = 1.0
+#    TotalFrames = 1
+#    StayLoaded
+#EndISRefEntry
+
+
+#   Isrefs 10 to 19 are reserved for 'Stream Weapons' which do not need
+#   images.
+#
+
+BeginISRefEntry = 10
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 11
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 12
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 13
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 14
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 15
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 16
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 17
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 18
+    NoImage
+EndISRefEntry
+
+BeginISRefEntry = 19
+    NoImage
+EndISRefEntry
+
+
+
+#   Isrefs 20 to 29 are standardized graphics, do not change their values!
+#
+
+# Explosion 1: Small firy explosion.
+#
+BeginISRefEntry = 20
+    FileName = effects/explosion1.tga
+    MergeMode = Additive
+    FrameDeterminat = ByAnimation
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 4
+    StayLoaded
+    LoadNow
+EndISRefEntry
+
+# Explosion 2: Medium firy explosion.
+#
+BeginISRefEntry = 21
+    FileName = effects/explosion2.tga
+    MergeMode = Additive
+    FrameDeterminat = ByAnimation
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 4
+    StayLoaded
+    LoadNow
+EndISRefEntry
+
+# Explosion 3: Large firy explosion.
+#
+BeginISRefEntry = 22
+    FileName = effects/explosion3.tga
+    MergeMode = Additive
+    FrameDeterminat = ByAnimation
+    LayerPlacement = Foreground
+    Effects = FadeOutGlow
+    Magnification = 2.0
+    TotalFrames = 6
+    StayLoaded
+    LoadNow
+EndISRefEntry
+
+# Explosion 4: Large mass explosion.
+#
+BeginISRefEntry = 23
+    FileName = effects/explosion4.tga
+    MergeMode = Additive
+    FrameDeterminat = ByAnimation
+    LayerPlacement = Foreground
+    Effects = FadeOutGlow
+    Magnification = 5.0
+    TotalFrames = 6
+    StayLoaded
+    LoadNow
+EndISRefEntry
+
+
+
+# #############################################################################
+#
+#                                  Vessels
+#
+
+# Bird of Prey
+BeginISRefEntry = 30
+    FileName = vessels/bird_of_prey.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground 
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 4.537856
+        Radius = 8
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 1.7453293
+        Radius = 8
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+EndISRefEntry
+
+# Vixen Class (Averaged/dirived model of Maqui Raider)
+BeginISRefEntry = 31
+    FileName = vessels/vixen.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 2.9370597
+        Radius = 10
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 3.3610325
+        Radius = 10
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0 
+    EndPointLight
+    BeginPointLight
+        Theta = 0.87266
+        Radius = 8
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight   
+    BeginPointLight
+        Theta = 5.4872
+        Radius = 8
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 2.0943
+        Radius = 10
+        ColorAlpha = 0  
+        ColorRed = 255  
+        ColorGreen = 255
+        ColorBlue = 255 
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 4.1887
+        Radius = 10
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255 
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 0
+        Radius = 14
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Klingon Vortcha Class
+BeginISRefEntry = 32
+    FileName = vessels/vortcha.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Starfleet Intrepid Class
+BeginISRefEntry = 33
+    FileName = vessels/intrepid.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground 
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 4.9251
+        Radius = 16
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0 
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 1.3580
+        Radius = 16
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 3.1415927
+        Radius = 45
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Ferrengi Freighter
+BeginISRefEntry = 34
+    FileName = vessels/ferrengi_freighter.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Starfleet Defiant Class
+BeginISRefEntry = 35
+    FileName = vessels/defiant.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 4.6251
+        Radius = 20
+	ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight   
+        Theta = 1.6580
+        Radius = 20
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 4.1887
+        Radius = 21
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 2.0943
+        Radius = 21
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 0.0000
+        Radius = 15
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight   
+        Theta = 2.96705
+        Radius = 19
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight   
+        Theta = 3.31612
+        Radius = 19
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Jemhaddar Fighter
+BeginISRefEntry = 36
+    FileName = vessels/jemhaddar_fighter.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Cardassian Galor Class Warship
+BeginISRefEntry = 37
+    FileName = vessels/galor.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 0.0000
+        Radius = 45
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380  
+    EndPointLight
+    BeginPointLight
+        Theta = 1.396263
+        Radius = 53
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 4.886921
+        Radius = 53
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Warbird
+BeginISRefEntry = 38
+    FileName = vessels/warbird.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Starfleet Runabout
+BeginISRefEntry = 39
+    FileName = vessels/runabout.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+
+    BeginPointLight    
+        Theta = 4.6251
+        Radius = 6
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight   
+        Theta = 1.6580
+        Radius = 6
+        ColorAlpha = 0
+        ColorRed = 0  
+        ColorGreen = 255
+        ColorBlue = 0 
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 3.1415
+        Radius = 6
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Starfleet Nebula Class    
+BeginISRefEntry = 40
+    FileName = vessels/nebula.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading 
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+
+    BeginPointLight
+        Theta = 4.7123
+        Radius = 60
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 1.5707
+        Radius = 60
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0 
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0 
+    EndPointLight
+    BeginPointLight
+        Theta = 0.0000
+        Radius = 0
+        ColorAlpha = 0
+        ColorRed = 255 
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 3.1415
+        Radius = 85
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+
+EndISRefEntry
+
+# Jemhaddar Battleship
+BeginISRefEntry = 41
+    FileName = vessels/jemhaddar_battleship.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Starfleet Galaxy class
+BeginISRefEntry = 42
+    FileName = vessels/galaxy.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 4.96
+        Radius = 68
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 1.321
+        Radius = 72
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 0
+        Radius = 4
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 3.10
+        Radius = 100   
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Starfleet Sovern Class
+BeginISRefEntry = 43
+    FileName = vessels/sovern.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight   
+        Theta = 5.672
+        Radius = 54
+        ColorAlpha = 0 
+        ColorRed = 255  
+        ColorGreen = 0 
+        ColorBlue = 0
+        StrobeOffInterval = 0 
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 0.610
+        Radius = 54
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight 
+        Theta = 0.0
+        Radius = 50
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+    BeginPointLight
+        Theta = 3.145
+        Radius = 26
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Delta Flyer
+BeginISRefEntry = 44
+    FileName = vessels/delta_flyer.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+    BeginPointLight
+        Theta = 4.886
+        Radius = 6
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 0
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight
+        Theta = 1.396
+        Radius = 6
+        ColorAlpha = 0
+        ColorRed = 0
+        ColorGreen = 255
+        ColorBlue = 0
+        StrobeOffInterval = 0
+        StrobeOnInterval = 0
+    EndPointLight
+    BeginPointLight  
+        Theta = 3.14
+        Radius = 8
+        ColorAlpha = 0
+        ColorRed = 255
+        ColorGreen = 255
+        ColorBlue = 255
+        StrobeOffInterval = 1900
+        StrobeOnInterval = 380
+    EndPointLight
+EndISRefEntry
+
+# Species 8472 Bioship
+BeginISRefEntry = 50
+    FileName = vessels/s8472_bioship.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+# Borg Cube (Explorer)
+BeginISRefEntry = 51
+    FileName = vessels/borg_cube.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Borg Diamond (Cruiser)
+BeginISRefEntry = 52
+    FileName = vessels/borg_diamond.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Borg Superquadratic (Carrier)
+BeginISRefEntry = 53
+    FileName = vessels/borg_superquadratic.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Breen Warship
+BeginISRefEntry = 55
+    FileName = vessels/breen_warship.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+
+#   Note: Isrefs 55 to 59 reserved for future vessels.
+
+
+# #############################################################################
+#
+#                                  Projectiles
+#
+
+BeginISRefEntry = 60
+    FileName = projectiles/pulse_yellow.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+    StayLoaded
+EndISRefEntry
+
+BeginISRefEntry = 61
+    FileName = projectiles/pulse_green.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+    StayLoaded
+EndISRefEntry
+
+BeginISRefEntry = 62
+    FileName = projectiles/torpedo_red.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+    StayLoaded
+EndISRefEntry
+
+BeginISRefEntry = 63
+    FileName = projectiles/torpedo_purple.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+    StayLoaded
+EndISRefEntry
+
+BeginISRefEntry = 64
+    FileName = projectiles/torpedo_blue.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+    StayLoaded
+EndISRefEntry
+
+
+# Warheads and fancy detailed projectiles are in the Misc section.
+#
+
+
+# #############################################################################
+#
+#                                  Celestial
+#
+
+# Stars
+BeginISRefEntry = 70
+    FileName = celestial/star01.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+BeginISRefEntry = 71
+    FileName = celestial/star02.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+BeginISRefEntry = 72
+    FileName = celestial/star03.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 73
+    FileName = celestial/star04.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 74
+    FileName = celestial/star05.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 75
+    FileName = celestial/star06.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 76
+    FileName = celestial/star07.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 77
+    FileName = celestial/star08.tga
+    MergeMode = Additive
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+# Planets
+BeginISRefEntry = 80
+    FileName = celestial/earth.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 81
+    FileName = celestial/bajor.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 82
+    FileName = celestial/cardassia.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 83
+    FileName = celestial/qonos.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground 
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+BeginISRefEntry = 90
+    FileName = celestial/planet01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry   
+
+BeginISRefEntry = 91
+    FileName = celestial/planet02.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 92
+    FileName = celestial/planet03.tga
+    MergeMode = Normal    
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1   
+EndISRefEntry     
+
+BeginISRefEntry = 93
+    FileName = celestial/planet04.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 94
+    FileName = celestial/planet05.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 95
+    FileName = celestial/asteroid01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+#  NOTE: Moon images have not been referanced yet, need to work on it!
+#
+#
+
+# Nebula scrolling tiled backgrounds.
+
+# Purplish nebula
+BeginISRefEntry = 100
+    FileName = celestial/nebula01.tga
+    MergeMode = Normal
+    FrameDeterminat = ByHeading
+    LayerPlacement = BackgroundTiled
+    Magnification = 11.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Greenish plasma nebula
+BeginISRefEntry = 101
+    FileName = celestial/nebula02.tga 
+    MergeMode = Normal
+    FrameDeterminat = ByHeading
+    LayerPlacement = BackgroundTiled
+    Magnification = 11.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Murkey dark brown nebula
+BeginISRefEntry = 102
+    FileName = celestial/nebula03.tga
+    MergeMode = Normal
+    FrameDeterminat = ByHeading
+    LayerPlacement = BackgroundTiled
+    Magnification = 11.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Dust cloud (scrolling tiled background)
+BeginISRefEntry = 103
+    FileName = celestial/dustcloud01.tga
+    MergeMode = Normal
+    FrameDeterminat = ByHeading
+    LayerPlacement = BackgroundTiled
+    Magnification = 11.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Plasma fire (scrolling tiled background)
+BeginISRefEntry = 104
+    FileName = celestial/plasmafire01.tga
+    MergeMode = Normal
+    FrameDeterminat = ByHeading
+    LayerPlacement = BackgroundTiled
+    Magnification = 11.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Comet as seen from tail to head.
+BeginISRefEntry = 105
+    FileName = celestial/comet.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Bajoran Wormhole
+BeginISRefEntry = 108
+    FileName = celestial/wormhole01.tga
+    MergeMode = Additive
+    FrameDeterminat = ByAnimation
+    LayerPlacement = Foreground
+    Effects = StarGlow
+    Magnification = 2.0
+    TotalFrames = 8
+EndISRefEntry
+
+
+# #############################################################################
+#
+#                                Stations
+#
+
+BeginISRefEntry = 110
+    FileName = stations/satelite01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 111
+    FileName = stations/cardassian01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 112
+    FileName = stations/starbase01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+BeginISRefEntry = 113
+    FileName = stations/starbase02.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+# #############################################################################
+#
+#                                Misc
+#
+
+# Bouy
+BeginISRefEntry = 140
+    FileName = misc/buoy.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Hubble Space Telescope
+BeginISRefEntry = 141
+    FileName = misc/hubble.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Power Transmission Relay
+BeginISRefEntry = 142
+    FileName = misc/ptr01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 2.0
+    TotalFrames = 1
+EndISRefEntry
+
+# Parameter Defense Platform (Federation)
+BeginISRefEntry = 143
+    FileName = misc/pdp01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+
+
+# Warhead
+BeginISRefEntry = 150
+    FileName = projectiles/warhead01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 16
+EndISRefEntry
+
+
+
+#   Debris
+#
+BeginISRefEntry = 180
+    FileName = misc/debris01.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
+
+#   Debris (this one is a bit more realistic).
+#
+BeginISRefEntry = 181
+    FileName = misc/debris02.tga
+    MergeMode = Normal
+    HasTransparency
+    FrameDeterminat = ByHeading
+    LayerPlacement = Foreground
+    Magnification = 1.0
+    TotalFrames = 1
+EndISRefEntry
