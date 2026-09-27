@@ -2,9 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
-extern char *tzname[2];
-
 #include <time.h>
 #include "../include/os.h"
 
@@ -35,7 +32,9 @@ int strcasecmp(const char *s1, const char *s2);
 #endif	/* __MSW__ */
 
 const char *strseekblank(const char *s);
+#ifndef __GLIBC__
 char *strcasestr(const char *haystack, const char *needle);
+#endif
 int strpfx(const char *str, const char *pfx);
 int strcasepfx(const char *str, const char *pfx);
 void strtoupper(char *s);
@@ -219,6 +218,7 @@ const char *strseekblank(const char *s)
  *	Case insensitive version of strstr(). Returns the pointer to
  *	needle in haystack if found or NULL on no match.
  */
+#ifndef __GLIBC__
 char *strcasestr(const char *haystack, const char *needle)
 {
 	const char *strptr1, *strptr2, *strptr3;
@@ -276,6 +276,7 @@ char *strcasestr(const char *haystack, const char *needle)
 
         return(NULL);
 }
+#endif	/* !__GLIBC__ */
 
 /*
  *	Returns 1 if pfx is a prefix of str.

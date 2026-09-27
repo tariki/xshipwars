@@ -24,7 +24,10 @@ extern int strlines(const char *s);
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
 extern const char *strseekblank(const char *s);
+/* glibc provides strcasestr() (with C++ const overloads). */
+#ifndef __GLIBC__
 extern char *strcasestr(const char *haystack, const char *needle);
+#endif
 extern int strpfx(const char *str, const char *pfx);
 extern int strcasepfx(const char *str, const char *pfx);
 extern void strtoupper(char *s);
