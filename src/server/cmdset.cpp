@@ -59,6 +59,7 @@ static int ALLOW_SET_MAC(int condescriptor, int uid)
 static int CmdOPMSet(int condescriptor, const char *arg)
 {
         char *strptr;
+        const char *arg_ptr;
         int con_obj_num, obj_num, opm_num;
         xsw_object_struct *con_obj_ptr, *obj_ptr, *opm_ptr, *tmp_obj_buf;
 
@@ -79,8 +80,8 @@ static int CmdOPMSet(int condescriptor, const char *arg)
 
 
         /* Begin parsing. */
-	strptr = strchr(arg, '=');
-        if(strptr == NULL)
+	arg_ptr = strchr(arg, '=');
+        if(arg_ptr == NULL)
 	{
 
 
@@ -89,7 +90,7 @@ static int CmdOPMSet(int condescriptor, const char *arg)
 	else
 	{
 	    /* Get OPM name. */
-	    strncpy(opm_name, strptr + 1, XSW_OBJ_NAME_MAX);
+	    strncpy(opm_name, arg_ptr + 1, XSW_OBJ_NAME_MAX);
 	    opm_name[XSW_OBJ_NAME_MAX - 1] = '\0';
 	    /* Remove first '$' char from OPM name as needed. */
 	    if(*opm_name == '$')

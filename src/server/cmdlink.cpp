@@ -10,6 +10,7 @@
 int CmdLink(int condescriptor, const char *arg)
 {
         char *strptr;
+        const char *arg_ptr;
 	int src_obj_num, tar_obj_num, con_obj_num;
 	xsw_object_struct *src_obj_ptr, *tar_obj_ptr, *con_obj_ptr;
 	connection_struct *con_ptr;
@@ -142,8 +143,8 @@ int CmdLink(int condescriptor, const char *arg)
           /* ****************************************************** */
 	  case XSW_OBJ_TYPE_WORMHOLE:
             /* Parse target object. */
-            strptr = strchr(arg, '=');
-            if(strptr == NULL)
+            arg_ptr = strchr(arg, '=');
+            if(arg_ptr == NULL)
             {
                 *tar_obj_name = '\0';
                 tar_obj_num = -1;
@@ -153,7 +154,7 @@ int CmdLink(int condescriptor, const char *arg)
             {
                 strncpy(
                     tar_obj_name,
-                    strptr + 1,
+                    arg_ptr + 1,
                     XSW_OBJ_NAME_MAX
                 );
                 tar_obj_name[XSW_OBJ_NAME_MAX - 1] = '\0';
@@ -287,8 +288,8 @@ int CmdLink(int condescriptor, const char *arg)
             src_obj_ptr->elink = NULL;
 
             /* Parse target. */
-            strptr = strchr(arg, '=');
-            if(strptr == NULL) 
+            arg_ptr = strchr(arg, '=');
+            if(arg_ptr == NULL) 
             {
 		/* Unlink, already unlinked. */
 
@@ -311,7 +312,7 @@ int CmdLink(int condescriptor, const char *arg)
 	    else
 	    {
 		/* Set new link. */
-                src_obj_ptr->elink = StringCopyAlloc(strptr + 1);
+                src_obj_ptr->elink = StringCopyAlloc(arg_ptr + 1);
 		if(src_obj_ptr->elink == NULL)
 		{
                     sprintf(   

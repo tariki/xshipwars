@@ -56,7 +56,9 @@ int CmdSysparm(int condescriptor, const char *arg)
 {
 	int i, matches = 0;
 	long dt;
-        char *strptr, *parm_name;
+        char *parm_name;
+        const char *arg_ptr;
+        size_t len;
 	int object_num, con_obj_num;
 	xsw_object_struct *con_obj_ptr;
 	connection_struct *con_ptr;
@@ -90,8 +92,8 @@ int CmdSysparm(int condescriptor, const char *arg)
 
 
         /* Parse argument. */
-        strptr = strchr(arg, '=');
-        if(strptr == NULL)
+        arg_ptr = strchr(arg, '=');
+        if(arg_ptr == NULL)
 	{
 	    strncpy(parm, arg, CS_DATA_MAX_LEN);
 	    parm[CS_DATA_MAX_LEN - 1] = '\0';
@@ -107,13 +109,16 @@ int CmdSysparm(int condescriptor, const char *arg)
 	}
 	else
 	{
-            strncpy(val, strptr + 1, CS_DATA_MAX_LEN);
+            strncpy(val, arg_ptr + 1, CS_DATA_MAX_LEN);
             val[CS_DATA_MAX_LEN - 1] = '\0';
             StringStripSpaces(val);
 
-            *strptr = '\0';
-            strncpy(parm, arg, CS_DATA_MAX_LEN);
-            parm[CS_DATA_MAX_LEN - 1] = '\0';
+            /* Copy the name part before '=' without writing into arg. */
+            len = arg_ptr - arg;
+            if(len > CS_DATA_MAX_LEN - 1)
+                len = CS_DATA_MAX_LEN - 1;
+            memcpy(parm, arg, len);
+            parm[len] = '\0';
             StringStripSpaces(parm);
 	}
 

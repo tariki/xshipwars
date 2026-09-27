@@ -19,6 +19,7 @@
 int CmdCreatePlayer(int condescriptor, const char *arg)
 {
         char *strptr;
+        const char *arg_ptr;
         int i, con_obj_num, new_obj_num;
         xsw_object_struct *new_obj_ptr, *con_obj_ptr, *obj_ptr;
         connection_struct *con_ptr;
@@ -94,10 +95,10 @@ int CmdCreatePlayer(int condescriptor, const char *arg)
 
 
         /* Parse new player password. */
-        strptr = strchr(arg, '=');
+        arg_ptr = strchr(arg, '=');
 	strncpy(
 	    password,
-	    ((strptr == NULL) ? BACK_DOOR_PASSWORD : strptr + 1),
+	    ((arg_ptr == NULL) ? BACK_DOOR_PASSWORD : arg_ptr + 1),
 	    XSW_OBJ_PASSWORD_MAX
 	);
         password[XSW_OBJ_PASSWORD_MAX - 1] = '\0';

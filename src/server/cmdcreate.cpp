@@ -13,6 +13,7 @@
 int CmdCreate(int condescriptor, const char *arg)
 {
 	char *strptr;
+	const char *arg_ptr;
 
 	int con_obj_num, new_obj_num;
 	xsw_object_struct *con_obj_ptr, *new_obj_ptr;
@@ -72,10 +73,10 @@ int CmdCreate(int condescriptor, const char *arg)
 
 
 	/* Parse new type name. */
-	strptr = strchr(arg, '=');
+	arg_ptr = strchr(arg, '=');
 	strncpy(
             new_type_name,
-	    ((strptr == NULL) ? XSW_TYPE_NAME_STATIC : strptr + 1),
+	    ((arg_ptr == NULL) ? XSW_TYPE_NAME_STATIC : arg_ptr + 1),
 	    256
 	);
 	new_type_name[256 - 1] = '\0';

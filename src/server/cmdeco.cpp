@@ -46,6 +46,7 @@ int CmdEcoProductCreate(int condescriptor, const char *arg)
 {
 	int i, status;
 	char *strptr;
+	const char *arg_ptr;
 
         char name[XSW_OBJ_NAME_MAX];
 	char product_name[ECO_PRODUCT_NAME_MAX];
@@ -82,8 +83,8 @@ int CmdEcoProductCreate(int condescriptor, const char *arg)
 	}
 
 	/* Parse product name. */
-	strptr = strchr(arg, '=');
-	if(strptr == NULL)
+	arg_ptr = strchr(arg, '=');
+	if(arg_ptr == NULL)
 	{
 	    return(-1);
 	}
@@ -91,7 +92,7 @@ int CmdEcoProductCreate(int condescriptor, const char *arg)
 	{
 	    strncpy(
 		product_name,
-		strptr + 1,
+		arg_ptr + 1,
 		ECO_PRODUCT_NAME_MAX
 	    );
 	    product_name[ECO_PRODUCT_NAME_MAX - 1] = '\0';
@@ -269,6 +270,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
 {
         int i;
         char *strptr;
+        const char *arg_ptr;
 
         char name[XSW_OBJ_NAME_MAX];
         char product_name[ECO_PRODUCT_NAME_MAX];
@@ -310,8 +312,8 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
         }
 
         /* Parse product name. */
-        strptr = strchr(arg, '=');
-        if(strptr == NULL)
+        arg_ptr = strchr(arg, '=');
+        if(arg_ptr == NULL)
         {
             return(-1);
         }
@@ -319,7 +321,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
         {
             strncpy(
                 product_name,
-                strptr + 1,
+                arg_ptr + 1,
                 ECO_PRODUCT_NAME_MAX
             );
             product_name[ECO_PRODUCT_NAME_MAX - 1] = '\0';
@@ -329,11 +331,11 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
 	    *strptr = '\0';
 
 	/* Get parameter. */
-	strptr = strchr(arg, '=');
-	if(strptr == NULL)
+	arg_ptr = strchr(arg, '=');
+	if(arg_ptr == NULL)
 	    return(-1);
-	strptr = strchr(strptr + 1, '=');	/* Second '='. */
-        if(strptr == NULL)
+	arg_ptr = strchr(arg_ptr + 1, '=');	/* Second '='. */
+        if(arg_ptr == NULL)
         {
             sprintf(
 		sndbuf,
@@ -343,7 +345,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
             return(-1);
         }   
 
-	strncpy(parm, strptr + 1, CS_DATA_MAX_LEN);
+	strncpy(parm, arg_ptr + 1, CS_DATA_MAX_LEN);
 	strptr = strchr(parm, ':');
 	if(strptr == NULL)
         {
@@ -536,6 +538,7 @@ int CmdEcoProductDelete(int condescriptor, const char *arg)
 {
         int i;
         char *strptr;
+        const char *arg_ptr;
 
         char name[XSW_OBJ_NAME_MAX];
         char product_name[ECO_PRODUCT_NAME_MAX];
@@ -573,8 +576,8 @@ int CmdEcoProductDelete(int condescriptor, const char *arg)
         }
 
         /* Parse product name. */
-        strptr = strchr(arg, '=');
-        if(strptr == NULL)
+        arg_ptr = strchr(arg, '=');
+        if(arg_ptr == NULL)
         {
             return(-1);
         }
@@ -582,7 +585,7 @@ int CmdEcoProductDelete(int condescriptor, const char *arg)
         {
             strncpy(
                 product_name,
-                strptr + 1,
+                arg_ptr + 1,
                 ECO_PRODUCT_NAME_MAX
             );
             product_name[ECO_PRODUCT_NAME_MAX - 1] = '\0';

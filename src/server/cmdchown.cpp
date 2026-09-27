@@ -9,6 +9,7 @@
 int CmdChown(int condescriptor, const char *arg)
 {
         char *strptr;
+        const char *arg_ptr;
 	int tar_obj_num, con_obj_num, new_owner_obj_num;
 	xsw_object_struct *tar_obj_ptr, *con_obj_ptr, *new_owner_obj_ptr;
 	connection_struct *con_ptr;
@@ -90,8 +91,8 @@ int CmdChown(int condescriptor, const char *arg)
 
 
         /* Parse new owner object name. */
-        strptr = strchr(arg, '=');
-        if(strptr == NULL)
+        arg_ptr = strchr(arg, '=');
+        if(arg_ptr == NULL)
 	    strncpy(
 		new_owner_obj_name,
 		con_obj_ptr->name,
@@ -100,7 +101,7 @@ int CmdChown(int condescriptor, const char *arg)
 	else
             strncpy(
 		new_owner_obj_name,
-		strptr + 1,
+		arg_ptr + 1,
 		XSW_OBJ_NAME_MAX
 	    );
 	new_owner_obj_name[XSW_OBJ_NAME_MAX - 1] = '\0';
