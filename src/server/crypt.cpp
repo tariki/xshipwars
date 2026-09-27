@@ -111,7 +111,10 @@ char *CryptCreateSeed(void)
         rand_val = rand(); 
 
         rand_val += 1234567891;	/* Just an odd number. */
-        rand_val = abs(rand_val);
+        /* The addition above may exceed INT_MAX; fold it back like the
+         * original int-based abs() did.
+         */
+        rand_val = abs(static_cast<int>(rand_val));
 
         /* Indexes into seed_lib[], 0 to 63 as range. */
         i = (int)(64.0 * rand_val / (RAND_MAX + 1.0)); 
