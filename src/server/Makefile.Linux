@@ -50,9 +50,7 @@ PREFIX = /home
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS = -D__USE_BSD -DPLUGIN_SUPPORT -Dc_plusplus -D__cplusplus \
-         -fomit-frame-pointer -funroll-loops -finline-functions \
-         -ffast-math -O6 -march=i586
+CFLAGS = -DPLUGIN_SUPPORT -O2 -g -Wall
 
 
 # ########################################################################
