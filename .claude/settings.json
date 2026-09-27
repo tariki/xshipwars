@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(scripts/build.sh:*)",
+      "Bash(scripts/headless.sh:*)",
+      "Bash(make:*)",
+      "Bash(g++:*)",
+      "Bash(gcc:*)",
+      "Bash(gdb:*)",
+      "Bash(nm:*)",
+      "Bash(objdump:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
