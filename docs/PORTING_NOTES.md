@@ -31,3 +31,16 @@
   文字をポインタに詰め込むのをやめ、`{名前, 文字}` の構造体の配列にした（`OSWGetASCIIFromKeyCode()` の挙動は同じ）。
 - 残っている警告で、あとで確認したいもの: `-Wsequence-point`（blitfade.cpp の `tar_buf_ptr`、disk.cpp:926、
   global/string.cpp:346,357）。これらは未定義動作の可能性がある。
+
+## client のヘッドレス起動 (2026-10-03)
+
+- client は起動時に X のコアフォント `7x14` と `6x10` を必須としていて、無いと exit 1 で終了する（クラッシュではない）。
+  Debian では `xfonts-base` に入っているので Dockerfile に追加した。リビルド前の確認では、Xvfb に
+  `-fp built-ins,<dir>` を付け、fonts.alias で `7x14`/`6x10` を組み込みの `fixed` に割り当てて代用した。
+- client は toplevel ディレクトリ（既定は `/usr/share/games/xshipwars`）の下に `etc/`・`images/`・`sounds/` があることを前提にしている。
+  リポジトリでは画像が `data/images`（client, effects, *.page）と `theme/images`（celestial, vessels など）に
+  分かれているので、両方を 1 つの `images/` にまとめる必要がある。ヘッドレス確認では `run-logs/xsw-root/` に
+  シンボリックリンクで組み立て、`HOME` を `run-logs/xsw-home/` にして `.shipwars/xshipwarsrc` の `ToplevelDir` で指した。
+- `data/etc/xshipwarsrc` は 1.33 形式で、`JSCalibrationFile` が未知のパラメータとして警告される。
+  また `UniverseListFile = .shipwars/universes` は `~/.shipwars/` からの相対パスとして解釈されるので、
+  `~/.shipwars/.shipwars/universes` を探してしまう（`universes` とだけ書けば読まれる）。

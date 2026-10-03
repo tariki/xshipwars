@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential gdb valgrind strace ltrace bear \
   libx11-dev libxext-dev libxpm-dev libxt-dev x11proto-dev \
   xvfb xauth x11-apps x11-utils xdotool imagemagick \
+  xfonts-base \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /usr/local/share/npm-global && chown -R node:node /usr/local/share
