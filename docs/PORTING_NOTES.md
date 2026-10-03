@@ -107,3 +107,14 @@
   - client の `engine_state > 0` の判定が、エンジンの無い物体でも真になる。unvedit では None が "On" と表示される。
   `xsw_object_struct` の中で char 単体のメンバーはこれだけ（shield_state / cloak_state は int）。
   ほかの構造体やローカル変数の char については、64bit 監査で別途確認する。
+
+## unvedit のヘッドレス起動 (2026-10-03)
+
+- 起動: `HOME=<dir> unvedit <ユニバースファイル>`。設定は `~/.shipwars/unveditrc`（`ToplevelDir`・`ImagesDir`・`ServerDir`）。
+  unvedit 自身の画像は `<ImagesDir>/unvedit/` から読み、リポジトリでは `src/unvedit/images`。ヘッドレス確認では
+  `run-logs/xsw-root/images/unvedit` にシンボリックリンクを張った。
+- generic_in.unv（オブジェクト 11 個）を開いて保存し直すと、選択していないオブジェクトは 1 バイトも変わらなかった。
+  選択中のオブジェクトは保存時にプロパティ欄の値で上書きされるので、次の差分が出る（どれも元からの仕様で、64bit/arm64 とは関係ない）。
+  - `ObjectHeading`: 画面には度数を `%.2f` で表示し、その文字列からラジアンに戻すので丸め誤差が出る（2.0969 → 2.0968）。
+  - `CloakStrength`: unvedit は 0.0〜1.0 に収める。同梱データの Defiant は 1.25 なので 1.0 になる。
+  - `ELink = `: 選択すると elink が空文字列で確保され、空の行が書き出される。
