@@ -54,6 +54,14 @@
   メインのキー（英数字、space=65、Esc=9、F1=67 など、番号 97 未満）は新旧で同じなので、そちらに割り当てた操作は効く。
 - キーシンボルからキーコードを引く既定値（`KeymapWinSetDefault()`、`osw_keycode.*`）は、キー設定画面の
   「Default」ボタンを押したときにしか使われない。
+- 対応: 同梱の `data/etc/xshipwarsrc` の `BeginKeyMap` で、新旧の番号が異なる 8 個を evdev の番号に書き換えた
+  （コードと設定ファイルの形式は変更なし）。変換には `/usr/share/X11/xkb/keycodes/xfree86` と `evdev` を使い、
+  キー名（`<RGHT>` など）を経由して番号を対応させた。
+  TurnLeft 100→113, TurnRight 102→114, ThrottleIncrease 98→111, ThrottleDecrease 104→116, ThrottleIdle 107→119,
+  MessageScrollUp 99→112, MessageScrollDown 105→117, ScreenShot 111→107。
+  キーコードは X サーバによって変わるので、evdev 以外の X サーバでは再びずれる可能性がある。
+  また、すでに `~/.shipwars/xshipwarsrc` にコピーされた設定ファイルは古い番号のままなので、
+  キー設定画面の「Default」ボタンで直す必要がある。
 - ゲーム中のキー処理（`gctl.cpp`）は `bridge_win.is_in_focus` が真のときだけ動き、このフラグは bridge の
   トップレベルウィンドウが FocusIn を受けたときにしか立たない。ウィンドウマネージャの無い Xvfb では
   フォーカスが PointerRoot のままで FocusIn が来ないので、ヘッドレス確認では
