@@ -72,4 +72,20 @@
 - `Makefile.Linux` のフラグを `-DUSE_XSHM -O2 -g -Wall` にし、`-L/usr/X11R6/lib` を削除しただけでビルドできた。
   monitor は元々サウンドもジョイスティックも使っていない。client で直した共有部分（widgets/、global/osw-x.cpp）の修正がそのまま効いている。
 - 警告に 64bit 関連（ポインタと整数の変換）は無い。`-Wsequence-point` は client と共通の global/disk.cpp:926 と global/string.cpp:346,357。
-- monitor は server の AUX ポート（既定 1702）に接続する。まだ実際には接続して確認していない。
+- monitor は server の AUX ポート（既定 1702）に接続する。
+
+## monitor のヘッドレス起動 (2026-10-03)
+
+- 起動: `monitor -u <名前> <パスワード> <アドレス> <ポート> -i src/monitor/images`。
+  monitor の各ウィンドウは、ダッシュで始まらない最初の引数をアドレスとみなし、その時点で接続する。
+  そのため `-u` はアドレスより前に書き、`-i`/`-s` のパスはアドレスとポートより後ろに書く
+  （先に書くとパスがホスト名として扱われ「Unknown Host」になる）。画像の既定パスは
+  `/usr/share/games/xshipwars/images/monitor` で、リポジトリでは `src/monitor/images`。
+- AUX プロトコルはテキスト形式（`CONNECTIONS: n n`、`MEMORY: %ld %ld %ld` などの行）なので、
+  バイナリの整数サイズには依存しない。server は time_t や long を `%ld` で送り、monitor は `%ld` で long に読む。
+  64bit ではどちらも 64bit になり、一致している。
+- AUX の Guest ログイン（`-u` を付けない場合の既定）は、server 側で「ログイン済み」にならない
+  （`auxconn.cpp` の "Do nothing for Guest logins"）。サーバのログ（MESSAGE）はログイン済みの接続にしか
+  転送されないので、Guest だと Messages ウィンドウには何も出ない。統計は Guest でも表示される。元からの仕様。
+- メモリ表示の「Objects: 11 8608 bytes」から、64bit の server では xsw_object_struct が約 880 バイト
+  （オブジェクトが 1 個増えると 880 増える）。32bit 版とはサイズが違うはずなので、64bit 監査で確認する。
