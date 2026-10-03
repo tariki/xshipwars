@@ -44,3 +44,17 @@
 - `data/etc/xshipwarsrc` は 1.33 形式で、`JSCalibrationFile` が未知のパラメータとして警告される。
   また `UniverseListFile = .shipwars/universes` は `~/.shipwars/` からの相対パスとして解釈されるので、
   `~/.shipwars/.shipwars/universes` を探してしまう（`universes` とだけ書けば読まれる）。
+
+## キー入力が効かない原因 (2026-10-03)
+
+- 設定ファイルの `BeginKeyMap` ... `EndKeyMap` には、**X のキーコード（番号）がそのまま**書かれている。
+  同梱の `data/etc/xshipwarsrc` の値は、旧 XFree86 キーボードドライバでの番号（TurnLeft=100, TurnRight=102,
+  ThrottleIncrease=98, ThrottleDecrease=104, ThrottleIdle=107 など）。現在の Xorg/Xvfb（evdev/XKB）では
+  Left=113, Right=114, Up=111, Down=116, Delete=119 なので、カーソル・ナビゲーションキーやテンキーに割り当てた操作が効かない。
+  メインのキー（英数字、space=65、Esc=9、F1=67 など、番号 97 未満）は新旧で同じなので、そちらに割り当てた操作は効く。
+- キーシンボルからキーコードを引く既定値（`KeymapWinSetDefault()`、`osw_keycode.*`）は、キー設定画面の
+  「Default」ボタンを押したときにしか使われない。
+- ゲーム中のキー処理（`gctl.cpp`）は `bridge_win.is_in_focus` が真のときだけ動き、このフラグは bridge の
+  トップレベルウィンドウが FocusIn を受けたときにしか立たない。ウィンドウマネージャの無い Xvfb では
+  フォーカスが PointerRoot のままで FocusIn が来ないので、ヘッドレス確認では
+  `xdotool windowfocus --sync <bridge のウィンドウ>` で明示的にフォーカスを与える必要がある（通常のデスクトップでは問題にならない）。
