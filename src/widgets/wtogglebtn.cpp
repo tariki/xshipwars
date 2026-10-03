@@ -153,8 +153,8 @@ int TgBtnSetHintMessage(
         if(tb->toplevel == 0)
 	{
 	    fprintf(stderr,
- "TgBtnSetHintMessage(): Structure 0x%.8x not initialized.\n",
-		(unsigned int)tb
+ "TgBtnSetHintMessage(): Structure %p not initialized.\n",
+		(void *)tb
 	    );
             return(-1);
 	}

@@ -6180,8 +6180,8 @@ int OSWGUIErrorHandler(
 
 	/* Display. */
         fprintf(stderr,
- "        X server display connection pointer: 0x%.8x\n",
-	    (u_int32_t)error_event->display
+ "        X server display connection pointer: %p\n",
+	    (void *)error_event->display
         );
 
 	/* Serial number. */

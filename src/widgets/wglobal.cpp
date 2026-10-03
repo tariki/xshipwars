@@ -838,8 +838,8 @@ void WidgetDestroyGlobals()
                     break;
 		}
 		fprintf(stderr,
-                    " widget #%i 0x%.8x was not destroyed.\n",
-                    i, (unsigned int)widget_reg.entry[i]->ptr
+                    " widget #%i %p was not destroyed.\n",
+                    i, widget_reg.entry[i]->ptr
 		);
             }
         }

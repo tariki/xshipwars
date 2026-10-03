@@ -222,7 +222,7 @@ image_t *WidgetLoadImageFromTgaData(u_int8_t *data)
         status = TgaReadFromData(data, td, osw_gui[0].depth);
         if(status != TgaSuccess)
         {
-            fprintf(stderr, "WidgetLoadImageFromTgaData(): 0x%.8x: ", (u_int32_t)data);
+            fprintf(stderr, "WidgetLoadImageFromTgaData(): %p: ", (void *)data);
             switch(status)
             {
               case TgaNoBuffers:
@@ -266,8 +266,8 @@ image_t *WidgetLoadImageFromTgaData(u_int8_t *data)
             if(OSWCreateImage(&image, td->width, td->height))
             {
                 fprintf(stderr,
-                    "0x%.8x: Error: Cannot allocate GUI image.\n",
-                    (u_int32_t)data
+                    "%p: Error: Cannot allocate GUI image.\n",
+                    (void *)data
                 );
             }
             else
@@ -291,8 +291,8 @@ image_t *WidgetLoadImageFromTgaData(u_int8_t *data)
 	    if(OSWCreateImage(&image, td->width, td->height))
             {
                 fprintf(stderr,
-                    "0x%.8x: Error: Cannot allocate GUI image.\n",
-                    (u_int32_t)data
+                    "%p: Error: Cannot allocate GUI image.\n",
+                    (void *)data
                 );
             }
 	    else
@@ -316,8 +316,8 @@ image_t *WidgetLoadImageFromTgaData(u_int8_t *data)
 	    if(OSWCreateImage(&image, td->width, td->height))
             {
                 fprintf(stderr,
-                    "0x%.8x: Error: Cannot allocate GUI image.\n",
-                    (u_int32_t)data
+                    "%p: Error: Cannot allocate GUI image.\n",
+                    (void *)data
                 );
             }
 	    else  
@@ -475,8 +475,8 @@ image_t *WidgetLoadImageFromXpmData(char **data)
         if(status != XpmSuccess)
         {
             fprintf(stderr, "WidgetLoadImageFromXpmData(): ");
-            fprintf(stderr, "0x%.8x: Failed load.\n",
-		(u_int32_t)data
+            fprintf(stderr, "%p: Failed load.\n",
+		(void *)data
 	    );
 
             return(0);
@@ -581,8 +581,8 @@ pixmap_t WidgetLoadPixmapFromXpmData(char **data)
         if(status != XpmSuccess)
         {
             fprintf(stderr, "WidgetLoadPixmapFromXpmData(): ");
-            fprintf(stderr, "0x%.8x: Failed load.\n",
-                (u_int32_t)data
+            fprintf(stderr, "%p: Failed load.\n",
+                (void *)data
             );
 
             return(0);

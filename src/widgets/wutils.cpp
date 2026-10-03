@@ -456,8 +456,8 @@ WCursor *WidgetCreateCursorFromData(
         if(status != XpmSuccess)
         {
             fprintf(stderr,
-                "0x%.8x: Unable to load embedded Pixmap.\n",
-                (u_int32_t)xpmdata
+                "%p: Unable to load embedded Pixmap.\n",
+                (void *)xpmdata
             );
             return(NULL);
         }

@@ -389,8 +389,8 @@ int IMGLoadImageData(int image_num, unsigned char *data)
         if(xsw_image[image_num]->image == NULL)
         {
             fprintf(stderr,
-                "IMGLoadImage(): Cannot load image data: 0x%.8x\n",
-                (u_int32_t)data
+                "IMGLoadImage(): Cannot load image data: %p\n",
+                (void *)data
             );
 
 	    /* Unload and free all resources. */
