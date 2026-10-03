@@ -9,7 +9,8 @@
 - `strcasestr()`: glibc が提供しており、C++ では const/非 const のオーバーロードで宣言されるため、
   独自版（`src/global/string.cpp`）と宣言（`src/include/string.h`）は `#ifndef __GLIBC__` で除外した。
   独自版は NULL 引数で NULL を返したが glibc 版は NULL を渡すとクラッシュする。server は呼んでいない。
-  unvedit の呼び出し元（`uewpropsio.cpp`, `wepw.cpp`）は移植時に NULL が来ないか確認すること。
+  unvedit の呼び出し元は確認済み: `uewpropsio.cpp` の引数はローカル配列なので NULL にならない。
+  `wepw.cpp` は `PromptGetS()` の戻り値（プロンプトのバッファが無いと NULL）を渡していたので、NULL チェックを追加した。
 - `src/include/xsw_ctype.h` の `bool isblank(int)` 宣言は標準の `int isblank(int)` と衝突し、しかも定義が
   どこにも無かったので削除した。`global/ctype.cpp` が実際に定義している `isblankChar` / `isblankInt` を宣言する。
 - `CmdSysparm()` は `const char *arg` に `'\0'` を書き込んでいた（呼び出し元のローカルバッファなので実害は無し）。
@@ -89,3 +90,20 @@
   転送されないので、Guest だと Messages ウィンドウには何も出ない。統計は Guest でも表示される。元からの仕様。
 - メモリ表示の「Objects: 11 8608 bytes」から、64bit の server では xsw_object_struct が約 880 バイト
   （オブジェクトが 1 個増えると 880 増える）。32bit 版とはサイズが違うはずなので、64bit 監査で確認する。
+
+## unvedit ビルド (2026-10-03)
+
+- `Makefile.Linux` のフラグを `-DUSE_XSHM -O2 -g -Wall` にし、`-L/usr/X11R6/lib` を削除した。サウンドもジョイスティックも使っていない。
+- `src/include/os.h` の固定幅型: glibc の `<sys/types.h>` が定義する `__BIT_TYPES_DEFINED__` が無いと、
+  os.h は `int64_t` を `long long` などと自前で typedef する。システムのヘッダより先に os.h をインクルードするファイル
+  （unvedit/rcfile.cpp など）では、あとから来る glibc の定義（LP64 の arm64/x86_64 では `int64_t` は `long`）と衝突していた。
+  32bit の glibc では `long long` 同士だったので衝突しなかった。os.h で Linux/FreeBSD のときに先に `<sys/types.h>`
+  をインクルードするようにし、常にシステムの型を使う（どの環境でもサイズは同じ）。
+- unvedit はオブジェクト番号（int）を CList の項目データ（`void *`）に入れて往復させている。`intptr_t` を経由するようにした。
+- **arm64 の char 問題**: `xsw_object_struct::engine_state` は `char` で、`ENGINE_STATE_NONE`（-1）を入れることがある。
+  arm64 では char が unsigned なので 255 になり、次の問題が起きる。`signed char` にした（サイズ・レイアウトは同じ）。
+  - ユニバースファイルに `EngineState = 255` と書き出される（x86 版は `-1`）。ファイル形式の値が変わってしまう。
+  - server が `SWEXTCMD_SETENGINE` で 255 を送る（プロトコルの値が変わってしまう）。
+  - client の `engine_state > 0` の判定が、エンジンの無い物体でも真になる。unvedit では None が "On" と表示される。
+  `xsw_object_struct` の中で char 単体のメンバーはこれだけ（shield_state / cloak_state は int）。
+  ほかの構造体やローカル変数の char については、64bit 監査で別途確認する。

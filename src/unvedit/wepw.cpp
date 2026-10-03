@@ -471,10 +471,13 @@ int WepWSetValues(wepw_struct *wepw_ptr, int wep_num)
 
 	strptr = PromptGetS(&wepw_ptr->flags_prompt);
 	wep_ptr->flags = 0;
-	if(strcasestr(strptr, XSW_WEP_FLAG_NAME_NO_FIRE_SOUND))
-	    wep_ptr->flags |= XSW_WEP_FLAG_NO_FIRE_SOUND;
-	if(strcasestr(strptr, XSW_WEP_FLAG_NAME_FIXED))
-            wep_ptr->flags |= XSW_WEP_FLAG_FIXED;
+	if(strptr != NULL)
+	{
+	    if(strcasestr(strptr, XSW_WEP_FLAG_NAME_NO_FIRE_SOUND))
+	        wep_ptr->flags |= XSW_WEP_FLAG_NO_FIRE_SOUND;
+	    if(strcasestr(strptr, XSW_WEP_FLAG_NAME_FIXED))
+                wep_ptr->flags |= XSW_WEP_FLAG_FIXED;
+	}
 
 	wep_ptr->ocs_code = PromptGetI(&wepw_ptr->ocs_code_prompt);
 
