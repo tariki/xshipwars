@@ -137,8 +137,6 @@ char *CryptCreateSeed(void)
  */
 char *CryptDoEncrypt(char *word, char *seed)
 {
-        encrypted[ENCRYPTED_WORD_LEN + 1] = (char )NULL;
-
         strncpy(encrypted, crypt(word, seed), ENCRYPTED_WORD_LEN + 1);
 	encrypted[ENCRYPTED_WORD_LEN] = '\0';
 
