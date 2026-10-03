@@ -66,3 +66,10 @@
   トップレベルウィンドウが FocusIn を受けたときにしか立たない。ウィンドウマネージャの無い Xvfb では
   フォーカスが PointerRoot のままで FocusIn が来ないので、ヘッドレス確認では
   `xdotool windowfocus --sync <bridge のウィンドウ>` で明示的にフォーカスを与える必要がある（通常のデスクトップでは問題にならない）。
+
+## monitor ビルド (2026-10-03)
+
+- `Makefile.Linux` のフラグを `-DUSE_XSHM -O2 -g -Wall` にし、`-L/usr/X11R6/lib` を削除しただけでビルドできた。
+  monitor は元々サウンドもジョイスティックも使っていない。client で直した共有部分（widgets/、global/osw-x.cpp）の修正がそのまま効いている。
+- 警告に 64bit 関連（ポインタと整数の変換）は無い。`-Wsequence-point` は client と共通の global/disk.cpp:926 と global/string.cpp:346,357。
+- monitor は server の AUX ポート（既定 1702）に接続する。まだ実際には接続して確認していない。

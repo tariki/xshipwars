@@ -50,7 +50,7 @@ PREFIX = /usr
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS  = -D__USE_BSD -O2 -funroll-loops -DUSE_XSHM -Dc_plusplus -D__cplusplus
+CFLAGS  = -DUSE_XSHM -O2 -g -Wall
 
 
 # ########################################################################
@@ -73,7 +73,7 @@ LIB = -lX11 -lXpm -lXext
 #   Each argument is of the format -L<dir> where <dir> is the full
 #   path to the directory.
 #
-LIB_DIR = -L/usr/X11R6/lib
+LIB_DIR =
 
 # Header File Directories:
 #
