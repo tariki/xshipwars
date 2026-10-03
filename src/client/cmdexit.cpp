@@ -3,7 +3,7 @@
 
 int CmdExit(const char *arg)
 {
-	char *strptr;
+	const char *strptr;
 
 	/* Check for exit option. */
 	if(arg != NULL)

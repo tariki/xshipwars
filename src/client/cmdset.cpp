@@ -19,7 +19,8 @@ int CMDSETPARMMATCH(const char *s, const char *pattern)
 int CmdSet(const char *arg)
 {
 	int n;
-        char *strptr;
+        const char *strptr;
+        char *eq;
 
         char text[CLIENT_CMD_MAX + 256];
 
@@ -55,9 +56,9 @@ int CmdSet(const char *arg)
 
             strncpy(parm, arg, CLIENT_CMD_MAX);
             parm[CLIENT_CMD_MAX - 1] = '\0';
-	    strptr = strchr(parm, '=');
-	    if(strptr != NULL)
-		*strptr = '\0';
+	    eq = strchr(parm, '=');
+	    if(eq != NULL)
+		*eq = '\0';
         }
 	StringStripSpaces(parm);
 	StringStripSpaces(val);

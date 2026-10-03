@@ -7,6 +7,7 @@ int CmdServScript(const char *arg)
 	char filename[PATH_MAX + NAME_MAX];
 	char stringa[PATH_MAX + NAME_MAX + 256];
 	char *strptr, *strptr2;
+	const char *args;
 
 	char **argv = NULL;
 	int argc = 0;
@@ -33,10 +34,10 @@ int CmdServScript(const char *arg)
 	}
 
 	/* Get arguments if any. */
-	strptr = strchr(arg, ' ');
-	if(strptr != NULL)
+	args = strchr(arg, ' ');
+	if(args != NULL)
 	{
-	    argv = ExecExplodeCommand(strptr, &argc);
+	    argv = ExecExplodeCommand(args, &argc);
 	    if(argc < 0)
 		argc = 0;
 	}
