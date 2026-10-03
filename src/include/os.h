@@ -23,6 +23,8 @@
 
 #if defined(__linux__) || defined(__FreeBSD__)
 # include <paths.h>
+/* Provides the bit types (and __BIT_TYPES_DEFINED__) checked below. */
+# include <sys/types.h>
 #endif
 
 
