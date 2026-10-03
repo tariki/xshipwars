@@ -39,6 +39,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 */
 #include <unistd.h>
 #include <sys/stat.h>
@@ -288,7 +289,7 @@ int UEWDoSelectObject(int n, int obj_num)
 
 	    item = list->row[i]->item[0];
 
-	    if((int)item->client_data == obj_num)
+	    if((int)(intptr_t)item->client_data == obj_num)
 	    {
 		CListSelectRow(list, i);
 		if(list->map_state)

@@ -25,6 +25,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 */
 #include "../include/string.h"
 #include "../include/osw-x.h"
@@ -104,7 +105,7 @@ void UEWUpdateObjectList(uew_struct *uew_ptr)
 	    /*   Set client data pointer on first item on row to
 	     *   index value of it's associated XSW object.
 	     */
-	    row_ptr->item[0]->client_data = (void *)i;
+	    row_ptr->item[0]->client_data = (void *)(intptr_t)i;
 
             CListAddItem(
                 list_ptr,
@@ -160,7 +161,7 @@ void UEWObjectListScrollToItem(
 	    if(item == NULL)
 		continue;
 
-	    if((int)item->client_data == obj_num)
+	    if((int)(intptr_t)item->client_data == obj_num)
 	    {
 		n = i;
 		break;
@@ -221,7 +222,7 @@ void UEWUpdateObjectListItemName(
 		continue;
 
 
-	    if((int)item->client_data == obj_num)
+	    if((int)(intptr_t)item->client_data == obj_num)
 	    {
                 item = list->row[i]->item[1];
                 if(item == NULL)

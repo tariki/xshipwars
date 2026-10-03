@@ -27,6 +27,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 */
 #include "../include/disk.h"
  
@@ -571,7 +572,7 @@ int UEWObjectsListCLCB(void *ptr)
 
 	    item = list->row[i]->item[0];
 
-	    obj_num = (int)item->client_data;
+	    obj_num = (int)(intptr_t)item->client_data;
 	    if(UEWIsObjectGarbage(uew_ptr, obj_num))
 		continue;
 
