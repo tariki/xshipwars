@@ -75,10 +75,7 @@ PREFIX = /usr
 #				this option unless you are attempting
 #				to debug the program.
 #
-CFLAGS = -D__USE_BSD -DUSE_XSHM -DJS_SUPPORT -DHAVE_YIFF -DHAVE_ESD \
-         -Dc_plusplus -D__cplusplus \
-         -fomit-frame-pointer -funroll-loops -finline-functions \
-         -ffast-math -O6 -march=i586
+CFLAGS = -DUSE_XSHM -O2 -g -Wall
 
 
 # ########################################################################
@@ -92,7 +89,7 @@ CFLAGS = -D__USE_BSD -DUSE_XSHM -DJS_SUPPORT -DHAVE_YIFF -DHAVE_ESD \
 #   to the LIB line depending on what you have set in the CFLAGS line
 #   farther above.
 #
-LIB = -lm -lX11 -lXpm -lXext -ljsw -lY2 -lesd -laudiofile
+LIB = -lm -lX11 -lXpm -lXext
 
 # Library Directories:
 #
@@ -101,7 +98,7 @@ LIB = -lm -lX11 -lXpm -lXext -ljsw -lY2 -lesd -laudiofile
 #   Each argument is of the format -L<dir> where <dir> is the full
 #   path to the directory.
 #
-LIB_DIR = -L/usr/X11R6/lib
+LIB_DIR =
 
 # Header File Directories:
 #
