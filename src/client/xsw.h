@@ -706,7 +706,7 @@ typedef struct {
          *   2 = network stats.
          *   3 = labels and network stats.
          */
-	char show_viewscreen_labels;
+	signed char show_viewscreen_labels;
 
 	/* Viewscreen effects graphics. */
 	char show_lens_flares;
@@ -719,7 +719,7 @@ typedef struct {
 	 *   1 = as needed.
 	 *   2 = always.
 	 */
-	char show_formal_label;
+	signed char show_formal_label;
 
 	/* Show network errors (undicipherable network data)? */
 	char show_net_errors;
@@ -737,7 +737,7 @@ typedef struct {
 
 
 	/* Sound level, one of XSW_SOUNDS_*. */
-	char sounds;
+	signed char sounds;
 	char music;	/* 0 for off, 1 for on. */
 
 
@@ -752,7 +752,7 @@ typedef struct {
 #define THROTTLE_MODE_NORMAL		0
 #define THROTTLE_MODE_BIDIRECTIONAL	1
 #define THROTTLE_MODE_INCREMENTAL	2
-	char throttle_mode;
+	signed char throttle_mode;
 
 #ifdef JS_SUPPORT
 	/* Close joystick when bridge is out of focus? */
