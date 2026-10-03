@@ -48,6 +48,8 @@
 
  */
 
+#include <stdint.h>
+
 #include "keymapwin.h"
 #include "keymap.h"
 #include "xsw.h"
@@ -163,7 +165,7 @@ int KeymapWinAppendListRow(
 	CListSetItemDataPtr(
 	    list,
 	    i, 1,		/* Row, colum. */
-	    (void *)keycode
+	    (void *)(uintptr_t)keycode
 	);
 
 	return(0);
@@ -186,7 +188,7 @@ int KeymapWinGetKeycode(
         )
             return(-1);
 
-	*keycode = (keycode_t)CListGetItemDataPtr(
+	*keycode = (keycode_t)(uintptr_t)CListGetItemDataPtr(
 	    list,
 	    row_num, 1 		/* Row, colum. */
 	);
@@ -219,7 +221,7 @@ int KeymapWinSetKeycode(
 	CListSetItemDataPtr(
 	    list,
 	    row_num, 1,		/* Row, colum. */
-	    (void *)keycode
+	    (void *)(uintptr_t)keycode
 	);
 
 	return(0);
@@ -779,7 +781,7 @@ int KeymapWinCheckDups(bool_t warn)
     are mapped to the same key `%s'.\n\n",
 			    xsw_keymap_name[n],
 			    xsw_keymap_name[i],
-			    OSWGetKeyCodeName((keycode_t)keycode1)
+			    OSWGetKeyCodeName((keycode_t)(uintptr_t)keycode1)
 			);
 
 			printdw(&err_dw, stringa);
