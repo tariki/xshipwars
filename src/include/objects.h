@@ -539,7 +539,7 @@ typedef struct
 	double thrust;		/* throttle * thrust_power */
 	double thrust_power;	/* Full power of thrust. */
 	double throttle;	/* 0.0 to 1.0. */
-	char engine_state;	/* One of ENGINE_STATE_*. */
+	signed char engine_state;	/* One of ENGINE_STATE_* (may be -1). */
 	double turnrate;	/* In radians per cycle. */
 
 	xswo_lighting_t lighting;	/* Vector lights, strobes, etc switches. */
