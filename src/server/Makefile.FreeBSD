@@ -45,7 +45,7 @@ PREFIX = /home
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS += -D__USE_BSD -Dc_plusplus -D__cplusplus
+CFLAGS = -DPLUGIN_SUPPORT -O2 -g -Wall
 
 
 # ########################################################################
@@ -86,8 +86,8 @@ INC = -I/usr/include
 #
 include Makefile.srclist
 
-# CC  ?= gcc
-CPP  ?= g++
+# CXX is c++ (clang) by default on FreeBSD; override with e.g. make CXX=g++13
+CPP = ${CXX}
 BIN = swserv
 OBJ = $(SRC:.cpp=.o)
 

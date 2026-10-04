@@ -18,7 +18,7 @@
 #   You may modify any value as needed. Change only the ones you are
 #   absolutly sure that requires modification.
 #
-PREFIX = /usr/local
+PREFIX = /usr
 
 
 # ########################################################################
@@ -33,6 +33,9 @@ PREFIX = /usr/local
 #	USE_GETDENTS		Use getdents() instead of readdir().
 #
 #       USE_XSHM		Enable MIT X Shared Memory.
+#
+#       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
+#				(Xinerama) screen. Requires -lXinerama.
 #
 #	JS_SUPPORT		Enable joystick support.
 #
@@ -52,7 +55,7 @@ PREFIX = /usr/local
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS+= -D__USE_BSD -DUSE_XSHM -Dc_plusplus -D__cplusplus
+CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall
 
 
 # ########################################################################
@@ -66,8 +69,8 @@ CFLAGS+= -D__USE_BSD -DUSE_XSHM -Dc_plusplus -D__cplusplus
 #   to the LIB line depending on what you have set in the CFLAGS line
 #   farther above.
 #
-X11BASE?= /usr/X11R6
-LIB = -lm -lX11 -lXpm -lXext
+LOCALBASE?= /usr/local
+LIB = -lm -lX11 -lXpm -lXext -lXinerama
 
 # Library Directories:
 #
@@ -76,7 +79,7 @@ LIB = -lm -lX11 -lXpm -lXext
 #   Each argument is of the format -L<dir> where <dir> is the full
 #   path to the directory.
 #
-LIB_DIR = -L${X11BASE}/lib
+LIB_DIR = -L${LOCALBASE}/lib
 
 # Header File Directories:
 #
@@ -86,7 +89,7 @@ LIB_DIR = -L${X11BASE}/lib
 #   Each argument is of the format -I<dir> where <dir> is the full
 #   path to the directory.
 #
-INC = -I${X11BASE}/include
+INC = -I${LOCALBASE}/include
 
 
 # ########################################################################
@@ -94,8 +97,8 @@ INC = -I${X11BASE}/include
 #
 include Makefile.srclist
 
-# CC?= cc
-CPP? = g++
+# CXX is c++ (clang) by default on FreeBSD; override with e.g. make CXX=g++13
+CPP = ${CXX}
 BIN = xsw
 OBJ = $(SRC:.cpp=.o)
 .cpp.o:

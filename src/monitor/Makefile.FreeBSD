@@ -34,6 +34,9 @@ PREFIX = /usr
 #
 #       USE_XSHM		Enable MIT X Shared Memory.
 #
+#       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
+#				(Xinerama) screen. Requires -lXinerama.
+#
 #   Other arguments include:
 #
 #       -O#                     Specifies the optimization level the
@@ -50,7 +53,7 @@ PREFIX = /usr
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS  += -D__USE_BSD -DUSE_XSHM -Dc_plusplus -D__cplusplus
+CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall
 
 
 # ########################################################################
@@ -64,7 +67,7 @@ CFLAGS  += -D__USE_BSD -DUSE_XSHM -Dc_plusplus -D__cplusplus
 #   to the LIB line depending on what you have set in the CFLAGS line
 #   farther above.
 #
-LIB = -lX11 -lXpm -lXext
+LIB = -lX11 -lXpm -lXext -lXinerama
 
 # Library Directories:          
 #
@@ -73,8 +76,8 @@ LIB = -lX11 -lXpm -lXext
 #   Each argument is of the format -L<dir> where <dir> is the full
 #   path to the directory.
 #
-X11BASE?= /usr/X11R6
-LIB_DIR = -L${X11BASE}/lib
+LOCALBASE?= /usr/local
+LIB_DIR = -L${LOCALBASE}/lib
 
 # Header File Directories:
 #
@@ -84,7 +87,7 @@ LIB_DIR = -L${X11BASE}/lib
 #   Each argument is of the format -I<dir> where <dir> is the full
 #   path to the directory.
 #
-INC = -I${X11BASE}/include
+INC = -I${LOCALBASE}/include
 
 
 # ########################################################################
@@ -93,7 +96,8 @@ INC = -I${X11BASE}/include
 include Makefile.srclist
 
 #CC  ?= cc
-CPP  ?= g++
+# CXX is c++ (clang) by default on FreeBSD; override with e.g. make CXX=g++13
+CPP = ${CXX}
 BIN = monitor
 OBJ = $(SRC:.cpp=.o)
 .cpp.o:
