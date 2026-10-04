@@ -224,3 +224,5 @@
   - server と一緒に入る `restart` は csh のサンプルスクリプトで、設定ファイルとして `etc/generic.conf` を参照するが、
     `make install` が置くのは `etc/default.conf`。使うときはコピーするかスクリプトを書き換える
     （コメントにも「環境に合わせて書き換えること」とある）。コンテナには csh が入っていない。
+  - server の `make install` は `plugins/` ディレクトリを作らないが、`default.conf` は `PluginsDir = plugins` を指定している
+    ので、起動時に「No such directory」の警告が出る（プラグインを使わなければ動作に影響は無い）。元からのインストール手順の抜け。
