@@ -812,7 +812,7 @@ char *ChangeDirRel(const char *cpath, const char *npath)
         if(rtn_str == NULL)
             return(NULL);
 
-	strncpy(rtn_str, strptr, len);
+	memcpy(rtn_str, strptr, len);
 	rtn_str[len] = '\0';
 
 
