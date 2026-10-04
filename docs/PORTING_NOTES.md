@@ -245,4 +245,16 @@
   999 にしておいた状態から 114 に戻ることを確認した。設定は正規の終了（runlevel 1。bridge ウィンドウを閉じる
   `WM_DELETE_WINDOW` でも入る）のときに保存され、SIGTERM では保存されない。
 - unvedit は SIGTERM を受けると、`$HOME/univXXXXXX` に緊急保存する（mkstemp に置き換えた経路が動くことの確認にもなった）。
-- XQuartz 実機での表示（フォントの有無、キーコード）はまだ確認していない。
+- XQuartz 実機（X.Org 21.1.23）で確認した (2026-10-04)。リビルド後、`host.docker.internal:0` に接続でき、
+  client が `--no_xshm` で表示された。
+  - フォント `7x14`・`6x10` は XQuartz にある。
+  - キーコードは macOS のキー番号 + 8: Left=131, Right=132, Up=134, Down=133, Delete=125, space=57, Escape=61,
+    F1=130, F8=108, a=8, x=15。英数字も含めて Xorg（evdev）とすべて違うので、Key Mappings で割り当て直す必要がある。
+  - XQuartz はルートレス表示なので、ルートウィンドウを撮っても中身は写らない。`xwininfo -root -tree` で
+    "XShipWars: localhost" を探し、`import -window <id>` で client のウィンドウだけを撮る。
+  - ログイン直後に、物体の名前だけが届かないことがあった（名前は "Object 3" などの仮のまま。自分の船の名前は届く）。
+    server はログイン時のリフレッシュで物体ごとに作成情報と名前を送っており、client から `NetSendRefresh()` を
+    呼んでリフレッシュを要求し直すと名前が届いた。XQuartz ではネットワーク越しの描画で client の起動が遅く、
+    その間に一度に届くデータの一部が送信キューからあふれた可能性がある（Xvfb では起きない）。ログでの直接の確認はできていない。
+  - リビルド直後の最初の実行で、`install-data.sh` の `install`（権限の設定）が "Operation not permitted" で
+    失敗したことが 1 回あった。`/workspace` は macOS と共有している virtiofs で、その後 5 回繰り返しても再現しなかった。
