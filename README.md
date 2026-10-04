@@ -15,6 +15,10 @@ XShipWars は、WolfPack Entertainment が 1999〜2001 年に開発した、X Wi
 動作を確認した環境は、Dev Container 内の Debian trixie（arm64）です。表示先は Xvfb と macOS の XQuartz で確かめています。
 x86_64 では試していませんが、64bit 環境向けの修正（固定幅型、char の符号など）は両方に共通です。
 
+**サポート対象は Linux と FreeBSD です。** FreeBSD は対象ですが、まだ試せておらず、`Makefile.FreeBSD` も移植前のままです。
+元の配布物にあった AIX・HP-UX・Solaris 向けのビルド用ファイルとコード、それに Windows への移植の名残は削除しました
+（試せる環境が無く、保守できないため）。Windows では、WSL2 で Linux 版を動かすのが現実的です（未検証）。
+
 ---
 
 ## とりあえず遊ぶ

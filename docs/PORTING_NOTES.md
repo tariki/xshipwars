@@ -286,3 +286,20 @@
   2 モニターの Xvfb で、bridge を右のモニターに移すと Options が右の中央（1216, 144）に、左に戻すと左（192, 144）に開き、
   開いたままの Options は bridge を移して選び直しても動かないことを確認した。
   XQuartz（2 台構成）でも、bridge を外部ディスプレイに移すと Options が外部ディスプレイに開くことをユーザーに確認してもらった。
+
+## サポート対象外の OS の削除 (2026-10-04)
+
+CLAUDE.md の方針（対象は Linux と FreeBSD のみ）に沿って、次を削除した。どの削除でも、分岐の対象外 OS 側だけを消し、
+Linux（と FreeBSD）側の処理は変えていない。削除のたびに 4 つをクリーンビルド（警告 0）し、スモークテストが全項目 PASS した。
+
+- AIX・HP-UX・Solaris: `src/{client,monitor,server}/Makefile.{AIX,HPUX.10.20,Solaris}`（7 個）、各 `platforms.ini` の
+  Solaris・AIX・HPUX の節、ソースの分岐（AIX の df の 512 バイト単位の換算、HP-UX・Solaris 用の df コマンド、
+  空の HP-UX ジョイスティック節、Solaris の `dlfcn.h`、server の plugins.cpp の `__linux__ || __SOLARIS__` の Solaris 側）。
+- Windows: `__MSW__`・`__WIN32__`・`_WIN32` の分岐（12 ファイル。ドライブ名と `\` のパス処理、`_findfirst()` による
+  ファイル一覧、独自の `strcasecmp()`、Windows 用の既定ディレクトリ、server の `GetDiskFreeSpace()`、os.h の
+  Solaris/Windows 用の固定幅型の節）と、どのビルドにも含まれていなかった `global/diskw.cpp`・`dfw.cpp`・`mfw.cpp`
+  （と client 側のシンボリックリンク `mfw.cpp`）、pconf の `platforms.ini` の仮置きの Windows 節。
+  分岐は、`__MSW__` などを未定義とみなして整理する小さなスクリプト（unifdef 相当）で機械的に消し、差分を確認した。
+- 後回しにしている widgetdemo（`src/widgetdemo/`）には手を付けていない。Cygwin 用の `Makefile.cygwin` と、
+  昔の configure が生成した `config.status`（AIX などの Makefile 名を含む）が残っている。
+- `include/os.h` の `_PATH_MAILDIR` の条件には `__NetBSD__` が残っている（NetBSD は削除の対象にしていない）。
