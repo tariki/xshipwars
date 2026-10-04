@@ -937,6 +937,7 @@ int TgaReadFromFile(
 
 		      case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr32 = PACK8TO32(0x00, pix[0], pix[0], pix[0]);
 			break;
 
@@ -987,6 +988,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO16(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1043,6 +1045,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO15(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1102,6 +1105,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr8 = PACK8TO8(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1173,6 +1177,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr32 = PACK8TO32(0x00, pix[0], pix[0], pix[0]);
                         break;
 
@@ -1223,6 +1228,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO16(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1279,6 +1285,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO15(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1338,6 +1345,7 @@ int TgaReadFromFile(
 
                       case 8:
                         pix[0] = (u_int8_t)fgetc(fp);
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr8 = PACK8TO8(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1549,6 +1557,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr32 = PACK8TO32(0x00, pix[0], pix[0], pix[0]);
                         break;
 
@@ -1599,6 +1608,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO16(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1656,6 +1666,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO15(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1715,6 +1726,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr8 = PACK8TO8(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1787,6 +1799,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr32 = PACK8TO32(0x00, pix[0], pix[0], pix[0]);
                         break;
 
@@ -1837,6 +1850,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO16(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1893,6 +1907,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr16 = PACK8TO15(pix[0], pix[0], pix[0]);
                         break;
 
@@ -1952,6 +1967,7 @@ int TgaReadFromData(
 
                       case 8:
                         pix[0] = (u_int8_t)*data_ptr++;
+                        pix[1] = pix[2] = pix[0];
                         *data_ptr8 = PACK8TO8(pix[0], pix[0], pix[0]);
                         break;
 

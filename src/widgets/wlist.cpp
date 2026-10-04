@@ -1189,6 +1189,7 @@ int ListWinManage(
                     lw->entry_pos = 0;
 
                 /* Move scrolled position as needed. */
+                OSWGetWindowAttributes(lw->toplevel, &wattr);
                 if((lw->sb.y_win_pos / (int)lw->row_height) > lw->entry_pos)
                 {
                     lw->sb.y_win_pos = lw->entry_pos * (int)lw->row_height;
