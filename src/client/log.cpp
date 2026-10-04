@@ -14,7 +14,7 @@
 
 
 
-int LogAppendLineFormatted(char *filename, char *str)
+int LogAppendLineFormatted(char *filename, const char *str)
 {
 	FILE *fp;
 	int len, bytes_written;

@@ -53,7 +53,7 @@ int MonBtnInit(
 	win_t parent,
 	int x, int y,
 	unsigned int width, unsigned int height,
-	char *label,
+	const char *label,
 	void *client_data,
 	int (*func_cb)(void *)
 )

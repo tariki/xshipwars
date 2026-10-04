@@ -167,7 +167,7 @@ int PromptDDEStoreASCIISeg(char *buf, int len)
  *	If prompt's style is PROMPT_STYLE_NOBORDER then
  *	nothing will be done.
  */
-void PromptChangeName(prompt_window_struct *prompt, char *name)
+void PromptChangeName(prompt_window_struct *prompt, const char *name)
 {
 	int x = 0;
 	int y = 0;

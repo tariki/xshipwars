@@ -51,7 +51,7 @@ char *LogGetCurrentTimeString(void)
  *	Logs message mesg to the log file filename.  The message
  *	may not contain any new line characters.
  */
-int LogAppendLineFormatted(char *filename, char *mesg)
+int LogAppendLineFormatted(char *filename, const char *mesg)
 {
 	int i, len;
         FILE *fp;

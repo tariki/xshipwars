@@ -52,7 +52,7 @@ extern splash_win_struct splash_win;
 extern int SplashInit();
 extern int SplashDoUpdateProgress(
         long items, long max_items,
-        char *message
+        const char *message
 );
 extern void SplashDestroy();
 

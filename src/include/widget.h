@@ -1488,7 +1488,7 @@ extern "C" void WidgetFrameButtonPixmap(
         unsigned long fg_pix, unsigned long bg_pix
 );
 extern "C" image_t *WidgetCreateImageText(
-	char *string,
+	const char *string,
 	font_t *font,
 	unsigned int font_width, unsigned int font_height,
 	pixel_t fg_pix,
@@ -1547,7 +1547,7 @@ extern "C" int PBtnInit(
 );
 extern "C" int PBtnSetHotKeys(
         push_button_struct *btn,
-        char *hotkeys
+        const char *hotkeys
 );
 extern "C" int PBtnSetHintMessage(
 	push_button_struct *btn,
@@ -1733,8 +1733,8 @@ extern "C" int FBrowserGetDeviceListing(fbrowser_struct *fb);
 extern "C" int FBrowserRefreshList(fbrowser_struct *fb);
 extern "C" int FBrowserSetOpMesg(
 	fbrowser_struct *fb,
-	char *title,
-	char *ok_btn_name 
+	const char *title,
+	const char *ok_btn_name 
 );
 
 extern "C" int FBrowserDevicesPUListCB(void *ptr);
@@ -1774,7 +1774,7 @@ extern "C" int PUListIsItemAllocated(popup_list_struct *list, int n);
 extern "C" char *PUListGetSelItemName(popup_list_struct *list);
 extern "C" int PUListAddItem(
 	popup_list_struct *list,
-	char *name,
+	const char *name,
 	bool_t disabled
 );
 extern "C" void PUListDeleteAllItems(popup_list_struct *list);
@@ -1823,7 +1823,7 @@ extern "C" int ListIsItemAllocated(
 extern "C" int ListAddItem(
         list_window_struct *lw,
         int type,  
-        char *name,
+        const char *name,
         image_t *image,
         int pos,		/* -1 for append. */
         void *data_ptr
@@ -1883,7 +1883,7 @@ extern "C" void MenuSetItemAccelerator(
 
 extern "C" int MenuAddItem(   
         menu_struct *menu,
-        char *name,
+        const char *name,
         int type,
         image_t *icon,
         int id_code,
@@ -1929,14 +1929,14 @@ extern "C" int MenuBarMatchItemByPos(
 extern "C" int MenuBarAddItem(
         menu_bar_struct *mb,
         int pos,                /* Can be -1 for append. */
-        char *name,
+        const char *name,
         int x, int y,
         unsigned int width, unsigned int height
 );
 extern "C" int MenuBarAddItemMenuItem(
         menu_bar_struct *mb,
         int n,                  /* Menu bar item number, must be valid */
-        char *name,
+        const char *name,
         int type,
         image_t *icon,          /* Shared. */
         int id_code,
@@ -1995,7 +1995,7 @@ extern "C" int PromptInit(
         int hist_bufs,
 	int (*func_cb)(char *)
 );
-extern "C" void PromptChangeName(prompt_window_struct *prompt, char *name);
+extern "C" void PromptChangeName(prompt_window_struct *prompt, const char *name);
 extern "C" void PROMPT_UNMARK_REDRAW_ALL(prompt_window_struct *except_prompt);
 extern "C" void PROMPT_UNFOCUS_REDRAW_ALL(prompt_window_struct *except_prompt);
 extern "C" int PromptDraw(prompt_window_struct *prompt, int amount);
@@ -2183,7 +2183,7 @@ extern "C" int TgBtnInit(
 	win_t parent,
         int x, int y,
         bool_t state,
-        char *label 
+        const char *label 
 );
 extern "C" int TgBtnDraw(toggle_button_struct *tb, int amount);
 extern "C" int TgBtnManage(toggle_button_struct *tb, event_t *event);

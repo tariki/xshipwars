@@ -419,7 +419,7 @@ void UEWDoUnselectAllObjects(int n)
 /*
  *	Updates status message on uew.
  */
-int UEWDoSetStatusMesg(int n, char *mesg)
+int UEWDoSetStatusMesg(int n, const char *mesg)
 {
         uew_struct *uew_ptr;
 

@@ -47,7 +47,7 @@
 int RC_SET_COLOR(char *string, WColorStruct *c);
 void RC_PRINT_COLOR_STRING(
         char *string,
-        char *label,
+        const char *label,
         WColorStruct c
 );
 
@@ -86,7 +86,7 @@ int RC_SET_COLOR(
  */                 
 void RC_PRINT_COLOR_STRING(
         char *string,
-        char *label,
+        const char *label,
         WColorStruct c
 )
 {

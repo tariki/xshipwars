@@ -128,10 +128,10 @@ extern void UnivEditWinDestroy(void);
 extern int UnivIsAllocated(int n);
 
 extern int UnivAdd(
-        char *alias,
+        const char *alias,
         char *url,
         time_t last_connected,
-        char *comments,
+        const char *comments,
         int pos
 );
 extern void UnivDelete(int n);

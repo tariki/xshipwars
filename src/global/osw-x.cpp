@@ -3914,8 +3914,8 @@ void OSWSetWindowIcon(win_t w, pixmap_t icon, bool_t has_transparency)
  */
 void OSWSetWindowWMProperties(
         win_t w,
-        char *title,
-        char *icon_title,
+        const char *title,
+        const char *icon_title,
         pixmap_t icon,
 	bool_t wm_sets_coordinates,
         int x, int y,
@@ -4153,7 +4153,7 @@ void OSWSetTransientFor(win_t wbum, win_t wshelter)
 /*
  *	Set window title.
  */
-void OSWSetWindowTitle(win_t w, char *title)
+void OSWSetWindowTitle(win_t w, const char *title)
 {
 	if(!IDC() ||
            (w == 0) ||

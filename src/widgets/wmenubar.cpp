@@ -188,7 +188,7 @@ int MenuBarMatchItemByPos(
 int MenuBarAddItem(
 	menu_bar_struct *mb,
         int pos,		/* Can be -1 for append. */
-	char *name,
+	const char *name,
 	int x, int y,
 	unsigned int width, unsigned int height
 )
@@ -275,7 +275,7 @@ int MenuBarAddItem(
 int MenuBarAddItemMenuItem(
 	menu_bar_struct *mb,
         int n,                  /* Menu bar item number, must be valid */
-        char *name,
+        const char *name,
         int type,
         image_t *icon,          /* Shared. */
         int id_code,

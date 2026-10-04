@@ -101,7 +101,7 @@ extern int NetSendGlobalMessage(char *message);
 extern int NetSendDisconnect(void);
 extern int NetSendRefresh(void);
 extern int NetSendSetInterval(void);
-extern int NetSendExec(char *arg);
+extern int NetSendExec(const char *arg);
 extern int NetSendSetImageSet(char *arg);
 extern int NetSendSetSoundSet(char *arg);
 extern int NetSendSetOCSN(char *arg);

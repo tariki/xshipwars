@@ -570,7 +570,7 @@ int SplashDrawProgressBar(
  *	Updates the progress bar on the Splash window and redraws
  *	it.
  */
-int SplashDoUpdateProgress(long items, long max_items, char *message)
+int SplashDoUpdateProgress(long items, long max_items, const char *message)
 {
 	char stringa[256];
 

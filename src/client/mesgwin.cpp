@@ -82,7 +82,7 @@ static bool_t	button1_state;
 
 void LMesgWinDoQuery(
 	prompt_window_struct *prompt,
-        char *label,
+        const char *label,
         char *val,
         int mode
 );
@@ -93,7 +93,7 @@ void LMesgWinDoQuery(
 /*
  *      Adds a message to the global messages list.
  */
-int MesgAdd(char *new_mesg, pixel_t mesg_color)
+int MesgAdd(const char *new_mesg, pixel_t mesg_color)
 {
         int i, n, p, tlen;
 
@@ -442,7 +442,7 @@ void MesgDrawAll()
  */
 void LMesgWinDoQuery(
 	prompt_window_struct *prompt,
-        char *label,
+        const char *label,
         char *val,
 	int mode
 )

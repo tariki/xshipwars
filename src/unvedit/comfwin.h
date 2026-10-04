@@ -66,7 +66,7 @@ extern int comf_last_result;
 /* comfwin.c */
 extern int ComfWinDoQuery(
 	comfirm_win_struct *cw,
-        char *mesg
+        const char *mesg
 );
 
 extern int ComfWinInit(
@@ -78,7 +78,7 @@ extern int ComfWinInit(
 extern void ComfWinDraw(comfirm_win_struct *cw);
 extern int ComfWinManage(comfirm_win_struct *cw, event_t *event);
 extern void ComfWinMap(comfirm_win_struct *cw);
-extern void ComfWinMapMesg(comfirm_win_struct *cw, char *mesg);
+extern void ComfWinMapMesg(comfirm_win_struct *cw, const char *mesg);
 extern void ComfWinUnmap(comfirm_win_struct *cw);
 extern void ComfWinDestroy(comfirm_win_struct *cw);
 

@@ -1553,7 +1553,7 @@ void WidgetFrameButtonPixmap(
  *	Returns NULL on error.
  */
 image_t *WidgetCreateImageText(
-	char *string,
+	const char *string,
 	font_t *font,
 	unsigned int font_width, unsigned int font_height,
 	pixel_t fg_pix,

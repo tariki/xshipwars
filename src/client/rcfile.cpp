@@ -1857,7 +1857,7 @@ use an up to date configuration file.\n"
  */
 void RC_PRINT_COLOR_STRING(
 	FILE *fp,
-	char *label,
+	const char *label,
 	WColorStruct c
 )
 {

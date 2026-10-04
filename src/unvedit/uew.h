@@ -307,7 +307,7 @@ extern void UEWDoChownAll(
 );
 extern int UEWDoSelectObject(int n, int obj_num);
 extern void UEWDoUnselectAllObjects(int n);
-extern int UEWDoSetStatusMesg(int n, char *mesg);
+extern int UEWDoSetStatusMesg(int n, const char *mesg);
 extern void UEWDoUpdateWindowMenus();
 extern int UEWDoNew(uew_struct *uew_ptr);
 extern int UEWDoOpen(uew_struct *uew_ptr, char *path);   

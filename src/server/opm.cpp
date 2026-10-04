@@ -425,7 +425,7 @@ int OPMGetTop()
  *	If type is -1, then all OPM types will be matched except
  *	XSW_OBJ_TYPE_GARBAGE.
  */
-int OPMGetByName(char *name, int type)
+int OPMGetByName(const char *name, int type)
 {
 	int opm_count, opm_found, found_count;
 	xsw_object_struct **ptr, *opm_ptr;
@@ -446,7 +446,7 @@ int OPMGetByName(char *name, int type)
 	/* Token string check. */
 	if(*name == '$')
 	{
-	    char *strptr;
+	    const char *strptr;
 
 	    /* Seek to ':' delimiter. */
 	    strptr = strchr(name, ':');

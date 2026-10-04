@@ -52,10 +52,10 @@ int UnivIsAllocated(int n)
  *	error.
  */
 int UnivAdd(
-	char *alias,
+	const char *alias,
 	char *url,
 	time_t last_connected,
-	char *comments,
+	const char *comments,
 	int pos
 )
 {

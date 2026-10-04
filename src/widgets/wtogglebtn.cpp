@@ -47,7 +47,7 @@ int TgBtnInit(
 	win_t parent,
 	int x, int y,
 	bool_t state,
-	char *label
+	const char *label
 )
 {
 	int len;

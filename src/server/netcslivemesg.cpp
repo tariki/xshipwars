@@ -61,7 +61,7 @@ int NetHandleLiveMessage(int condescriptor, char *mesg)
 }
 
 
-int NetSendLiveMessage(int condescriptor, char *mesg)
+int NetSendLiveMessage(int condescriptor, const char *mesg)
 {
         char lmesg[CS_MESG_MAX];
         char sndbuf[CS_DATA_MAX_LEN];

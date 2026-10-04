@@ -2077,7 +2077,7 @@ extern "C" int ISRefLoadFromFile(char *filename);
 
 
 /* In log.c */
-extern "C" int LogAppendLineFormatted(char *filename, char *str);
+extern "C" int LogAppendLineFormatted(char *filename, const char *str);
 
 
 /* In main.c */
@@ -2107,7 +2107,7 @@ extern "C" void XSWManage(void);
 extern "C" void XSWShutdown(void);
 
 /* In mesgwin.c */
-extern "C" int MesgAdd(char *new_mesg, pixel_t mesg_color);
+extern "C" int MesgAdd(const char *new_mesg, pixel_t mesg_color);
 extern "C" int MesgReplace(
 	char *new_mesg,
 	pixel_t mesg_color,

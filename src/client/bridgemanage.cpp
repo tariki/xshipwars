@@ -58,8 +58,8 @@ static bool_t	button1_state;
 
 void BridgeDoQuery(
 	prompt_window_struct *prompt,
-	char *label,
-	char *val,
+	const char *label,
+	const char *val,
 	int mode
 );
 
@@ -100,8 +100,8 @@ int BW_IS_IN_BTNPOS(int btnpos_num, int x, int y)
  */
 void BridgeDoQuery(
         prompt_window_struct *prompt,
-        char *label,
-        char *val,
+        const char *label,
+        const char *val,
         int mode
 )
 {

@@ -198,7 +198,7 @@ void MenuSetItemAccelerator(
  */
 int MenuAddItem(
         menu_struct *menu, 
-        char *name, 
+        const char *name, 
         int type, 
         image_t *icon,
         int id_code,

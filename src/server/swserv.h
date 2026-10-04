@@ -1166,8 +1166,8 @@ extern int DBCreateExplicitObject(
         double bank
 );
 extern int DBCreateObjectByOPM(
-        char *opmname,
-        char *name,
+        const char *opmname,
+        const char *name,
         int type,
         double x,
         double y,
@@ -1308,7 +1308,7 @@ extern void IncomingSocketReclaim();
 
 
 /* In log.c */
-extern int LogAppendLineFormatted(char *filename, char *mesg);
+extern int LogAppendLineFormatted(char *filename, const char *mesg);
 
 
 /* In main.c */
@@ -1354,7 +1354,7 @@ extern int OPMCreate(int type);
 extern int OPMCreateExplicit(int opm_num, int type);
 extern void OPMRecycle(int opm_num);
 extern int OPMGetTop(void);
-extern int OPMGetByName(char *name, int type);
+extern int OPMGetByName(const char *name, int type);
 
 extern int OPMModelObjectPtr(
         xsw_object_struct *obj_ptr,

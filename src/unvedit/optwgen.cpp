@@ -75,7 +75,7 @@ void OptWGenDrawOutline(
         int x, int y,
         unsigned int width,
         unsigned int height,
-        char *name,
+        const char *name,
         pixel_t fg_pix,
         pixel_t bg_pix,
         pixel_t text_pix
@@ -93,7 +93,7 @@ void OptWGenDrawOutline(
         int x, int y,
         unsigned int width,  
         unsigned int height,
-        char *name,
+        const char *name,
         pixel_t fg_pix,
 	pixel_t bg_pix,
         pixel_t text_pix

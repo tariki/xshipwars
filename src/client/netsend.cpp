@@ -246,7 +246,7 @@ int NetSendSetInterval()
 /*
  *	Sends a literal command.
  */
-int NetSendExec(char *arg)
+int NetSendExec(const char *arg)
 {
 	char larg[CS_MESG_MAX];
         char sndbuf[CS_DATA_MAX_LEN];

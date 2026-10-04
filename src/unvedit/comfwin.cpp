@@ -64,7 +64,7 @@ int comf_last_result;
  */
 int ComfWinDoQuery(
 	comfirm_win_struct *cw,
-	char *mesg
+	const char *mesg
 )
 {
 	int events_handled;
@@ -677,7 +677,7 @@ void ComfWinMap(comfirm_win_struct *cw)
 }
 
 
-void ComfWinMapMesg(comfirm_win_struct *cw, char *mesg)
+void ComfWinMapMesg(comfirm_win_struct *cw, const char *mesg)
 { 
         if(cw == NULL)
             return;

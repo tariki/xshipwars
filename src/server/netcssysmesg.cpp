@@ -13,7 +13,7 @@ int NetHandleSysMessage(int condescriptor)
 int NetSendSysMessage(
         int condescriptor,
         int code,               /* One of CS_SYSMESG_* */
-        char *mesg
+        const char *mesg
 )
 {
         char lmesg[CS_MESG_MAX + 256];

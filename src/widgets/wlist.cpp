@@ -218,7 +218,7 @@ int ListIsItemAllocated(
 int ListAddItem(
         list_window_struct *lw,
         int type,
-        char *name,
+        const char *name,
         image_t *image,
         int pos,
         void *data_ptr

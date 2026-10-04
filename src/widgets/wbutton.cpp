@@ -432,7 +432,7 @@ int PBtnSetHintMessage(
  */
 int PBtnSetHotKeys(
 	push_button_struct *btn,
-        char *hotkeys
+        const char *hotkeys
 )
 {
 	if((btn == NULL) ||

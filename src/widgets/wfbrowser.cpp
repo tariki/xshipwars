@@ -1458,8 +1458,8 @@ int FBrowserRefreshList(fbrowser_struct *fb)
  */
 int FBrowserSetOpMesg(
 	fbrowser_struct *fb,
-	char *title,
-	char *ok_btn_name 
+	const char *title,
+	const char *ok_btn_name 
 )
 {
 	if(fb == NULL)

@@ -876,8 +876,8 @@ extern void OSWDestroyWindow(win_t *w);
 extern bool_t OSWDrawableIsWindow(drawable_t d);
 extern void OSWSetWindowWMProperties(
 	win_t w,
-	char *title,
-	char *icon_title,
+	const char *title,
+	const char *icon_title,
 	pixmap_t icon,
 	bool_t wm_sets_coordinates,
 	int x, int y,
@@ -899,7 +899,7 @@ extern void OSWMoveWindow(win_t w, int x, int y);
 extern void OSWResizeWindow(win_t w, unsigned int width, unsigned int height);
 extern void OSWMoveResizeWindow(win_t w, int x, int y,
 	unsigned int width, unsigned int height);
-extern void OSWSetWindowTitle(Window w, char *title);
+extern void OSWSetWindowTitle(Window w, const char *title);
 extern void OSWClearWindow(win_t w);
 extern void OSWSetWindowBkg(win_t w, pixel_t pix, pixmap_t pixmap);
 extern bool_t OSWGetWindowAttributes(win_t w, win_attr_t *wattr);

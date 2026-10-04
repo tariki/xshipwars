@@ -418,8 +418,8 @@ int DBCreateExplicitObject(
  *      Create an object by Object parameter macro referance.
  */
 int DBCreateObjectByOPM(
-        char *opmname,
-        char *name,
+        const char *opmname,
+        const char *name,
         int type,
         double x,
         double y,

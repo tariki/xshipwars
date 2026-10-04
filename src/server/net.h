@@ -46,14 +46,14 @@ extern int NetHandleCreateObject(int condescriptor, char *arg);
 extern int NetSendCreateObject(int condescriptor, int object_num);
 
 extern int NetHandleLiveMessage(int condescriptor, char *mesg);
-extern int NetSendLiveMessage(int condescriptor, char *mesg);
+extern int NetSendLiveMessage(int condescriptor, const char *mesg);
 extern int ConNotify(int condescriptor, char *mesg);
 
 extern int NetHandleSysMessage(int condescriptor);
 extern int NetSendSysMessage(
         int condescriptor,
         int code,               /* One of CS_SYSMESG_* */
-        char *mesg
+        const char *mesg
 );
 
 extern int NetHandleSetDmgCtl(int condescriptor, char *arg);

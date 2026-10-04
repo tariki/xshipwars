@@ -121,7 +121,7 @@ int CREATE_PROMPT(
 	prompt_window_struct *prompt,
 	int x, int y,
 	unsigned int width, unsigned int height,
-	char *name,
+	const char *name,
 	unsigned int buf_len,
 	int (*func_cb)(char *)
 )
@@ -181,7 +181,7 @@ void DRAW_OUTLINE(
 	int x, int y,
 	unsigned int width,
 	unsigned int height,
-	char *name,
+	const char *name,
 	unsigned long fg_pix,
 	unsigned long bg_pix,
 	unsigned long text_pix
@@ -289,7 +289,7 @@ void DRAW_OUTLINE(
 void DRAW_LABEL(
 	drawable_t d,
         int x, int y,
-        char *text,
+        const char *text,
 	unsigned long text_pix
 )
 {

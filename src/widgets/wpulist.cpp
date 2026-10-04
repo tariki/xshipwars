@@ -161,7 +161,7 @@ char *PUListGetSelItemName(popup_list_struct *list)
  */
 int PUListAddItem(
 	popup_list_struct *list,
-	char *name,
+	const char *name,
 	bool_t disabled
 ) 
 {
