@@ -20,9 +20,6 @@ extern "C" {
 extern int strlinelen(const char *s);
 extern int strlongestline(const char *s);
 extern int strlines(const char *s);
-#ifdef __MSW__
-extern int strcasecmp(const char *s1, const char *s2);
-#endif
 extern const char *strseekblank(const char *s);
 /* glibc provides strcasestr() (with C++ const overloads). */
 #ifndef __GLIBC__
@@ -34,9 +31,7 @@ extern void strtoupper(char *s);
 extern void strtolower(char *s);
 extern char *strcatalloc(char *orig, const char *new_str);
 extern void substr(char *s, const char *token, const char *val);
-#ifndef __MSW__
 extern void strset(char *s, char c, int n);
-#endif
 extern void strpad(char *s, int n);
 extern void straddflag(char *s, const char *flag, char operation, int len);
 

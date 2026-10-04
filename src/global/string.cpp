@@ -5,11 +5,7 @@
 #include <time.h>
 #include "../include/os.h"
 
-#ifdef __MSW__
-
-#else
 # include <sys/time.h>
-#endif
 
 #include "../include/cfgfmt.h"
 #include "../include/cs.h"
@@ -27,9 +23,6 @@ static int SORT(const void *a, const void *b);
 int strlinelen(const char *s);
 int strlongestline(const char *s);
 int strlines(const char *s);
-#ifdef __MSW__
-int strcasecmp(const char *s1, const char *s2);
-#endif	/* __MSW__ */
 
 const char *strseekblank(const char *s);
 #ifndef __GLIBC__
@@ -169,32 +162,6 @@ int strlines(const char *s)
 	return(lines);
 }
 
-#ifdef __MSW__
-/*
- *	Works just like the UNIX strcasecmp(). Returns 1 for no match
- *	and 0 for match.
- */
-int strcasecmp(const char *s1, const char *s2)
-{
-	if((s1 == NULL) ||
-           (s2 == NULL)
-	)
-	    return(1);	/* False. */
-
-	while((*s1) && (*s2))
-	{
-	    if(toupper(*s1) != toupper(*s2))
-		return(1);	/* False. */
-
-	    s1++;
-	    s2++;
-	}
-	if(*s1 == *s2)
-	    return(0);	/* True. */
-	else
-	    return(1);	/* False. */
-}
-#endif
 
 /*
  *	Returns pointer in string s which is the first blank character
@@ -497,7 +464,6 @@ void substr(char *s, const char *token, const char *val)
         return;
 }
 
-#ifndef __MSW__
 /*
  *	Sets the first n characters of string s to be the
  *	value of c.  A null character will be tacked on at the end.
@@ -520,9 +486,7 @@ void strset(char *s, char c, int n)
 
 	return;
 }
-#endif
 
-#ifndef __MSW__
 /*
  *	Same as strset(), except always sets the first n characters
  *	of string s to the ' ' character. Tacks on a null terminating
@@ -534,7 +498,6 @@ void strpad(char *s, int n)
 
 	return;
 }
-#endif
 
 /*
  *      Concatonates flag string, putting in the operation character

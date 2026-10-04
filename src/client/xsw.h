@@ -148,15 +148,6 @@ to the fullest extent of the law."
 /*
  *   Default program directories:
  */
-#ifdef __WIN32__
-#define DEF_LOCAL_SHIPWARS_DIR	CWD_STR
-#define DEF_XSW_TOPLEVEL_DIR	CWD_STR
-#define DEF_XSW_IMAGES_DIR	CWD_STR"images"
-#define DEF_XSW_SOUNDS_DIR	CWD_STR"sounds"
-#define DEF_XSW_ETC_DIR		CWD_STR
-#define DEF_ETC_DIR		CWD_STR
-#define DEF_SW_SERVER_DIR	CWD_STR
-#else
 #define DEF_LOCAL_SHIPWARS_DIR	".shipwars"
 #define DEF_XSW_TOPLEVEL_DIR	"/usr/share/games/xshipwars"
 #define DEF_XSW_IMAGES_DIR	"/usr/share/games/xshipwars/images"
@@ -164,7 +155,6 @@ to the fullest extent of the law."
 #define DEF_XSW_ETC_DIR		"/usr/share/games/xshipwars/etc"
 #define DEF_ETC_DIR		"/etc"
 #define DEF_SW_SERVER_DIR	"/home/swserv"
-#endif
 
 
 /*

@@ -158,7 +158,6 @@ int RCLoadFromFile(char *filename)
                     !strcasecmp(parm, "ServerToplevelDir")
 	    )
             {
-#ifndef __WIN32__ /* Disable this for windows. */
 		strncpy(dname.toplevel, val, PATH_MAX);
 		dname.toplevel[PATH_MAX - 1] = '\0';
 
@@ -183,7 +182,6 @@ int RCLoadFromFile(char *filename)
                         dname.toplevel
 		    );
 		}
-#endif /* __WIN32__ */
             }
             /* EtcDir */
             else if(!strcasecmp(parm, "EtcDir") ||
@@ -250,7 +248,6 @@ int RCLoadFromFile(char *filename)
                     !strcasecmp(parm, "ServerBinDir")
 	    )
             {
-#ifndef __WIN32__ /* Disable item for windows. */
                 strncpy(dname.bin, val, PATH_MAX);
 		dname.bin[PATH_MAX - 1] = '\0';
 
@@ -275,7 +272,6 @@ int RCLoadFromFile(char *filename)
                         dname.bin
                     );
                 }
-#endif /* __WIN32__ */
             }
             /* DBDir */
             else if(!strcasecmp(parm, "DBDir") ||

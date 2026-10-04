@@ -77,10 +77,6 @@ FILE *FOpen(const char *path, const char *mode)
 	{
 	    *strptr2 = *strptr1;
 
-#ifdef __MSW__
-	    if(*strptr2 == '/')
-		*strptr2 = '\\';
-#endif	/* __MSW__ */
 
 	    strptr1++; strptr2++;
 	}

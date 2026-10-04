@@ -107,17 +107,6 @@ to the fullest extent of the law."
  *	These directories may be modified in SWSERV_RC_FILE
  *	(see farther below).
  */
-#ifdef __WIN32__
-# define SWSERV_TOPLEVEL_DIR	"."
-# define SWSERV_BIN_DIR         "."
-# define SWSERV_DB_DIR          "db"
-# define SWSERV_ETC_DIR		"."
-# define SWSERV_LOGS_DIR	"logs"
-# define SWSERV_PLUGINS_DIR	"plugins"
-# define SWSERV_PUBLIC_HTML_DIR	"public_html"
-# define SWSERV_TMP_DIR		"tmp"
-# define ETC_DIR		"."
-#else
 # define SWSERV_TOPLEVEL_DIR	"/home/swserv"
 # define SWSERV_BIN_DIR		"/home/swserv/bin"
 # define SWSERV_DB_DIR		"/home/swserv/db"
@@ -127,7 +116,6 @@ to the fullest extent of the law."
 # define SWSERV_PUBLIC_HTML_DIR	"/home/swserv/public_html"
 # define SWSERV_TMP_DIR		"/home/swserv/tmp"
 # define ETC_DIR		"/etc"
-#endif	/* __WIN32__ */
 
 
 /*

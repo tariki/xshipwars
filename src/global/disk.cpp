@@ -6,20 +6,14 @@
 
 #include "../include/os.h"
 
-#ifdef __MSW__
-# include <io.h>	/* Needed by _findfirst(), _findnext(), etc. */
-#else
 # include <unistd.h>
 # include <sys/time.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #ifndef USE_GETDENTS
-# ifndef __MSW__
 # include <dirent.h>
-# endif
 #endif /* not USE_GETDENTS */
 
 #if defined(__linux__)
@@ -89,32 +83,6 @@ int FILEHASEXTENSION(const char *filename)
 
 int ISPATHABSOLUTE(const char *path)
 {
-#ifdef __MSW__
-	char *strptr;
-
-	if(path == NULL)
-	    return(0);
-
-	/* Has drive notation? */
-	strptr = strchr(path, ':');
-	if(strptr == NULL)
-	{
-	    /* No drive notation, check if first char is a '\\'. */
-#if defined(__cplusplus) || defined(c_plusplus)
-	    while(ISBLANK(*path))
-#else
-	    while(ISBLANK((int)(*path)))
-#endif
-		path++;
-
-	    return(*path == '\\');
-	}
-	else
-	{
-	    /* Has drive notation, check if first char past : is a '\\'. */
-	    return((*(strptr + 1)) == '\\');
-	}
-#else
 	if(path == NULL)
             return(0);
 
@@ -127,7 +95,6 @@ int ISPATHABSOLUTE(const char *path)
 	    path++;
 
 	return((*path) == DIR_DELIMINATOR);
-#endif
 }
 
 /*
@@ -247,9 +214,6 @@ int ISPATHDIR(const char *path)
 
 int ISLPATHDIR(const char *path)
 {
-#ifdef __MSW__
-	return(ISPATHDIR(path));
-#else
         struct stat stat_buf;
 
 
@@ -261,34 +225,10 @@ int ISLPATHDIR(const char *path)
             return(0);
 
         return((S_ISDIR(stat_buf.st_mode)) ? 1 : 0);
-#endif
 }
 
 int ISPATHEXECUTABLE(const char *path)
 {
-#ifdef __MSW__
-	char *strptr;
-
-
-	if(path == NULL)
-	    return(0);
-
-	strptr = strrchr(path, '.');
-	if(strptr == NULL)
-	    return(0);
-	else
-	    strptr++;
-
-	/* Check known MSW extensions for being executeable. */
-	if(!strcasecmp(strptr, "exe"))
-	    return(1);
-	else if(!strcasecmp(strptr, "bat"))
-	    return(1);
-	else if(!strcasecmp(strptr, "com"))
-	    return(1);
-	else
-	    return(0);
-#else
         struct stat stat_buf;
 
 
@@ -307,7 +247,6 @@ int ISPATHEXECUTABLE(const char *path)
             return(1);
 	else
 	    return(0);
-#endif
 }
 
 /*
@@ -372,13 +311,8 @@ int rmkdir(const char *path, mode_t m)
 
 	    if(stat(fullpath, &stat_buf))
             {
-#ifdef __MSW__
-		if(mkdir(fullpath))
-		    return(-1);
-#else
                 if(mkdir(fullpath, m))
 		    return(-1);
-#endif
             }
 
 	    /* If pointer to next deliminator is valid then reset it
@@ -563,68 +497,6 @@ char **GetDirEntNames(const char *parent)
 
 char **GetDirEntNames(const char *parent)
 {
-#ifdef __MSW__
-	long ffh;		/* Find file handle. */
-	struct _finddata_t d;	/* Find data return structure. */
-	char prev_cwd[PATH_MAX];
-
-
-	/* Record previous current working dir. */
-	getcwd(prev_cwd, PATH_MAX);
-	prev_cwd[PATH_MAX - 1] = '\0';
-
-	/* Change to parent dir. */
-	chdir(parent);
-
-	/* Find first file in specified directory */
-	ffh = _findfirst("*", &d);
-	if(ffh == -1L)
-	{
-	    return(NULL);
-	}
-	else
-	{
-	    /* Found first file in directory. */
-	    int i = 0;
-	    char **rtn_names = (char **)malloc(sizeof(char *));
-
-
-	    if(rtn_names == NULL)
-	    {
-		_findclose(ffh);
-		return(NULL);
-	    }
-
-	    rtn_names[i] = StringCopyAlloc(d.name);
-	    i++;
-
-	    /* Find additional (if any) files in directory. */
-            while(_findnext(ffh, &d) == 0)
-	    {
-		rtn_names = (char **)realloc(rtn_names, (i + 1) * sizeof(char *));
-		if(rtn_names == NULL)
-		{
-		    _findclose(ffh);
-		    return(NULL);
-		}
-
-		rtn_names[i] = StringCopyAlloc(d.name);
-		i++;
-	    }
-
-	    /* Close find file handle and its resources. */
-	    _findclose(ffh);
-
-	    /* Allocate last pointer to be NULL. */
-	    rtn_names = (char **)realloc(rtn_names, (i + 1) * sizeof(char *));
-	    if(rtn_names != NULL)
-	    {
-		rtn_names[i] = NULL;
-	    }
-
-	    return(rtn_names);
-	}
-#else
         int i;
         DIR *dir;
         struct dirent *de;
@@ -674,7 +546,6 @@ char **GetDirEntNames(const char *parent)
         rtn_names[i] = NULL;
 
         return(rtn_names);
-#endif	/* NOT __MSW__ */
 }
 #endif /* USE_GETDENTS */
 
@@ -1033,9 +904,6 @@ char *PrefixPaths(const char *parent, const char *child)
  */
 char *GetAllocLinkDest(const char *link)
 {
-#ifdef __MSW__
-	return(NULL);
-#else
 	int bytes_read;
 	char *dest;
 	struct stat stat_buf;
@@ -1072,7 +940,6 @@ char *GetAllocLinkDest(const char *link)
 
 
 	return(dest);
-#endif	/* NOT __MSW__ */
 }
 
 
@@ -1117,9 +984,6 @@ int FileCountLines(const char *filename)
  */
 int DirHasSubDirs(const char *path)
 {
-#ifdef __MSW__
-	return(0);
-#else
 	char *strptr;
         DIR *dir;
         struct dirent *dent;
@@ -1167,7 +1031,6 @@ int DirHasSubDirs(const char *path)
 	closedir(dir);
 
 	return(status);
-#endif	/* NOT __MSW__ */
 }
 
 

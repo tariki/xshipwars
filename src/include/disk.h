@@ -11,12 +11,6 @@
 #include "os.h"
 
 /* MSW makeups. */
-#ifdef __MSW__
-# include <direct.h>
-# define mode_t unsigned short
-# define S_ISDIR(m) ((m) & S_IFDIR)
-# define S_ISREG(m) ((m) & S_IFREG)
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,11 +18,7 @@ extern "C" {
 
 /* Path deliminator. */
 #ifndef DIR_DELIMINATOR
-# ifdef __MSW__
-#  define DIR_DELIMINATOR	'\\'
-# else
 #  define DIR_DELIMINATOR	'/'
-# endif
 #endif
 
 
@@ -69,18 +59,9 @@ extern int CopyObject(
 );
 
 
-#ifdef __MSW__
-/*
- *	Windows path notation delimiters.
- */
-# define PATH_SEP_CHAR	'\\'
-# define PATH_SEP_STR	"\\"
-# define CWD_STR	".\\"
-#else
 # define PATH_SEP_CHAR	'/'
 # define PATH_SEP_STR	"/"
 # define CWD_STR	"./"
-#endif /* __WIN32__ */
 
 #ifdef __cplusplus
 }

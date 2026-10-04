@@ -29,9 +29,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#ifdef __WIN32__ 
-#include <windows.h>
-#endif
 
 #ifndef _USE_BSD
 # define _USE_BSD
@@ -181,35 +178,6 @@ void SWServDoVersion()
  */
 void SWServGetOSStats()
 {
-#ifdef __WIN32__
-	char CurrDir[257];
-	int SectorsPerCluster, BytesPerSector, FreeClusters, TotalClusters;
-
-	if(GetCurrentDirectory(sizeof(CurrDir),CurrDir))
-	{
-	    CurrDir[3] = '\0'; /* only need the drive */
-            if(GetDiskFreeSpace(CurrDir,
-                                (PDWORD)&SectorsPerCluster,
-                                (PDWORD)&BytesPerSector,
-                                (PDWORD)&FreeClusters,
-                                (PDWORD)&TotalClusters
-	       )
-	    )
-	    {
-                os_stat.disk_used = (BytesPerSector *
-                    SectorsPerCluster) * FreeClusters;
-
-                os_stat.disk_total = (BytesPerSector *
-		    SectorsPerCluster) * TotalClusters;
-
-		return;
-            }
-	}
-
-        os_stat.disk_used = 0;
-        os_stat.disk_total = 0;
-
-#else
 	int i;
 	int total_df_stats;
 	df_stat_struct **df_stat;
@@ -251,7 +219,6 @@ void SWServGetOSStats()
 
 
 	return;
-#endif /* __WIN32__ */
 }
 
 
@@ -1167,11 +1134,7 @@ int SWServInit(int argc, char *argv[])
         *fname.scores_export = '\0';
         *fname.events_export = '\0';
 
-#ifdef __WIN32__
-        strcpy(stringa, ".");
-#else
 	getcwd(stringa, sizeof(stringa));
-#endif /* __WIN32_ */
 	strptr = PrefixPaths(stringa, SWSERV_RC_FILE);
 	strncpy(
 	    fname.rc,
@@ -1405,7 +1368,6 @@ int SWServInit(int argc, char *argv[])
 	}
 	else
 	{
-#ifndef __WIN32__	/* only check "etc" on unix */
 	    /* Is in the etc dir? */
             strptr = PrefixPaths(dname.etc, SWSERV_RC_FILE);
             strncpy(
@@ -1435,7 +1397,6 @@ int SWServInit(int argc, char *argv[])
                     status = RCLoadFromFile(fname.rc);
 		}
 	    }
-#endif /* not __WIN32__ */
 	}
 	/* Error loading the configuration file? */
 	if(status < 0)

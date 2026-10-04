@@ -327,9 +327,6 @@ int XSWIsDescriptorValid(int s)
  */
 int XSWStartServer(char *cmd)
 {
-#ifdef __WIN32__
-	Exec(".\\swserv.exe");
-#else
 	char *strptr;
 	char cwd[PATH_MAX];
 	char new_cwd[PATH_MAX];
@@ -389,7 +386,6 @@ Path not absolute.\n",
 	/* Change back to previous working dir. */
 	chdir(cwd);
 
-#endif	/* __WIN32__ */
 	return(0);
 }
 
@@ -1600,15 +1596,6 @@ int XSWInit(int argc, char *argv[])
 	/* Initialize time zone. */
         tzset();
 
-#ifdef __WIN32__
-	/* Change working dir to be the user's home dir. */
-	chdir(CWD_STR);
-
-	/* Get current, home and local shipwars directories. */
-	strcpy(cwd, CWD_STR);
-	strcpy(home_dir, CWD_STR);
-	strcpy(local_sw_dir, CWD_STR);
-#else
 	/* Change working dir to be the user's home dir. */
 	strptr = getenv("HOME");
 	if(strptr != NULL)
@@ -1636,7 +1623,6 @@ int XSWInit(int argc, char *argv[])
 	    );
 	}
 	local_sw_dir[PATH_MAX - 1] = '\0';
-#endif	/* __WIN32__ */
 
 
 	/* Reset/fetch global variables to their default values. */

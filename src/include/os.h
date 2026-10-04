@@ -15,9 +15,6 @@
 #define OS_H
 
 /* Define windows dependancies. */
-#if defined(_WIN32) && !defined(__MSW__)
-#define __MSW__
-#endif
 
 #include <limits.h>
 
@@ -67,7 +64,7 @@
 #endif
 
 /* Apparently VI has become the standard editor for UNIX. */
-#if !defined(_PATH_VI) && !defined(__MSW__)
+#if !defined(_PATH_VI)
 //# define _PATH_VI		"/usr/bin/vi"
 # include <paths.h>
 #endif
@@ -180,51 +177,10 @@
  *
  *	Byte orderings are in `Intel notation'.
  */
-#if defined(__MSW__)
-
-/* Robin Lee Powell: rlpowell at solect.com
- * Solaris apparently has uint*_t defined instead of u_int*_t defined.
- */
-
-#include <sys/types.h>
-
-# ifdef uint8_t
-#  define u_int8_t	uint8_t
-# endif
-# ifndef u_int8_t
-#  define u_int8_t	unsigned char
-# endif
-
-# ifdef uint16_t
-#  define u_int16_t	uint16_t
-# endif
-# ifndef u_int16_t
-#  define u_int16_t	unsigned short
-# endif
-
-# ifdef uint32_t
-#  define u_int32_t	uint32_t
-# endif
-# ifndef u_int32_t
-#  define u_int32_t     unsigned int
-# endif
-
-# ifdef uint64_t
-#  define u_int64_t	uint64_t
-# endif
-# ifndef u_int64_t
-#  define u_int64_t	unsigned long long
-# endif
-
-# ifndef int64_t
-#  define int64_t	long long
-# endif
-
-#endif	/* OSes that needed us to define bit types. */
 
 
 /* Bit types still not defined? */
-#if !defined(__BIT_TYPES_DEFINED__) && !defined(__MSW__)
+#if !defined(__BIT_TYPES_DEFINED__)
 //#define __BIT_TYPES_DEFINED__ Dan S: Multiple declaration problem.
 #ifndef __FreeBSD__
 

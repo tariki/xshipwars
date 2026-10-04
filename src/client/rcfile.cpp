@@ -183,7 +183,6 @@ int RCLoadFromFile(char *filename)
                 }
 	    }
 	    /* ToplevelDir */
-#ifndef __WIN32__
             else if(!strcasecmp(parm, "ToplevelDir"))
             {
 		strptr3 = PathSubHome(val);
@@ -215,7 +214,6 @@ int RCLoadFromFile(char *filename)
 		    );
 		}
 	    }
-#endif	/* __WIN32__ */
 	    /* ImagesDir */
             else if(!strcasecmp(parm, "ImagesDir"))
             {
@@ -347,7 +345,6 @@ int RCLoadFromFile(char *filename)
                 }
             }
             /* EtcDir */
-#ifndef __WIN32__
             else if(!strcasecmp(parm, "EtcDir"))
             {
                 strptr3 = PathSubHome(val);
@@ -379,7 +376,6 @@ int RCLoadFromFile(char *filename)
                     );
                 }   
             }
-#endif	/* __WIN32__ */
 	    /* NetDeviceMaxLoad */
 	    else if(!strcasecmp(parm, "NetDeviceMaxLoad"))
 	    {
