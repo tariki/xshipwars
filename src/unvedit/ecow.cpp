@@ -113,7 +113,8 @@ void EcoWStringToUpper(char *s)
 
 	while(*s != '\0')
 	{
-	    *s++ = toupper((int)*s);
+	    *s = toupper((int)*s);
+	    s++;
 	}
 
 	return;

@@ -59,7 +59,8 @@ void UEW_STRING_TOUPPER(char *s)
 
         while(*s != '\0')
         {
-            *s++ = toupper((int)*s);
+            *s = toupper((int)*s);
+            s++;
         }
 
         return;

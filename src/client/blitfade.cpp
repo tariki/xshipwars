@@ -129,11 +129,12 @@ void BlitBufFade8(
             /* No transparency check. */
 
             /* Do fade to this pixel. */
-            *tar_buf_ptr++ = PACK8TO8(
+            *tar_buf_ptr = PACK8TO8(
 		(u_int8_t)(((*tar_buf_ptr & 0xE0)) * gamma),
 		(u_int8_t)(((*tar_buf_ptr & 0x1C) << 2) * gamma),
 		(u_int8_t)(((*tar_buf_ptr & 0x03) << 5) * gamma)
 	    );
+            tar_buf_ptr++;
         }
 
 
@@ -234,11 +235,12 @@ void BlitBufFade15(
             /* No transparency check. */
 
             /* Do fade to this pixel. */
-            *tar_buf_ptr++ = PACK8TO15(
+            *tar_buf_ptr = PACK8TO15(
                 (u_int8_t)(((*tar_buf_ptr & 0x7C00) >> 7) * gamma),
                 (u_int8_t)(((*tar_buf_ptr & 0x03E0) >> 2) * gamma),
                 (u_int8_t)(((*tar_buf_ptr & 0x001F) << 3) * gamma)
             );
+            tar_buf_ptr++;
         }
 
 
@@ -340,11 +342,12 @@ void BlitBufFade16(
             /* No transparency check. */
 
             /* Do fade to this pixel. */
-            *tar_buf_ptr++ = PACK8TO16(
+            *tar_buf_ptr = PACK8TO16(
                 (u_int8_t)(((*tar_buf_ptr & 0xF800) >> 8) * gamma),
                 (u_int8_t)(((*tar_buf_ptr & 0x07E0) >> 3) * gamma),
                 (u_int8_t)(((*tar_buf_ptr & 0x001F) << 3) * gamma)
             );
+            tar_buf_ptr++;
         }
 
 
@@ -446,12 +449,13 @@ void BlitBufFade32(
             /* No transparency check. */
 
             /* Do fade to this pixel. */
-            *tar_buf_ptr++ = PACK8TO32(
+            *tar_buf_ptr = PACK8TO32(
 		(u_int8_t)((*tar_buf_ptr & 0xff000000) >> 24),
                 (u_int8_t)(((*tar_buf_ptr & 0x00ff0000) >> 16) * gamma),
                 (u_int8_t)(((*tar_buf_ptr & 0x0000ff00) >> 8) * gamma),
                 (u_int8_t)((*tar_buf_ptr & 0x000000ff) * gamma)
             );
+            tar_buf_ptr++;
         }
 
 
@@ -640,7 +644,7 @@ void BlitBufGlow8(
             /*   Add glow to this pixel.
 	     *   rrgg gbbb
 	     */
-	    *tar_buf_ptr++ = PACK8TO8(
+	    *tar_buf_ptr = PACK8TO8(
 		(u_int8_t)MIN(
 		    ((*tar_buf_ptr & 0xE0)) + color.r,
 		    0xff
@@ -654,6 +658,7 @@ void BlitBufGlow8(
                     0xff
                 )
 	    );
+	    tar_buf_ptr++;
         }
 
 
@@ -750,7 +755,7 @@ void BlitBufGlow15(
             /*   Add glow to this pixel.
              *   arrr rrgg gggb bbbb
              */
-            *tar_buf_ptr++ = PACK8TO15(
+            *tar_buf_ptr = PACK8TO15(
                 (u_int8_t)MIN(
                     ((*tar_buf_ptr & 0x7C00) >> 7) + color.r,
                     0xff
@@ -763,7 +768,8 @@ void BlitBufGlow15(
                     ((*tar_buf_ptr & 0x001F) << 3) + color.b,
                     0xff
                 )
-            );   
+            );
+            tar_buf_ptr++;   
         }
 
 
@@ -861,7 +867,7 @@ void BlitBufGlow16(
             /*   Add glow to this pixel.
              *   rrr rrggg gggb bbbb
              */
-            *tar_buf_ptr++ = PACK8TO16(
+            *tar_buf_ptr = PACK8TO16(
                 (u_int8_t)MIN(
                     ((*tar_buf_ptr & 0xF800) >> 8) + color.r,
                     0xff
@@ -875,6 +881,7 @@ void BlitBufGlow16(
                     0xff  
                 )
             );
+            tar_buf_ptr++;
         }
 
 
@@ -972,7 +979,7 @@ void BlitBufGlow32(
 
             /*   Add glow to this pixel.
              */
-            *tar_buf_ptr++ = PACK8TO32(
+            *tar_buf_ptr = PACK8TO32(
                 (u_int8_t)((*tar_buf_ptr & 0xff000000) >> 24),
                 (u_int8_t)MIN(
                     ((*tar_buf_ptr & 0x00ff0000) >> 16) + color.r,
@@ -987,6 +994,7 @@ void BlitBufGlow32(
                     0xff
                 ) 
             );
+            tar_buf_ptr++;
         }
 
 

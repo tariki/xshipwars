@@ -343,7 +343,10 @@ void strtoupper(char *s)
 	    return;
 
         while(*s != '\0')
-            *s++ = toupper(*s);
+        {
+            *s = toupper(*s);
+            s++;
+        }
 
 	return;
 }
@@ -354,7 +357,10 @@ void strtolower(char *s)
             return;
 
 	while(*s != '\0')
-	    *s++ = tolower(*s);
+	{
+	    *s = tolower(*s);
+	    s++;
+	}
 
 	return;
 }

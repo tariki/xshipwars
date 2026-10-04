@@ -923,7 +923,10 @@ void StripParentPath(char *path, const char *parent)
 	{
 	    strptr = path;
 	    while(*strptr != '\0')
-		*strptr++ = *(strptr + 1);
+	    {
+		*strptr = *(strptr + 1);
+		strptr++;
+	    }
 	}
 
 	/* If path is empty, it implies the parent and path were
