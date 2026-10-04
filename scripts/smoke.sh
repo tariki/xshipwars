@@ -10,6 +10,7 @@
 #     (client の内部の値を gdb で読んで判定する)
 #   - EngineState = -1 の物体が server と unvedit の保存を通っても -1 のまま
 #   - unvedit で開いて保存し直したファイルが元と同一
+# client/monitor/unvedit のデータは scripts/install-data.sh でインストールしたものを使う。
 # 各項目を PASS/FAIL で表示し、FAIL があれば終了コード 1。
 # 事前に scripts/build.sh all でビルドしておくこと。
 set -uo pipefail
@@ -52,7 +53,7 @@ rm -rf "$OUT"
 SRV="$OUT/swserv-root"
 XSW="$OUT/xsw-root"
 HOMEDIR="$OUT/home"
-mkdir -p "$SRV"/{bin,db,etc,logs,plugins,public_html,tmp} "$XSW/images" "$HOMEDIR/.shipwars"
+mkdir -p "$SRV"/{bin,db,etc,logs,plugins,public_html,tmp} "$HOMEDIR/.shipwars"
 
 sed "s#^ServerToplevelDir = .*#ServerToplevelDir = $SRV#" \
   "$ROOT/src/server/default.conf" > "$SRV/etc/generic.conf"
@@ -61,14 +62,13 @@ cp "$ROOT/src/server/default.ocs" "$ROOT/src/server/default.opm" "$SRV/db/"
 awk '/^    Name = Earth$/ {e=1} e && /^    EngineState = / {sub(/= .*/, "= -1"); e=0} {print}' \
   "$ROOT/src/server/generic_in.unv" > "$SRV/db/generic_in.unv"
 
-# etc はインストール後と同じ構成にする: client データ (data/etc) に、
-# client の make install が置く xshipwarsrc と universes (src/client) を重ねる
-mkdir -p "$XSW/etc"
-for f in "$ROOT"/data/etc/*; do ln -s "$f" "$XSW/etc/"; done
-ln -s "$ROOT/src/client/xshipwarsrc" "$ROOT/src/client/universes" "$XSW/etc/"
-ln -s "$ROOT/theme/sounds" "$XSW/sounds"
-for f in "$ROOT"/data/images/* "$ROOT"/theme/images/*; do ln -s "$f" "$XSW/images/"; done
-ln -s "$ROOT/src/unvedit/images" "$XSW/images/unvedit"
+# client/monitor/unvedit のデータは、インストールスクリプトで実際にインストールして使う
+# (インストール手順の確認も兼ねる)
+if "$ROOT/scripts/install-data.sh" "$XSW" > "$OUT/install-data.log" 2>&1; then
+  pass "install-data.sh でデータをインストールできた"
+else
+  fail "install-data.sh が失敗した (log: $OUT/install-data.log)"
+fi
 
 # client は初回起動時に etc/xshipwarsrc を ~/.shipwars にコピーする。その代わりに、
 # パスだけをこの実行環境に合わせたものを置く
@@ -102,7 +102,7 @@ fi
 # ------------------------------------------------------------------
 # monitor (AUX ポートにログイン。-u はアドレスより前に書く)
 "$ROOT/src/monitor/monitor" -u Defiant yiffbaby 127.0.0.1 1702 \
-  -i "$ROOT/src/monitor/images" > "$OUT/monitor.log" 2>&1 &
+  -i "$XSW/images/monitor" > "$OUT/monitor.log" 2>&1 &
 MON_PID=$!; PIDS+=("$MON_PID")
 # AUX の TITLE を受け取るとウィンドウ名がユニバース名になる
 for _ in $(seq 20); do

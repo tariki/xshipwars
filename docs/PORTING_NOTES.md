@@ -197,3 +197,23 @@
   キーコードの修正を最初はこちらにだけ入れてしまい、インストールされる 1.34 版は旧番号のままだった。
   混乱を避けるため 1.33 版の 2 ファイルは削除し、キーコードの修正は 1.34 版に入れた（変更した 8 個は同じ）。
 - `scripts/smoke.sh` も、`etc/` をインストール後と同じ構成（`data/etc/*` に `src/client/` の 2 ファイルを重ねる）で組み立てる。
+
+## インストール手順 (2026-10-04)
+
+元の配布では、プログラム本体とは別に「client データ」と「グラフィックテーマ」のパッケージを
+`/usr/share/games/xshipwars/` に展開する前提だった。このリポジトリではそれぞれ `data/` と `theme/` にあたる。
+これらを配置する手順が無かったので `scripts/install-data.sh` を作った。全体の手順は次のとおり。
+
+1. ビルド: `scripts/build.sh all`
+2. プログラム本体: 各 `src/<component>` で `make -f Makefile.Linux install`（`PREFIX` は Makefile.Linux の値）
+   - client: `/usr/games/xsw`、`/usr/share/games/xshipwars/etc/{xshipwarsrc,universes}`
+   - monitor / unvedit: `/usr/games/` と `images/monitor`・`images/unvedit`
+   - server: `/home/swserv/` の下に bin・db・etc（`default.conf`）など。`etc/default.conf` の `ServerToplevelDir` を合わせる
+3. データ: `sudo scripts/install-data.sh`（既定のインストール先は `/usr/share/games/xshipwars`）
+   - `etc/`（`data/etc` ＋ `src/client` の rc と universes）、`images/`（`data/images` と `theme/images` をまとめる
+     ＋ `images/unvedit`・`images/monitor`）、`sounds/`（`theme/sounds`）を配置する
+   - 2 と内容が重なる部分（client の rc、monitor/unvedit の画像）は同じファイルなので、どちらを先にしてもよい
+   - `data/images` と `theme/images` で名前が重なると、何も書かずにエラーで止まる。`-n` で配置内容だけを表示する
+   - インストール先を変えたときは、`~/.shipwars/xshipwarsrc` の `ToplevelDir` をそこに合わせる
+- `scripts/smoke.sh` は、client・monitor・unvedit 用のデータをこのスクリプトでインストールしてから使う。
+- 2 の `make install` は実際には試していない（スモークテストは 3 だけを通している）。

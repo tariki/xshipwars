@@ -13,6 +13,7 @@
 - ビルド: `scripts/build.sh <server|client|monitor|unvedit|all>` (ログは `build-logs/`)
 - ヘッドレス実行: `scripts/headless.sh start|shot|key|stop`（Xvfb :99）
 - スモークテスト: `scripts/smoke.sh`（server/monitor/client/unvedit を起動して主要動作を自動判定。変更後の確認に使う）
+- データのインストール: `scripts/install-data.sh [-n] [インストール先]`（data/ と theme/ を client が読む配置にまとめる）
 
 ## ソース構成とビルドシステム
 - `src/<component>/` に各プログラム、`src/include/` と `src/global/` と `src/widgets/` が共通部分
