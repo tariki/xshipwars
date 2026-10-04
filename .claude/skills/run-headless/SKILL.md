@@ -5,6 +5,11 @@ description: Launch the XShipWars server (swserv) and X11 client (xsw) headlessl
 
 # ヘッドレスでの起動確認
 
+まず `scripts/smoke.sh` を実行する。実行環境を `run-logs/smoke/` に作り直し、server・monitor・client・unvedit を
+起動して主要な動作を自動判定する（PASS/FAIL を表示し、スクリーンショットとログを残す）。
+特定の画面や操作を調べたいとき、FAIL の原因を追うときは、下の手順で個別に起動する
+（データディレクトリの組み立て方は smoke.sh を参照）。
+
 1. 対象がビルド済みか確認する（まだなら build-linux skill でビルドする）
 2. `scripts/headless.sh start` で Xvfb :99 を起動する
 3. サーバを起動する: `src/server/swserv` をフォアグラウンドオプション (`--fg`) と設定ファイルを指定してバックグラウンドで実行し、
@@ -12,7 +17,9 @@ description: Launch the XShipWars server (swserv) and X11 client (xsw) headlessl
    - 設定ファイルやデータのパスが分からないときは、`src/server/main.cpp` の引数処理と `default.conf` を読んで判断する
 4. クライアントを起動する: `DISPLAY=:99 src/client/xsw` をバックグラウンドで実行し、ログを `run-logs/client.log` に保存する
 5. 数秒おきに `scripts/headless.sh shot run-logs/shot-N.png` を撮り、Read で画像を確認する。
-   接続などの操作は `scripts/headless.sh key <keysym>` で送る
+   接続などの操作は `scripts/headless.sh key <keysym>` で送る。ウィンドウマネージャが無いので、
+   ゲーム中のキーは `xdotool windowfocus --sync <bridge のウィンドウ>` でフォーカスを与えてから送る。
+   client はデバッグ情報付きなので、内部の値は `gdb -batch -p <PID> -ex 'print <式>'` で読める
 6. クラッシュしたら `gdb -batch -ex run -ex bt --args <cmd...>` でバックトレースを取る。
    メモリ破壊が疑われる場合は `-fsanitize=address,undefined` を付けて再ビルドして再現させる
 7. 終了時はクライアント・サーバのプロセスを kill し、`scripts/headless.sh stop` を実行する

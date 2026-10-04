@@ -171,3 +171,16 @@
   netfile.cpp のファイル名は、元から 192 文字で切って通信の 1 行（256 バイト）に 64 文字の余裕を残しており、
   その上限を配列の大きさで表した（上限そのものは変えていない）。
 - Makefile はヘッダの依存関係を追跡しないので、ヘッダを変えたときは `clean` してから再ビルドすること。
+
+## スモークテスト (2026-10-04)
+
+- `scripts/smoke.sh` で、server・monitor・client・unvedit の主要な動作を自動で確認できる。
+  実行環境（server の toplevel、client・unvedit 用の images の統合、HOME と設定ファイル）は毎回 `run-logs/smoke/` に作り直す。
+  - client は URL を引数に渡して Guest で接続する（`xsw swserv://Guest:guest@localhost:1701`）。
+  - 旋回・加速・推力モードは、client の内部の値を gdb で読んで判定する。
+  - テスト用ユニバースでは Earth の EngineState を -1 にしてあり、server（終了時に generic_out.unv を書く）と
+    unvedit（開いて保存し直す）を通っても -1 のままかを確認する（arm64 の char 符号の回帰テスト）。
+  - unvedit の保存は、画面の座標（File メニュー → Save）をクリックしている。ウィンドウの配置が変わったら座標を直す必要がある。
+- コンテナに `xfonts-base` が入ったので、Xvfb のフォントの別名による代用はもう必要ない。
+- `mkstemp()` に変えた一時ファイルは、server の df と client の mf（関数を直接呼ぶテスト）で確認した。
+  どちらもファイルを 0600 で排他的に作り、外部コマンドが追記し、読み終えてから削除している。unvedit の印刷は未確認。
