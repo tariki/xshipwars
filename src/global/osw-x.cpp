@@ -423,6 +423,11 @@ namespace static_osw_x {
 /* Needed for XkbKeycodeToKeysym(). */
 #include <X11/XKBlib.h>
 
+#ifdef HAVE_XINERAMA
+/* Needed to find the size of one monitor on a multi-monitor screen. */
+# include <X11/extensions/Xinerama.h>
+#endif
+
 /* Needed for OSWSetWindowWMProperties(). */
 #include "../include/MwmUtil.h"
 
@@ -984,6 +989,33 @@ if(vptr != NULL)
 	    gui->display,
 	    gui->scr_num
 	);
+
+#ifdef HAVE_XINERAMA
+	/*   On a multi-monitor (Xinerama) screen the root window spans
+	 *   all monitors, so windows centered on it end up between or
+	 *   off the monitors. Use the size of the monitor at the screen
+	 *   origin for placing windows instead.
+	 */
+	if(XineramaIsActive(gui->display))
+	{
+	    int i, total_monitors = 0;
+	    XineramaScreenInfo *monitor = XineramaQueryScreens(
+		gui->display, &total_monitors
+	    );
+
+	    for(i = 0; i < total_monitors; i++)
+	    {
+		if((monitor[i].x_org == 0) && (monitor[i].y_org == 0))
+		{
+		    gui->display_width = monitor[i].width;
+		    gui->display_height = monitor[i].height;
+		    break;
+		}
+	    }
+	    if(monitor != NULL)
+		XFree(monitor);
+	}
+#endif	/* HAVE_XINERAMA */
 
 	gui->black_pix = BlackPixelOfScreen(gui->scr_ptr);
 	gui->white_pix = WhitePixelOfScreen(gui->scr_ptr);

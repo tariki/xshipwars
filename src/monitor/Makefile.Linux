@@ -34,6 +34,9 @@ PREFIX = /usr
 #
 #       USE_XSHM		Enable MIT X Shared Memory.
 #
+#       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
+#				(Xinerama) screen. Requires -lXinerama.
+#
 #   Other arguments include:
 #
 #       -O#                     Specifies the optimization level the
@@ -50,7 +53,7 @@ PREFIX = /usr
 #                               this option unless you are attempting
 #                               to debug the program.
 #
-CFLAGS  = -DUSE_XSHM -O2 -g -Wall
+CFLAGS  = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall
 
 
 # ########################################################################
@@ -64,7 +67,7 @@ CFLAGS  = -DUSE_XSHM -O2 -g -Wall
 #   to the LIB line depending on what you have set in the CFLAGS line
 #   farther above.
 #
-LIB = -lX11 -lXpm -lXext
+LIB = -lX11 -lXpm -lXext -lXinerama
 
 # Library Directories:
 #

@@ -258,3 +258,20 @@
     その間に一度に届くデータの一部が送信キューからあふれた可能性がある（Xvfb では起きない）。ログでの直接の確認はできていない。
   - リビルド直後の最初の実行で、`install-data.sh` の `install`（権限の設定）が "Operation not permitted" で
     失敗したことが 1 回あった。`/workspace` は macOS と共有している virtiofs で、その後 5 回繰り返しても再現しなかった。
+
+## 複数ディスプレイでのダイアログの位置 (2026-10-04)
+
+- client・monitor・unvedit は、ダイアログやメニューの位置を `osw_gui[0].display_width/height`（`OSWGUIConnect()` で
+  `DisplayWidth/Height` から取る X の画面全体の大きさ）をもとに計算する（約 50 か所）。複数ディスプレイの環境では
+  X の画面は全ディスプレイをまとめた大きさになるので、ダイアログが「全体の中央」に置かれ、ディスプレイの境目や
+  別のディスプレイ、ディスプレイの無い位置に出ていた。XQuartz（2 台構成で画面 4448x1662）で、Options と Key Mappings が
+  見えない位置（x=1904, 2024）に出て、開いていないように見えた。
+- `HAVE_XINERAMA` を定義したときは、Xinerama で原点 (0, 0) にあるモニターを探し、その大きさを `display_width/height`
+  に使うようにした（osw-x.cpp の 1 か所。50 か所の配置計算は変えていない）。Linux の client・monitor・unvedit の
+  Makefile に `-DHAVE_XINERAMA` と `-lXinerama` を足した（Dockerfile に `libxinerama-dev`）。ディスプレイが 1 台なら
+  今までと同じ。原点にメインのディスプレイがある前提で、そうでない配置ではずれが残る。
+- 検証: Xvfb の `+xinerama -screen ... -screen ...` は 2 画面が原点に重なって横並びにならないので使えない。
+  横 2048 の 1 画面の Xvfb に、libXrandr の `XRRSetMonitor()` で左右 2 つのモニターを定義すると、X サーバが
+  Xinerama の問い合わせにそのモニターを返す。ただし、定義したクライアントが切断するとモニターは消えるので、
+  定義したプロセスを動かしたまま client を起動する必要がある。この環境で、Options が全体の中央（x=704）ではなく
+  左のモニターの中央（x=192）に出ることを確認した。
