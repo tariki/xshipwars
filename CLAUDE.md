@@ -26,8 +26,9 @@
 ## サポート対象プラットフォーム
 - 対象は **Linux** と **FreeBSD** のみ
   - Linux: 主な対象。Dev Container（Debian trixie, arm64）でビルド・動作を確認している
-  - FreeBSD: 対象とするが、この Dev Container では検証できない。`src/*/Makefile.FreeBSD` は移植前の古い設定のまま
-    （Linux 側の修正の反映は未着手）
+  - FreeBSD: 対象とするが、この Dev Container では検証できない。`src/*/Makefile.FreeBSD` は Linux と同じ設定に
+    そろえてある（コンパイラは `${CXX}`、X11 は `${LOCALBASE}`、PREFIX は Linux と同じ /usr）。Linux 側を直したら
+    FreeBSD 側にも反映し、GNU make で `-f Makefile.FreeBSD` を使って Linux 上でビルドが通ることを確かめる
 - **AIX・HP-UX・Solaris・Windows は対象外とし、ビルド環境とソースコードから削除する**
   - 理由: このプロジェクトで試せる環境が無く、2001 年以降ビルドされていないと考えられるため。
     試せないコードは修正のたびに保守の負担になる。（OS 自体の状況は理由にしない。AIX 7.3 と

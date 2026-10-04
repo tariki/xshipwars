@@ -7,7 +7,8 @@
 - `Makefile.Linux` の `-D__cplusplus` / `-D__USE_BSD` は削除した。`__cplusplus` は g++ が自前で定義し、
   `__USE_BSD` は glibc の内部マクロで外から定義しても無視される（g++ は `_GNU_SOURCE` を既定で有効にする）。
 - `strcasestr()`: glibc が提供しており、C++ では const/非 const のオーバーロードで宣言されるため、
-  独自版（`src/global/string.cpp`）と宣言（`src/include/string.h`）は `#ifndef __GLIBC__` で除外した。
+  独自版（`src/global/string.cpp`）と宣言（`src/include/string.h`）は `#ifndef __GLIBC__` で除外した
+  （2026-10-04: FreeBSD の libc も持っているので、`!defined(__GLIBC__) && !defined(__FreeBSD__)` に変えた）。
   独自版は NULL 引数で NULL を返したが glibc 版は NULL を渡すとクラッシュする。server は呼んでいない。
   unvedit の呼び出し元は確認済み: `uewpropsio.cpp` の引数はローカル配列なので NULL にならない。
   `wepw.cpp` は `PromptGetS()` の戻り値（プロンプトのバッファが無いと NULL）を渡していたので、NULL チェックを追加した。
@@ -303,3 +304,28 @@ Linux（と FreeBSD）側の処理は変えていない。削除のたびに 4 �
 - 後回しにしている widgetdemo（`src/widgetdemo/`）には手を付けていない。Cygwin 用の `Makefile.cygwin` と、
   昔の configure が生成した `config.status`（AIX などの Makefile 名を含む）が残っている。
 - `include/os.h` の `_PATH_MAILDIR` の条件には `__NetBSD__` が残っている（NetBSD は削除の対象にしていない）。
+
+## FreeBSD への対応 (2026-10-04)
+
+FreeBSD の実機・ヘッダはこの環境に無いので、知られている FreeBSD との違いに当てはまる箇所をコードから探して直した。
+**どれも FreeBSD では未確認。** Linux でのビルド（警告 0）とスモークテストは毎回確認した。
+
+- `<malloc.h>`（31 ファイル）を `<stdlib.h>` にした。FreeBSD の `<malloc.h>` は「`<stdlib.h>` を使え」という `#error` になる。
+  malloc.h にしか無い関数（mallinfo, memalign など）は使っていない。
+- server/crypt.cpp の `<crypt.h>`: FreeBSD には無い（crypt は `<unistd.h>`）。`__has_include(<crypt.h>)` のときだけ読み、
+  `<unistd.h>` は常に読む。
+- 独自の `strcasestr()`: FreeBSD の libc にもあり、`<string.h>` で C リンケージで宣言されるので、C++ の独自版とぶつかる。
+  FreeBSD でも独自版を使わないようにした。
+- `Makefile.FreeBSD`（4 つ）を Linux と同じ設定にした。BSD make は `CPP` に `cpp` を最初から入れるので、
+  `CPP ?= g++` では上書きされず、client は `CPP? = g++` の書き間違いもあった。FreeBSD の基本システムには g++ も無いので
+  `CPP = ${CXX}`（標準は c++ = clang）にした。X11 は `/usr/X11R6` ではなく `${LOCALBASE}`（/usr/local）。
+  client の PREFIX は /usr/local だったが、プログラムはデータを `/usr/share/games/xshipwars` で探し、同梱の設定ファイルの
+  ひな形の ToplevelDir も同じなので、Linux と同じ /usr にした（FreeBSD の慣習からは外れる。置き場所を変えられるように
+  するのは、ビルドシステムの改修でまとめて行う）。
+- Linux 上で GNU make に `-f Makefile.FreeBSD` を渡すと、4 つとも警告 0 でビルドできることを確認した。
+  BSD make（bmake）での動作と、Makefile の `include`（ドットなし）が BSD make で通るかは未確認。
+- 未対応のまま記録だけにしたもの:
+  - FreeBSD には `free` コマンドが無いので、mf（メモリ統計）が失敗し、client のオプションウィンドウのメモリ表示が 0 になる。
+  - server のプラグイン読み込み（plugins.cpp）は `__linux__` のときだけ有効。FreeBSD でも dlopen は使えるが、
+    機能を増やすことになるので変えていない。
+  - clang の `-Wall` での警告は確認できていない（この環境には gcc しかない）。

@@ -15,7 +15,8 @@ XShipWars は、WolfPack Entertainment が 1999〜2001 年に開発した、X Wi
 動作を確認した環境は、Dev Container 内の Debian trixie（arm64）です。表示先は Xvfb と macOS の XQuartz で確かめています。
 x86_64 では試していませんが、64bit 環境向けの修正（固定幅型、char の符号など）は両方に共通です。
 
-**サポート対象は Linux と FreeBSD です。** FreeBSD は対象ですが、まだ試せておらず、`Makefile.FreeBSD` も移植前のままです。
+**サポート対象は Linux と FreeBSD です。** FreeBSD 用の Makefile は Linux と同じ設定にそろえてありますが、
+FreeBSD の実機ではまだ試せていません。
 元の配布物にあった AIX・HP-UX・Solaris 向けのビルド用ファイルとコード、それに Windows への移植の名残は削除しました
 （試せる環境が無く、保守できないため）。Windows では、WSL2 で Linux 版を動かすのが現実的です（未検証）。
 
@@ -33,6 +34,12 @@ sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-d
 
 `xfonts-base` は実行時に必要です。client は X のコアフォント `7x14` と `6x10` が無いと起動しません。
 
+FreeBSD では、次のパッケージが必要なはずです（未確認）。スクリプト類（`scripts/*.sh`）を使うなら `bash` も必要です。
+
+```sh
+pkg install libX11 libXext libXpm libXinerama font-misc-misc
+```
+
 ### ビルド
 
 ```sh
@@ -44,6 +51,10 @@ make -C src/unvedit -f Makefile.Linux
 
 できあがるのは `src/server/swserv`、`src/client/xsw`、`src/monitor/monitor`、`src/unvedit/unvedit` です。
 Dev Container の中では `scripts/build.sh all` でも同じことができます（ログが `build-logs/` に残ります）。
+
+FreeBSD では `Makefile.Linux` の代わりに `Makefile.FreeBSD` を使います（未確認）。コンパイラは `c++`（clang）、
+X11 は `/usr/local` から探します。BSD の make でうまく動かない場合は、GNU make（`gmake`）で試してください。
+インストール先は Linux と同じです（client などは `/usr/games`、データは `/usr/share/games/xshipwars`）。
 
 ### インストール（システム全体）
 
