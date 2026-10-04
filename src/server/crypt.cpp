@@ -14,7 +14,11 @@
 
  */
 
-#include <crypt.h>
+/* glibc declares crypt() in <crypt.h>; FreeBSD declares it in <unistd.h>. */
+#if __has_include(<crypt.h>)
+# include <crypt.h>
+#endif
+#include <unistd.h>
 
 #include "swserv.h"
 

@@ -25,7 +25,7 @@ int strlongestline(const char *s);
 int strlines(const char *s);
 
 const char *strseekblank(const char *s);
-#ifndef __GLIBC__
+#if !defined(__GLIBC__) && !defined(__FreeBSD__)
 char *strcasestr(const char *haystack, const char *needle);
 #endif
 int strpfx(const char *str, const char *pfx);
@@ -185,7 +185,7 @@ const char *strseekblank(const char *s)
  *	Case insensitive version of strstr(). Returns the pointer to
  *	needle in haystack if found or NULL on no match.
  */
-#ifndef __GLIBC__
+#if !defined(__GLIBC__) && !defined(__FreeBSD__)
 char *strcasestr(const char *haystack, const char *needle)
 {
 	const char *strptr1, *strptr2, *strptr3;
@@ -243,7 +243,7 @@ char *strcasestr(const char *haystack, const char *needle)
 
         return(NULL);
 }
-#endif	/* !__GLIBC__ */
+#endif	/* !__GLIBC__ && !__FreeBSD__ */
 
 /*
  *	Returns 1 if pfx is a prefix of str.

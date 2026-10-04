@@ -21,8 +21,8 @@ extern int strlinelen(const char *s);
 extern int strlongestline(const char *s);
 extern int strlines(const char *s);
 extern const char *strseekblank(const char *s);
-/* glibc provides strcasestr() (with C++ const overloads). */
-#ifndef __GLIBC__
+/* glibc and FreeBSD's libc provide strcasestr(). */
+#if !defined(__GLIBC__) && !defined(__FreeBSD__)
 extern char *strcasestr(const char *haystack, const char *needle);
 #endif
 extern int strpfx(const char *str, const char *pfx);
