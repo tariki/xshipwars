@@ -139,7 +139,7 @@ int VSLabelGetHighest()
  *	Adds (allocates as needed) a new or replace existing label.
  */
 int VSLabelAdd(
-	char *text,
+	const char *text,
 	WColorStruct fg_color,
 	WColorStruct bg_color,
 	font_t *font,

@@ -1353,7 +1353,7 @@ char *StringCurrentTimeFormat(const char *format)
         time(&current);
         tm_ptr = localtime(&current);
 	if(tm_ptr == NULL)
-	    return("");
+	    { s[0] = '\0'; return(s); }
 
         /* Format time string. */
 	len = strftime(
@@ -1391,7 +1391,7 @@ char *StringTimeFormat(const char *format, time_t seconds)
 
         tm_ptr = localtime(&seconds);
 	if(tm_ptr == NULL)
-	    return("");
+	    { s[0] = '\0'; return(s); }
 
         /* Format time string. */
         len = strftime(

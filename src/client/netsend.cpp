@@ -1062,7 +1062,7 @@ int NetSendHail(int src_obj, int tar_obj, int channel)
  */
 int NetSendComMessage(
 	int src_obj, int tar_obj,
-	int channel, char *message
+	int channel, const char *message
 )
 {
         char sndbuf[CS_DATA_MAX_LEN];

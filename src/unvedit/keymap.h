@@ -11,7 +11,7 @@
 #define KM_VIEW_TRANSLATE       1
 #define KM_VIEW_ZOOM            2
 
-static char *keymap_name[] = {
+static const char *keymap_name[] = {
         "ViewMove",
         "ViewTranslate",
         "ViewZoom"

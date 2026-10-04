@@ -340,7 +340,7 @@ char *FBrowserGetPathMask(char *path)
 	static char search_str[PATH_MAX + NAME_MAX];
 
 	if(path == NULL)
-	    return("*");
+	    { strcpy(search_str, "*"); return(search_str); }
 
         if(!FBrowserHasMask(path))
             { strcpy(search_str, "*"); return(search_str); }
@@ -698,7 +698,7 @@ int FBrowserDoOK(fbrowser_struct *fb)
  */
 int FBrowserChangeDir(
         fbrowser_struct *fb,
-        char *path
+        const char *path
 )
 {       
         char *newpath;
@@ -4410,7 +4410,7 @@ void FBrowserMapPath(fbrowser_struct *fb, char *path)
  *	Set file browser's search string pattern prepended to
  *	whatever path it currently has, reget listing and map.
  */
-void FBrowserMapSearchMask(fbrowser_struct *fb, char *pattern)
+void FBrowserMapSearchMask(fbrowser_struct *fb, const char *pattern)
 {
         char *strptr;
         char tmp_path[PATH_MAX + NAME_MAX];

@@ -137,7 +137,7 @@ int TgBtnInit(
  */
 int TgBtnSetHintMessage(
 	toggle_button_struct *tb,
-	char *message
+	const char *message
 )
 {
         int i;

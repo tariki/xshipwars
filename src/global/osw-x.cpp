@@ -2912,7 +2912,7 @@ int OSWLoadPixelHSL(
  *	Returns 0 on success, -1 on general error, an\nd -2 on
  *	ambiguous or missing data.
  */
-int OSWLoadPixelCLSP(pixel_t *pix_rtn, char *clsp)
+int OSWLoadPixelCLSP(pixel_t *pix_rtn, const char *clsp)
 {
 	XColor c;
 
@@ -3694,9 +3694,11 @@ void OSWSetWindowIcon(win_t w, pixmap_t icon, bool_t has_transparency)
 	/* Set new icon referance in wm hints structure. */
 	wm_hints.icon_pixmap = icon;
 
-        /* Set class hint names. */
-        class_hints.res_name = "Eterm"; /* Must call it that. */
-        class_hints.res_class = "Eterm";
+        /* Set class hint names (XClassHint members are char *). */
+        static char class_hint_res_name[] = "Eterm"; /* Must call it that. */
+        static char class_hint_res_class[] = "Eterm";
+        class_hints.res_name = class_hint_res_name;
+        class_hints.res_class = class_hint_res_class;
 
 
 	/* Get original size hints. */

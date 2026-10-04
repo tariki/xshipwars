@@ -129,7 +129,7 @@ extern int UnivIsAllocated(int n);
 
 extern int UnivAdd(
         const char *alias,
-        char *url,
+        const char *url,
         time_t last_connected,
         const char *comments,
         int pos

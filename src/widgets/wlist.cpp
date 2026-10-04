@@ -552,7 +552,7 @@ int ListWinDraw(list_window_struct *lw)
 {
 	int i, x_pos, y_pos;
         int entries_drawn, entries_visible;
-	char *entry_name_ptr;
+	const char *entry_name_ptr;
 	int name_len;
 	list_window_entry_struct **ptr, *entry_ptr;
 	image_t *entry_icon_ptr;

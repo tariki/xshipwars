@@ -77,7 +77,7 @@ int TgBtnArrayInit(
         int x, int y,
         unsigned int nbtns,
         int start_sel_btn,
-	char **names,
+	const char *const *names,
 	unsigned int nnames,
 	int alignment
 )

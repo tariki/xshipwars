@@ -128,7 +128,7 @@ extern int NetSendTractorBeamLock(int src_obj, int tar_obj);
 extern int NetSendHail(int src_obj, int tar_obj, int channel);
 extern int NetSendComMessage(
 	int src_obj, int tar_obj,
-	int channel, char *message
+	int channel, const char *message
 );
 extern int NetSendWormHoleEnter(int src_obj, int tar_obj);
 extern int NetSendELinkEnter(int src_obj, int tar_obj);

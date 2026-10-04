@@ -109,7 +109,7 @@ extern int PrinterWritePSImage(
         printer_parm_struct *parm
 );
 extern int PrinterRunPrint(
-        char *cmd,			/* Can be NULL. */
+        const char *cmd,			/* Can be NULL. */
 	char *filename			/* Must be valid. */
 );
 extern int PrinterPrintImage(

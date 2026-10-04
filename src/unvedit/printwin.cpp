@@ -1187,7 +1187,7 @@ int PrintWinInit()
         char hotkey[PBTN_MAX_HOTKEYS];
 	win_attr_t wattr;
 	print_win_struct *pw;
-	char *strarray[10];
+	const char *strarray[10];
 
 	pw = &print_win;
 

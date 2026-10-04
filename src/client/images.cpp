@@ -211,10 +211,10 @@ int IMGAllocateExplicit(int image_num)
 /*
  *	Load image.
  */
-int IMGLoadImage(int image_num, char *filename)
+int IMGLoadImage(int image_num, const char *filename)
 {
 	int status;
-	char *strptr;
+	const char *strptr;
 	char parsed_filename[PATH_MAX + NAME_MAX];
 	xsw_image_struct *img_ptr = NULL;
 

@@ -79,33 +79,33 @@ struct {
  */
 
 /* Throttle mode. */
-char *throttle_mode_names[] = {
+const char *throttle_mode_names[] = {
         "Normal", 
         "Bi-Directional",
 	"Incremental"
 };
 /* Show viewscreen labels. */
-char *show_viewscreen_label_names[] = {
+const char *show_viewscreen_label_names[] = {
         "None",
         "Object Names",
         "Net Stats",
         "All"
 };
 /* Show formal name labels. */
-char *show_formal_label_names[] = {
+const char *show_formal_label_names[] = {
 	"Never",
 	"As needed",
 	"Always"
 };
 /* Sound amount. */
-char *sound_amount_names[] = {
+const char *sound_amount_names[] = {
         "None",
         "Events",
         "Engines",
         "All"
 };
 /* Sound servers. */
-char *sound_server_names[] = {
+const char *sound_server_names[] = {
         "None",
         "YIFF",
         "EsounD",

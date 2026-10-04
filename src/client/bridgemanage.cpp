@@ -387,7 +387,7 @@ void BridgeWarnWeaponsOffline(int object_num)
 int BridgeManagePromptExec(event_t *event)
 {
 	keycode_t keycode;
-	char *value;
+	const char *value;
 	int object_num;
 	xsw_object_struct *obj_ptr;
 	prompt_window_struct *prompt;

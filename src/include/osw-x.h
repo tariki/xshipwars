@@ -825,7 +825,7 @@ extern int OSWLoadPixelHSL(
 	u_int8_t s,
 	u_int8_t l
 );
-extern int OSWLoadPixelCLSP(pixel_t *pix_rtn, char *clsp);
+extern int OSWLoadPixelCLSP(pixel_t *pix_rtn, const char *clsp);
 extern void OSWDestroyPixel(pixel_t *pix_ptr);
 extern void OSWSetFgPix(pixel_t pix);
 

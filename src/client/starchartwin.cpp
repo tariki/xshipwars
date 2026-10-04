@@ -2570,7 +2570,7 @@ void SChtDraw(starchart_win_struct *cht, int amount)
 	    {
 		double d, r;
 		sw_units_struct u;
-		char *units_name_ptr;
+		const char *units_name_ptr;
 		char text[256];
 
 		/* Calculate distance in XSW Real units. */

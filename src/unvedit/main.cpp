@@ -122,7 +122,7 @@ int file_browser_op_code;
 int UEDoEmergencySaveAll()
 {
 	int i, status;
-	char *dir_name;
+	const char *dir_name;
 	char *tmp_name;
 	struct stat stat_buf;
 
@@ -661,7 +661,8 @@ void UEResetTimmers()
 int UEInit(int argc, char *argv[])
 {
 	int i, status;
-	char *strptr, *strptr2;
+	char *strptr2;
+	const char *strptr;
 	char cwd[PATH_MAX];
 	char image_unvedit_path[PATH_MAX + NAME_MAX];
 	char tmp_path[PATH_MAX + NAME_MAX];

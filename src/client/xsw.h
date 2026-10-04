@@ -2025,7 +2025,7 @@ extern "C" int IMGResize(
 	unsigned int height
 );
 extern "C" int IMGAllocateExplicit(int image_num);
-extern "C" int IMGLoadImage(int image_num, char *filename);
+extern "C" int IMGLoadImage(int image_num, const char *filename);
 extern "C" int IMGLoadImageData(int image_num, unsigned char *data);
 extern "C" void IMGUnload(int image_num);
 
@@ -2355,7 +2355,7 @@ extern "C" int VSLabelGetByPointer(xsw_object_struct *obj_ptr);
 extern "C" int VSLabelGetHighest(void);
 
 extern "C" int VSLabelAdd(
-        char *text,
+        const char *text,
         WColorStruct fg_color,
         WColorStruct bg_color,
 	font_t *font,

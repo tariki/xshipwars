@@ -170,7 +170,7 @@ int DialogWinInit(
  */
 int DialogWinDraw(
         dialog_win_struct *dw,
-        char *mesg
+        const char *mesg
 )
 {
         int x, y, n;
@@ -700,7 +700,7 @@ void DialogWinDestroy(dialog_win_struct *dw)
  */
 int printdw(     
         dialog_win_struct *dw,
-        char *mesg
+        const char *mesg
 )
 {
 	if(dw == NULL)

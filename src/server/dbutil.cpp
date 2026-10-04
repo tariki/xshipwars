@@ -671,8 +671,10 @@ const char *DBGetTypeName(int type)
  */
 char *DBGetFormalNameStr(int object_num)
 {
+        static char garbage_name[] = XSW_OBJ_GARBAGE_NAME;
+
         if(DBIsObjectGarbage(object_num))
-            return(XSW_OBJ_GARBAGE_NAME);
+            return(garbage_name);
         else
             return(UNVGetObjectFormalName(
                 xsw_object[object_num],
@@ -711,7 +713,7 @@ char *DBGetOCSOPMName(int ocs_code)
 int DBValidateObjectName(char *name)
 {          
         int i, n;  
-        char *strptr = INVALID_NAME_CHARACTERS;
+        const char *strptr = INVALID_NAME_CHARACTERS;
 
 
         /* Null pointer? */

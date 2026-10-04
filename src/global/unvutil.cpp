@@ -257,10 +257,10 @@ char *UNVGetObjectFormalName(xsw_object_struct *obj_ptr, int obj_num)
 
 
 	if(obj_ptr == NULL)
-	    return(XSW_OBJ_GARBAGE_NAME);
+	    { strcpy(name, XSW_OBJ_GARBAGE_NAME); return(name); }
 
 	if(obj_ptr->type <= XSW_OBJ_TYPE_GARBAGE)
-	    return(XSW_OBJ_GARBAGE_NAME);
+	    { strcpy(name, XSW_OBJ_GARBAGE_NAME); return(name); }
 
 	if(obj_num < 0)
 	{

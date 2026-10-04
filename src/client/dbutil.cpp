@@ -378,7 +378,7 @@ void DBSortEconomyProducts(int object_num)
 int DBValidateObjectName(char *name)
 {
         int i, n;
-        char *strptr = INVALID_NAME_CHARACTERS;
+        const char *strptr = INVALID_NAME_CHARACTERS;
 
 
         /* Null pointer? */
@@ -500,8 +500,10 @@ int DBGetObjectNumByPtr(xsw_object_struct *obj_ptr)
  */
 char *DBGetFormalNameStr(int object_num)
 {
+        static char garbage_name[] = XSW_OBJ_GARBAGE_NAME;
+
         if(DBIsObjectGarbage(object_num))
-            return(XSW_OBJ_GARBAGE_NAME);
+            return(garbage_name);
 	else
 	    return(UNVGetObjectFormalName(
 		xsw_object[object_num],

@@ -1697,7 +1697,7 @@ extern "C" int DialogWinInit(
 );
 extern "C" int DialogWinDraw(     
         dialog_win_struct *dw,
-        char *mesg
+        const char *mesg
 );
 extern "C" int DialogWinManage(
         dialog_win_struct *dw, 
@@ -1710,7 +1710,7 @@ extern "C" void DialogWinDestroy(
 );      
 extern "C" int printdw(
         dialog_win_struct *dw,
-        char *mesg  
+        const char *mesg  
 );
 
 
@@ -1727,7 +1727,7 @@ extern "C" int FBrowserDoOK(fbrowser_struct *fb);
 extern "C" int FBrowserApplyCVPrompt(fbrowser_struct *fb);
 extern "C" int FBrowserChangeDir(
 	fbrowser_struct *fb,
-	char *path
+	const char *path
 );
 extern "C" int FBrowserGetDeviceListing(fbrowser_struct *fb);
 extern "C" int FBrowserRefreshList(fbrowser_struct *fb);
@@ -1764,7 +1764,7 @@ extern "C" void FBrowserMapCVPrompt(fbrowser_struct *fb, int mode);
 extern "C" void FBrowserUnmapCVPrompt(fbrowser_struct *fb);
 extern "C" void FBrowserMap(fbrowser_struct *fb);
 extern "C" void FBrowserMapPath(fbrowser_struct *fb, char *path);
-extern "C" void FBrowserMapSearchMask(fbrowser_struct *fb, char *pattern);
+extern "C" void FBrowserMapSearchMask(fbrowser_struct *fb, const char *pattern);
 extern "C" void FBrowserUnmap(fbrowser_struct *fb);
 extern "C" void FBrowserDestroy(fbrowser_struct *fb);
 
@@ -2157,13 +2157,13 @@ extern "C" int TgBtnArrayInit(
 	int x, int y,
 	unsigned int nbtns,
 	int start_sel_btn,
-	char **names,
+	const char *const *names,
 	unsigned int nnames,
 	int alignment
 );
 extern "C" int TgBtnSetHintMessage(
 	toggle_button_struct *tb,
-	char *message
+	const char *message
 );
 extern "C" int TgBtnArrayManage(
 	toggle_button_array_struct *tba,

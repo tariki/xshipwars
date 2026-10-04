@@ -246,7 +246,7 @@ int ViewerLoadFile(
 
 	FILE *fp;
 	char stringa[256 + PATH_MAX + NAME_MAX];
-	char *strptr;
+	const char *strptr;
 	char need_hex_mode = 0;
 
 

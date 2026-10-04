@@ -577,7 +577,7 @@ int MonInit(monitor_struct *m, int argc, char *argv[])
 
 void MonDraw(monitor_struct *m, int amount)
 {
-	char *strptr;
+	const char *strptr;
 	char time_str1[256];
 	char time_str2[256];
 	int x, y, yp, len;

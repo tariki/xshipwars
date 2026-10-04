@@ -634,13 +634,14 @@ int PrinterWritePSImage(
  *	Proecdure to run the print command.
  */
 int PrinterRunPrint(
-	char *cmd,
+	const char *cmd,
 	char *filename
 )
 {
 #define PrinterFileToken	"%file"
 
-	char *strptr;
+	const char *strptr;
+	char *buf;
 	int i, n, len;
 
 	char **strv;
@@ -669,18 +670,18 @@ int PrinterRunPrint(
 
 	strptr = cmd;
 	len = strlen(cmd) + (strlen(filename) * n) + 10;
-	cmd = (char *)malloc((len + 1) * sizeof(char));
-	if(cmd == NULL)
+	buf = (char *)malloc((len + 1) * sizeof(char));
+	if(buf == NULL)
 	    return(PrinterNoBuffers);
-	strcpy(cmd, strptr);
+	strcpy(buf, strptr);
 
 
 	/* Substitute. */
-	substr(cmd, PrinterFileToken, filename);
+	substr(buf, PrinterFileToken, filename);
 
 
 	/* Explode command. */
-	strv = strchrexp(cmd, ';', &strc);
+	strv = strchrexp(buf, ';', &strc);
 	for(i = 0; i < strc; i++)
 	{
 	    if(strv[i] == NULL)
@@ -696,7 +697,7 @@ int PrinterRunPrint(
 
 
 	/* Free new allocated command string. */
-	free(cmd);
+	free(buf);
 
 
 	return(PrinterSuccess);

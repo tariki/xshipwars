@@ -96,7 +96,7 @@
 /*
  *	Keymap conical names.
  */
-static char *xsw_keymap_name[] = {
+static const char *xsw_keymap_name[] = {
         "Help",
         "Exit",
 
