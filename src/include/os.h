@@ -60,11 +60,11 @@
 # define _PATH_DEVNULL		"/dev/null"
 #endif
 
-#if !defined(_AIX) && !defined(__FreeBSD__) && !defined(__NetBSD__)
+#if !defined(__FreeBSD__) && !defined(__NetBSD__)
 # ifndef _PATH_MAILDIR
 #  define _PATH_MAILDIR		"/var/spool/mail"
 # endif
-#endif	/* _AIX */
+#endif
 
 /* Apparently VI has become the standard editor for UNIX. */
 #if !defined(_PATH_VI) && !defined(__MSW__)
@@ -180,7 +180,7 @@
  *
  *	Byte orderings are in `Intel notation'.
  */
-#if defined(__SOLARIS__) || defined(__MSW__)
+#if defined(__MSW__)
 
 /* Robin Lee Powell: rlpowell at solect.com
  * Solaris apparently has uint*_t defined instead of u_int*_t defined.

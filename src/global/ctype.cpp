@@ -16,7 +16,6 @@
 #include <ctype.h>
 #include "../include/xsw_ctype.h"
 
-//#if defined(_AIX_) || (__SOLARIS__) || defined(__CYGWIN32__)
 // Dan S: I found the function signature for isblank(int) in linux libs
 // to be inaccurate. Somewhere they are using so many macros to provide
 // portability that the actual library is unable to link, with or without

@@ -45,9 +45,6 @@ extern "C" {
 #ifdef __linux__
 # include <dlfcn.h>
 #endif
-#ifdef __SOLARIS__
-# include <dlfcn.h>
-#endif
 }
 
 #include "plugins.h"
@@ -374,7 +371,7 @@ plugin_id_t PluginLoad(
 
 
 	/* Attempt to load plugin. */
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	handle = dlopen(
 	    path,
 	    RTLD_LAZY |
@@ -393,7 +390,7 @@ plugin_id_t PluginLoad(
                     fname.primary_log,
 		    path
 		);
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	    strptr = dlerror();
             if(sysparm.log_errors)
                 LogAppendLineFormatted(
@@ -408,7 +405,7 @@ plugin_id_t PluginLoad(
 	/* Get and check if all required functions exist in
 	 * plugin.
 	 */
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	// Dan S: Not sure if there is a less complicated way to typecast this under C++.
         init_fptr = ( int(*)(int, char **, int, plugin_data_ref_struct *) )dlsym(handle, SWPLUGIN_INIT_FUNCNAME);
 	manage_fptr = ( int(*)(plugin_data_ref_struct *) )dlsym(handle, SWPLUGIN_MANAGE_FUNCNAME);
@@ -420,7 +417,7 @@ plugin_id_t PluginLoad(
 	)
 	{
 	    /* Could not resolve functions, so unload. */
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	    dlclose(handle);
 #endif
 
@@ -462,7 +459,7 @@ plugin_id_t PluginLoad(
 	    /* Init function reported error, so deallocate and close
 	     * anything that we did.
 	     */
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	    dlclose(handle);
 #endif	/* __linux__ */
 
@@ -505,7 +502,7 @@ plugin_id_t PluginLoad(
 	    {
 		total_plugins = 0;
 
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
                 dlclose(handle);
 #endif
                 StringFreeArray(largv, largc);
@@ -526,7 +523,7 @@ plugin_id_t PluginLoad(
 	    );
 	    if(plugin[n] == NULL)
 	    {
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
                 dlclose(handle);
 #endif  /* __linux__ */
                 StringFreeArray(largv, largc);
@@ -609,7 +606,7 @@ void PluginUnload(plugin_id_t id)
 	    if(plugin_ptr->shutdown_fptr != NULL)
 		(*plugin_ptr->shutdown_fptr)(&plugin_data_ref);
 
-#if defined(__linux__) || defined(__SOLARIS__)
+#if defined(__linux__)
 	    /* Unload library. */
 	    dlclose(plugin_ptr->handle);
 #endif

@@ -254,8 +254,6 @@ to the fullest extent of the law."
 #  define DEV_JOYSTICK4			"/dev/js3"
 # endif /* __linux__ */
 
-# ifdef __HPUX__
-# endif /* __HPUX__ */
 
 #endif /* JS_SUPPORT */
 

@@ -161,19 +161,7 @@ df_stat_struct **DiskFreeGetListing(int *total)
 	    }
 
 	    /* Set new values (convert to required units). */
-#if defined(_AIX_)
-            strncpy(df_stat[n]->filesystem, df_filesystem, NAME_MAX + PATH_MAX);
-            df_stat[n]->filesystem[NAME_MAX + PATH_MAX - 1] = '\0';
-
-/* AIX returns in units of 512 bytes. */
-            df_stat[n]->total = df_total * 2;
-            df_stat[n]->used = df_used * 2;
-            df_stat[n]->available = df_available * 2;
-
-            strncpy(df_stat[n]->mounted_on, df_mounted_on, NAME_MAX + PATH_MAX);
-            df_stat[n]->mounted_on[NAME_MAX + PATH_MAX - 1] = '\0';
-#else
-/* All other systems should return in units of 1024 bytes. */
+	    /* DF_CMD reports sizes in units of 1024 bytes. */
 	    strncpy(df_stat[n]->filesystem, df_filesystem, NAME_MAX + PATH_MAX);
             df_stat[n]->filesystem[NAME_MAX + PATH_MAX - 1] = '\0';
 
@@ -183,7 +171,6 @@ df_stat_struct **DiskFreeGetListing(int *total)
 
             strncpy(df_stat[n]->mounted_on, df_mounted_on, NAME_MAX + PATH_MAX);
 	    df_stat[n]->mounted_on[NAME_MAX + PATH_MAX - 1] = '\0';
-#endif
 	}
 
 

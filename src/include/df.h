@@ -22,16 +22,8 @@
 # define DF_CMD         "df -k"
 #endif
 
-#if defined(__HPUX__)
-# define DF_CMD         "df -Pk"
-#endif
-
 #if defined(__linux__)
 # define DF_CMD		"df -P --no-sync"
-#endif
-
-#if defined(__SOLARIS__)
-# define DF_CMD         "df -k"
 #endif
 
 /* All else, assume POSIX responsive. */
