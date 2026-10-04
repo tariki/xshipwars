@@ -37,6 +37,7 @@ SWSERV_ETC_DIR  = $(SWSERV_BASE_DIR)/etc
 SWSERV_LOGS_DIR = $(SWSERV_BASE_DIR)/logs
 SWSERV_HTML_DIR = $(SWSERV_BASE_DIR)/public_html
 SWSERV_TMP_DIR  = $(SWSERV_BASE_DIR)/tmp
+SWSERV_PLUGINS_DIR = $(SWSERV_BASE_DIR)/plugins
 
 HR = "-------------------------------------------------------------------------"
 
@@ -58,6 +59,7 @@ install:
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_LOGS_DIR)
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_HTML_DIR)
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_TMP_DIR)
+	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_PLUGINS_DIR)
 
 	@echo $(HR)
 	@echo "Program $(BIN) installed in:"

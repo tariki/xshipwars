@@ -225,4 +225,5 @@
     `make install` が置くのは `etc/default.conf`。使うときはコピーするかスクリプトを書き換える
     （コメントにも「環境に合わせて書き換えること」とある）。コンテナには csh が入っていない。
   - server の `make install` は `plugins/` ディレクトリを作らないが、`default.conf` は `PluginsDir = plugins` を指定している
-    ので、起動時に「No such directory」の警告が出る（プラグインを使わなければ動作に影響は無い）。元からのインストール手順の抜け。
+    ので、起動時に「No such directory」の警告が出ていた（プラグインを使わなければ動作に影響は無い）。元からのインストール手順の抜けで、
+    `src/server/Makefile.install.UNIX` で `plugins/` も作るようにした。
