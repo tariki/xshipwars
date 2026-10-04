@@ -1265,7 +1265,7 @@ void WidgetPutImageTile(
         unsigned int tar_width, unsigned int tar_height
 )
 {
-	register int x, y;
+	int x, y;
 
         /* Error checks. */
         if(!IDC() ||
@@ -1315,7 +1315,7 @@ void WidgetPutPixmapTile(
         unsigned int src_width, unsigned int src_height
 )
 {
-        register int x, y;
+        int x, y;
          
         /* Error checks. */
         if( !IDC() ||
@@ -1794,17 +1794,17 @@ void WidgetPutImageNormal(
         bool_t allow_transparency
 )
 {
-	register int x, len;
+	int x, len;
         image_t *tar_ximage;
 
-	register u_int8_t *tar_buf_ptr8;
-        register u_int8_t *src_buf_ptr8;
+	u_int8_t *tar_buf_ptr8;
+        u_int8_t *src_buf_ptr8;
 
-        register u_int16_t *tar_buf_ptr16;
-        register u_int16_t *src_buf_ptr16;
+        u_int16_t *tar_buf_ptr16;
+        u_int16_t *src_buf_ptr16;
             
-        register u_int32_t *tar_buf_ptr32;
-        register u_int32_t *src_buf_ptr32;
+        u_int32_t *tar_buf_ptr32;
+        u_int32_t *src_buf_ptr32;
 
 
         /* Error checks. */
