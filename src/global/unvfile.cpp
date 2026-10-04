@@ -61,7 +61,8 @@ xsw_object_struct **UNVLoadFromFile(
 )
 {
 	int i, n, prev;
-	char *strptr, *strptr2;
+	char *strptr;
+	const char *strptr2;
         off_t filesize;
 	FILE *fp;
 	struct stat stat_buf;

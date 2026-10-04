@@ -110,7 +110,8 @@ void RC_PRINT_COLOR_STRING(
 int RCLoadFromFile(char *filename)
 {
 	int i;
-        char *strptr, *strptr2, *strptr3;
+        char *strptr, *strptr3;
+        const char *strptr2;
 
         FILE *fp;
         struct stat stat_buf;

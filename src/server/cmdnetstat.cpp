@@ -18,7 +18,8 @@ static void CmdNetstatPrintStandard(int condescriptor)
 	connection_struct **con_ptr;
 	aux_connection_struct **ac_ptr;
 
-	char *strptr1, *strptr2;
+	char *strptr1;
+	const char *strptr2;
 	char num_str[80];
 	char sndbuf[CS_DATA_MAX_LEN + XSW_OBJ_NAME_MAX + HOST_NAME_MAX];
 
@@ -176,7 +177,8 @@ static void CmdNetstatPrintListening(int condescriptor)
 {
 	int i;
 	incoming_socket_struct **is_ptr;
-        char *strptr1, *strptr2;
+        char *strptr1;
+        const char *strptr2;
 	char num_str[80];
         char sndbuf[CS_DATA_MAX_LEN + XSW_OBJ_NAME_MAX + HOST_NAME_MAX];
 
@@ -245,7 +247,8 @@ static void CmdNetstatPrintPlayer(int condescriptor, int object_num)
 {
 	int i, printed;
         connection_struct **con_ptr;
-	char *strptr1, *strptr2;
+	char *strptr1;
+	const char *strptr2;
 
         char num_str[80];
         char sndbuf[CS_DATA_MAX_LEN + XSW_OBJ_NAME_MAX + HOST_NAME_MAX];

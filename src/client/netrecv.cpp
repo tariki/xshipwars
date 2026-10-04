@@ -3166,7 +3166,7 @@ int NetHandleSetWeaponValues(char *arg)
 {
 	char changed_name = 0;
 	char changed_amount = 0;
-	char *strptr;
+	const char *strptr;
 
 	int object_num;
 	int weapon_num;

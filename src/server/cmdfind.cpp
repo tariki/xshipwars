@@ -63,8 +63,8 @@ int CmdFind(int condescriptor, const char *arg)
 	const int position_str_len = 256;
         char position_str[position_str_len];
 
-	char *type_strptr = "";
-	char *units_strptr = "";
+	const char *type_strptr = "";
+	const char *units_strptr = "";
 
         char name1[XSW_OBJ_NAME_MAX + 80];
         char name2[XSW_OBJ_NAME_MAX + 80];

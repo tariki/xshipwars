@@ -21,7 +21,8 @@
 
 int UnivListLoadFromFile(char *filename)
 {
-        char *strptr, *strptr2;
+        char *strptr;
+        const char *strptr2;
 
         FILE *fp;
         struct stat stat_buf;

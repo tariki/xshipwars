@@ -18,7 +18,8 @@
 int OCSLoadFromFile(char *path)
 {
 	int status;
-        char *strptr, *strptr2;
+        char *strptr;
+        const char *strptr2;
         FILE *fp;
         struct stat stat_buf;
 

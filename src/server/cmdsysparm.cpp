@@ -56,7 +56,7 @@ int CmdSysparm(int condescriptor, const char *arg)
 {
 	int i, matches = 0;
 	long dt;
-        char *parm_name;
+        const char *parm_name;
         const char *arg_ptr;
         size_t len;
 	int object_num, con_obj_num;

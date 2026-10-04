@@ -1081,7 +1081,7 @@ int OptWGenInit()
 int OptWGenDraw(int amount)
 {
 	int x, y;
-	char *strptr;
+	const char *strptr;
 	win_t w;
 	pixmap_t pixmap;
 	win_attr_t wattr;

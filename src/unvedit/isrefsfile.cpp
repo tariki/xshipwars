@@ -85,7 +85,8 @@ isref_struct **ISRefLoadFromFile(
 )
 {
         int i;
-	char *strptr, *strptr2, *strptr3;
+	char *strptr, *strptr3;
+	const char *strptr2;
 	char text[PATH_MAX + NAME_MAX + 256];
 
 	FILE *fp;

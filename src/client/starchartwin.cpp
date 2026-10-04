@@ -2402,7 +2402,7 @@ void SChtDraw(starchart_win_struct *cht, int amount)
                         double d, r;
 			xsw_object_struct *obj_ptr2;
                         sw_units_struct u;
-                        char *units_name_ptr;
+                        const char *units_name_ptr;
 			char text[XSW_OBJ_NAME_MAX + XSW_OBJ_EMPIRE_MAX + 80];
 
 

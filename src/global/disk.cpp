@@ -403,7 +403,8 @@ int rmkdir(const char *path, mode_t m)
 char *PathSubHome(char *path)
 {
         int i, n;
-        char *strptr, *strptr2;
+        char *strptr2;
+        const char *strptr;
         static char rtn_path[PATH_MAX];
 
 

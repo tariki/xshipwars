@@ -1,5 +1,5 @@
 /* XPM */
-static char * dragitem_cur_xpm[] = {
+static const char * dragitem_cur_xpm[] = {
 "24 24 3 1",
 "-	s None  c none",
 " 	c #FFFFFFFFFFFF",

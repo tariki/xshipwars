@@ -11,7 +11,7 @@
 int CmdExamine(int condescriptor, const char *arg)
 {
 	int i, con_obj_num, obj_num, wep_num;
-	char *strptr, *strptr2;        
+	const char *strptr, *strptr2;        
         xsw_object_struct *obj_ptr, *con_obj_ptr;
         connection_struct *con_ptr;
 

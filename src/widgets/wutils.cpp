@@ -13,7 +13,7 @@
 		WColorStruct color
 	)
 	WCursor *WidgetCreateCursorFromData(
-                char **xpmdata,
+                const char **xpmdata,
                 int hot_x, int hot_y,
                 WColorStruct color
         )
@@ -405,7 +405,7 @@ WCursor *WidgetCreateCursorFromFile(
  *	Creates a widget cursor from XPM data.
  */
 WCursor *WidgetCreateCursorFromData(
-	char **xpmdata,
+	const char **xpmdata,
         int hot_x, int hot_y,
         WColorStruct color
 )
@@ -445,10 +445,11 @@ WCursor *WidgetCreateCursorFromData(
         xpmattr.depth = 1;
 
 
+        /* libXpm's API is not const-correct but never writes to the data. */
         status = XpmCreatePixmapFromData(
             osw_gui[0].display,
             osw_gui[0].root_win,
-            xpmdata,
+            const_cast<char **>(xpmdata),
             &pixmap,
             &mask,
             &xpmattr

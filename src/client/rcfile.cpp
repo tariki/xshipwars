@@ -64,7 +64,8 @@ static int RC_SET_COLOR(
 int RCLoadFromFile(char *filename)
 {
 	int i, n, status;
-        char *strptr, *strptr2, *strptr3;
+        char *strptr, *strptr3;
+        const char *strptr2;
 
         FILE *fp;
         struct stat stat_buf;

@@ -3017,7 +3017,7 @@ void BWDP_PENGINESTATE(
         unsigned int height = 30;
 
         shared_image_t *img_ptr;
-	char *strptr;
+	const char *strptr;
 
 
         img_ptr = bridge_win.pan_p3_img;

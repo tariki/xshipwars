@@ -1582,7 +1582,7 @@ int XSWInit(int argc, char *argv[])
 {
 	int i, n, x, y, z;
 	bool_t b;
-	char *strptr;
+	const char *strptr;
 	char stringa[MAX_URL_LEN + 512];
 	char cwd[PATH_MAX];
 	char home_dir[PATH_MAX];

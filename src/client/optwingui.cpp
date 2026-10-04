@@ -1474,7 +1474,7 @@ int OptWinTabRemap(int tab)
 
 int OptWinDraw()
 {
-	char *strptr;
+	const char *strptr;
 	win_attr_t wattr;
 	win_attr_t toplevel_wattr;
 	char stringa[256];

@@ -241,7 +241,7 @@ void BridgePrintSubjectStats(int object_num)
 	double size;
 	xsw_object_struct *obj_ptr;
 	xsw_weapons_struct *wep_ptr;
-	char *area_type_text;
+	const char *area_type_text;
 	char text[256];
 	char size_text[80];
 

@@ -383,7 +383,7 @@ int WepWGetAllValues(wepw_struct *wepw_ptr)
 int WepWGetValues(wepw_struct *wepw_ptr, int wep_num)
 {
 	xsw_weapons_struct *wep_ptr;
-        char *strptr;
+        const char *strptr;
 	const int len = 256;
 	char text[len];
 

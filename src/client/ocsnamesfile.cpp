@@ -22,7 +22,8 @@
 int OCSLoadFromFile(char *filename)
 {
         int status;
-        char *strptr, *strptr2, *strptr3;
+        char *strptr, *strptr3;
+        const char *strptr2;
 
         FILE *fp;
         struct stat stat_buf;

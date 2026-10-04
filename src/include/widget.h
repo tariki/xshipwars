@@ -1441,7 +1441,7 @@ extern "C" WCursor *WidgetCreateCursorFromFile(
         WColorStruct color
 );
 extern "C" WCursor *WidgetCreateCursorFromData(
-        char **xpmdata,
+        const char **xpmdata,
         int hot_x, int hot_y,
         WColorStruct color
 );
