@@ -33,7 +33,6 @@ int comf_last_result;
 
 /*
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>

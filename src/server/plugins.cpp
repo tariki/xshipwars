@@ -36,7 +36,7 @@
 #ifdef PLUGIN_SUPPORT
 
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../include/string.h"
 #include "../include/disk.h"

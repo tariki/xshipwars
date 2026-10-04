@@ -47,7 +47,6 @@
 #include <stdio.h>
 #include <db.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 */
 #include "../include/string.h"

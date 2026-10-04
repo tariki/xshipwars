@@ -13,7 +13,7 @@
  */
 /*
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <db.h>
 */
 #include <math.h>
