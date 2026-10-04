@@ -2283,8 +2283,7 @@ int FBrowserInit(
 	else
 	{
 	    /* Start directory is NULL, use current working directory. */
-	    getcwd(cwd, PATH_MAX);
-	    if( (cwd != NULL) && (fb->prompt.buf != NULL) )
+	    if( (getcwd(cwd, PATH_MAX) != NULL) && (fb->prompt.buf != NULL) )
 	    {
 		strncpy(fb->prompt.buf, cwd, (int)fb->prompt.buf_len);
 	    }

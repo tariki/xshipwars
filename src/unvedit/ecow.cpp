@@ -414,8 +414,7 @@ int EcoWGetAllValues(ecow_struct *ecow_ptr)
 
 		    strncpy(
 			prod_name,
-			((eco_data_ptr->product[i]->name == NULL) ?
-			    "(null)" : eco_data_ptr->product[i]->name),
+			eco_data_ptr->product[i]->name,
 			ECO_PRODUCT_NAME_MAX
 		    );
 		    prod_name[ECO_PRODUCT_NAME_MAX - 1] = '\0';

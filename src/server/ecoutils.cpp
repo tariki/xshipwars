@@ -104,9 +104,6 @@ int EcoGetOCSFromName(
 	    if(ocs[i] == NULL)
 		continue;
 
-	    if(ocs[i]->opm_name == NULL)
-		continue;
-
 	    if(!strcasecmp(s, ocs[i]->opm_name))
 		return(i);
 	}
