@@ -420,6 +420,9 @@ namespace static_osw_x {
 
 #include "../include/osw-x.h"
 
+/* Needed for XkbKeycodeToKeysym(). */
+#include <X11/XKBlib.h>
+
 /* Needed for OSWSetWindowWMProperties(). */
 #include "../include/MwmUtil.h"
 
@@ -1755,7 +1758,7 @@ char *OSWGetKeyCodeName(keycode_t keycode)
 	    return("#0");
 	}
 
-	keysym = XKeycodeToKeysym(osw_gui[0].display, keycode, 0);
+	keysym = XkbKeycodeToKeysym(osw_gui[0].display, keycode, 0, 0);
 	if(keysym == NoSymbol)
 	{
 	    sprintf(rtn_str, "#%i", keycode);
