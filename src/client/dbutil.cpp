@@ -139,12 +139,11 @@ int DBCreateObjectEconomyProduct(
 
 
 	/* New product index is now i. */
-	strncpy(
+	strlcpy(
 	    eco_ptr->product[i]->name,
 	    product_name,
 	    ECO_PRODUCT_NAME_MAX
 	);
-	eco_ptr->product[i]->name[ECO_PRODUCT_NAME_MAX - 1] = '\0';
 
         eco_ptr->product[i]->sell_price = sell_price;
         eco_ptr->product[i]->buy_price = buy_price;

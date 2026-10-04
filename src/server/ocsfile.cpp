@@ -198,11 +198,10 @@ int OCSLoadFromFile(char *path)
                     /* OPMName. */
                     else if(!strcmp(parm, "OPMName"))
                     {
-                        strncpy(ocs[ocs_num]->opm_name,
+                        strlcpy(ocs[ocs_num]->opm_name,
                             val,
                             XSW_OBJ_NAME_MAX
 			);
-                        ocs[ocs_num]->opm_name[XSW_OBJ_NAME_MAX - 1] = '\0';
                     }
                     /* Coppies. */
                     else if(!strcmp(parm, "Coppies"))

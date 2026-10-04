@@ -1173,12 +1173,11 @@ xsw_object_struct **UNVLoadFromFile(
                                   /* Name */
                                   if(!strcasecmp(parm, "Name"))
                                   {
-                                    strncpy(
+                                    strlcpy(
                                       eco_ptr->product[product_num]->name,
                                       val,
                                       ECO_PRODUCT_NAME_MAX
                                     );
-                   eco_ptr->product[product_num]->name[ECO_PRODUCT_NAME_MAX - 1] = '\0';
                                   }
                                   /* SellPrice */
                                   else if(!strcasecmp(parm, "SellPrice"))

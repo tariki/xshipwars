@@ -146,3 +146,12 @@
   ASan/UBSan 付きのテストで、ハッシュの生成と照合（正しいパスワードは通り、誤りは拒否）を確認した。
 - 同梱データの Defiant などはパスワードが `*` で、これは「どのパスワードでも通す」裏口の値
   （`CryptHandleVerify()` の `BACK_DOOR_PASSWORD`）。テストのときは、誤ったパスワードでもログインできる。
+
+## 警告の修正 (2026-10-04)
+
+- 「切り詰めてでも必ず終端するコピー」は `strlcpy()` を使う。glibc 2.38 以降（Debian trixie は 2.41）にある。
+  `strncpy(dst, src, N); dst[N - 1] = '\0';` の形を置き換えた。`strncpy` と違って残りをゼロで埋めないが、
+  構造体をそのままファイルや通信に書く箇所は無い（64bit 監査で確認済み）ので影響は無い。glibc 2.38 より古い環境へ
+  移植するときは、自前の実装が必要になる。
+- `strncpy` のあとに終端していなかった箇所（server の cmdeco.cpp の parm/val、cmdnetstat.cpp の larg、global/disk.cpp の fullpath）は、
+  長い入力で終端の無い文字列になっていた。`strlcpy` にしたことで終端されるようになった。

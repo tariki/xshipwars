@@ -396,7 +396,7 @@ int CmdNetstat(int condescriptor, const char *arg)
         }
 	else
 	{
-	    strncpy(larg, arg, CS_DATA_MAX_LEN);
+	    strlcpy(larg, arg, CS_DATA_MAX_LEN);
 	    StringStripSpaces(larg);
 
 	    if(larg[0] == '-')

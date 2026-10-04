@@ -209,12 +209,11 @@ int OCSLoadFromFile(char *filename)
                     /* Name */
                     else if(!strcasecmp(parm, "Name"))
                     {   
-                        strncpy(
+                        strlcpy(
                             ocsn[ocsn_num]->name,
                             val,
                             XSW_OBJ_NAME_MAX
                         );
-                        ocsn[ocsn_num]->name[XSW_OBJ_NAME_MAX - 1] = '\0';
                     }
                     /* IconImage */
                     else if(!strcasecmp(parm, "IconImage"))

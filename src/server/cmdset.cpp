@@ -98,8 +98,7 @@ static int CmdOPMSet(int condescriptor, const char *arg)
 		strncpy(tmp_name1, opm_name + 1, XSW_OBJ_NAME_MAX);
 		tmp_name1[XSW_OBJ_NAME_MAX - 1] = '\0';
 
-		strncpy(opm_name, tmp_name1, XSW_OBJ_NAME_MAX);
-		opm_name[XSW_OBJ_NAME_MAX - 1] = '\0';
+		strlcpy(opm_name, tmp_name1, XSW_OBJ_NAME_MAX);
 	    }
 
 	    /* Get object name. */
@@ -402,8 +401,7 @@ static int CmdDoSet(int condescriptor, const char *arg)
 	    stringd[CS_DATA_MAX_LEN - 1] = '\0';
 
 	    *strptr = '\0';
-	    strncpy(stringc, stringa, CS_DATA_MAX_LEN);
-	    stringc[CS_DATA_MAX_LEN - 1] = '\0';
+	    strlcpy(stringc, stringa, CS_DATA_MAX_LEN);
 
 	    StringStripSpaces(stringd);
 	    strncpy(val, stringd, CS_DATA_MAX_LEN);

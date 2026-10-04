@@ -345,7 +345,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
             return(-1);
         }   
 
-	strncpy(parm, arg_ptr + 1, CS_DATA_MAX_LEN);
+	strlcpy(parm, arg_ptr + 1, CS_DATA_MAX_LEN);
 	strptr = strchr(parm, ':');
 	if(strptr == NULL)
         {
@@ -358,7 +358,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
         }
 
 	*strptr = '\0';
-	strncpy(val, strptr + 1, CS_DATA_MAX_LEN);
+	strlcpy(val, strptr + 1, CS_DATA_MAX_LEN);
 
 
         StringStripSpaces(name);

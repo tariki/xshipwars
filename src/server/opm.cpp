@@ -189,8 +189,7 @@ int OPMCreate(int type)
 
 	    sprintf(name, "OPM #%i", opm_rtn);
 	    name[XSW_OBJ_NAME_MAX - 1] = '\0';
-	    strncpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);
-	    opm[opm_rtn]->name[XSW_OBJ_NAME_MAX - 1] = '\0';
+	    strlcpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);
 
             opm[opm_rtn]->type = type;
 
@@ -250,8 +249,7 @@ int OPMCreate(int type)
         sprintf(name, "OPM #%i", opm_rtn);
         name[XSW_OBJ_NAME_MAX - 1] = '\0';
 
-        strncpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);            
-	opm[opm_rtn]->name[XSW_OBJ_NAME_MAX - 1] = '\0';
+        strlcpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);            
 
         opm[opm_rtn]->type = type;
 
@@ -350,8 +348,7 @@ int OPMCreateExplicit(int opm_num, int type)
 	sprintf(name, "OPM #%i", opm_rtn);
 	name[XSW_OBJ_NAME_MAX - 1] = '\0';
 
-	strncpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);
-	opm[opm_rtn]->name[XSW_OBJ_NAME_MAX - 1] = '\0';
+	strlcpy(opm[opm_rtn]->name, name, XSW_OBJ_NAME_MAX);
 
         opm[opm_rtn]->type = type;
         

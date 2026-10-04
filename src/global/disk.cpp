@@ -342,7 +342,7 @@ int rmkdir(const char *path, mode_t m)
 	    cwd[PATH_MAX - 1] = '\0';
 
 	    strptr = PrefixPaths(cwd, path);
-            strncpy(
+            strlcpy(
 		fullpath,
 		((strptr == NULL) ? path : strptr),
                 PATH_MAX + NAME_MAX
@@ -724,7 +724,7 @@ char *ChangeDirRel(const char *cpath, const char *npath)
             if(rtn_str == NULL)
                 return(NULL);
 
-            strncpy(rtn_str, cpath, len);
+            memcpy(rtn_str, cpath, len);
 	    rtn_str[len] = '\0';
 
             return(rtn_str);
@@ -778,7 +778,7 @@ char *ChangeDirRel(const char *cpath, const char *npath)
             if(rtn_str == NULL)
                 return(NULL);
 
-            strncpy(rtn_str, cpath, len);
+            memcpy(rtn_str, cpath, len);
 	    rtn_str[len] = '\0';
 
             return(rtn_str);
@@ -792,7 +792,7 @@ char *ChangeDirRel(const char *cpath, const char *npath)
             if(rtn_str == NULL)
                 return(NULL);
 
-            strncpy(rtn_str, npath, len);
+            memcpy(rtn_str, npath, len);
 	    rtn_str[len] = '\0';
 
             return(rtn_str);

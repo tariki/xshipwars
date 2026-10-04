@@ -65,7 +65,7 @@ char **strexp(const char *str, int *n)
 		ret[num - 1] = (char *)malloc(len + 1);
 
 		/* copy string over and null-terminate */
-		strncpy(ret[num - 1], head, len);
+		memcpy(ret[num - 1], head, len);
 		ret[num - 1][len] = '\0';
 
 		/* get ready for next substring */
@@ -126,7 +126,7 @@ char **strchrexp(const char *str, char c, int *n)
 		ret[num - 1] = (char *)malloc((len + 1) * sizeof(char));
 
 		/* copy string over and null-terminate */
-		strncpy(ret[num - 1], head, len);
+		memcpy(ret[num - 1], head, len);
 		ret[num - 1][len] = '\0';
 
 		/* Seek head past tail or to end of string. */

@@ -209,7 +209,7 @@ int DialogWinDraw(
 	    if(dw->mesg == NULL)
 		return(-1);
 
-	    strncpy(dw->mesg, mesg, len);
+	    memcpy(dw->mesg, mesg, len);
 
 	    /* Get longest line and number of lines. */
 	    dw->total_lines = strlines(mesg);

@@ -196,7 +196,7 @@ void PromptChangeName(prompt_window_struct *prompt, char *name)
 	prompt->name = (char *)calloc(1, (len + 1) * sizeof(char));
 	if(prompt->name == NULL)
 	    return;
-	strncpy(prompt->name, name, len);
+	memcpy(prompt->name, name, len);
 
 
 	/* Get attributes and values. */
