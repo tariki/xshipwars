@@ -66,7 +66,7 @@ int CmdSysparm(int condescriptor, const char *arg)
         char parm[CS_DATA_MAX_LEN];
         char val[CS_DATA_MAX_LEN];
 
-        char sndbuf[CS_DATA_MAX_LEN + UNV_TITLE_MAX + 512];
+        char sndbuf[(2 * (PATH_MAX + NAME_MAX)) + UNV_TITLE_MAX + 512];
 
 
 	/* Get connection's object number (assumed valid). */

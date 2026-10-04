@@ -2744,7 +2744,7 @@ int NetHandleComMessage(char *arg)
         char larg[CS_DATA_MAX_LEN];
         char message[CS_MESG_MAX];
 	char stringa[CS_MESG_MAX + XSW_OBJ_NAME_MAX + 256];
-	char stringb[CS_MESG_MAX + XSW_OBJ_NAME_MAX + 256];
+	char stringb[sizeof(stringa) + 1];	/* stringa plus newline. */
 
 
         strncpy(larg, arg, CS_DATA_MAX_LEN);

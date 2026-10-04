@@ -587,7 +587,7 @@ void MonDraw(monitor_struct *m, int amount)
 	image_t *img_ptr;
 	font_t *prev_font;
 
-	char text[256];
+	char text[1024];
 	win_attr_t wattr;
 
 

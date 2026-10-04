@@ -15,7 +15,7 @@ int CmdExamine(int condescriptor, const char *arg)
         xsw_object_struct *obj_ptr, *con_obj_ptr;
         connection_struct *con_ptr;
 
-        char sndbuf[CS_DATA_MAX_LEN];
+        char sndbuf[CS_DATA_MAX_LEN + 1024];
         char name1[XSW_OBJ_NAME_MAX + 80];
         char name2[XSW_OBJ_NAME_MAX + 80];
 

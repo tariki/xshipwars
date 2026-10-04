@@ -344,11 +344,11 @@ static int CmdOPMSet(int condescriptor, const char *arg)
 static int CmdDoSet(int condescriptor, const char *arg)
 {
         int i, n;
-        char stringa[CS_DATA_MAX_LEN];
+        char stringa[5 * CS_DATA_MAX_LEN];
         char stringb[CS_DATA_MAX_LEN];
         char stringc[CS_DATA_MAX_LEN];
         char stringd[CS_DATA_MAX_LEN];   
-        char sndbuf[CS_DATA_MAX_LEN];
+        char sndbuf[5 * CS_DATA_MAX_LEN];
         char prop[CS_DATA_MAX_LEN];
         char val[CS_DATA_MAX_LEN];
 	int object_num;

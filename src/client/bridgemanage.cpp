@@ -816,7 +816,7 @@ int BridgeManage(event_t *event)
             /* Net connect. */
             else if(keycode == xsw_keymap[XSW_KM_CONNECT].keycode)
 	    {
-		char url[MAX_URL_LEN + (2 * XSW_OBJ_NAME_MAX)];
+		char url[MAX_URL_LEN + (2 * XSW_OBJ_NAME_MAX) + 64];
 
                 snprintf(url, sizeof(url),
 		    "swserv://%s:%s@%s:%i",

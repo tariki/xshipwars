@@ -373,7 +373,7 @@ int RCLoadFromFile(char *filename)
 int RCSaveToFile(char *filename)
 {
 	int i;
-	char buf[CFG_STRING_MAX];
+	char buf[CFG_STRING_MAX + PATH_MAX];
 	FILE *fp;
 	struct stat stat_buf;
         char cwd[PATH_MAX];

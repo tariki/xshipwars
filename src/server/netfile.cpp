@@ -46,7 +46,7 @@ int NetHandleSetOCSN(int condescriptor, char *arg)
 
 int NetSendSetImageSet(int condescriptor, char *filename)
 {
-	char lname[CS_DATA_MAX_LEN];
+	char lname[CS_DATA_MAX_LEN - 64 + 1];	/* Leaves a margin of 64 chars. */
         char sndbuf[CS_DATA_MAX_LEN];
 
 #if (CS_DATA_MAX_LEN < 64)
@@ -59,9 +59,7 @@ int NetSendSetImageSet(int condescriptor, char *filename)
 	    return(-1);
 
 
-	strncpy(lname, filename, CS_DATA_MAX_LEN);
-	/* Null terminate with a margin of 64 chars. */
-	lname[CS_DATA_MAX_LEN - 64] = '\0';
+	strlcpy(lname, filename, sizeof(lname));
 
 	/*
 	 *   Format CS_CODE_IMAGESET:
@@ -80,7 +78,7 @@ int NetSendSetImageSet(int condescriptor, char *filename)
 
 int NetSendSetSoundSet(int condescriptor, char *filename)
 {
-        char lname[CS_DATA_MAX_LEN];
+        char lname[CS_DATA_MAX_LEN - 64 + 1];	/* Leaves a margin of 64 chars. */
         char sndbuf[CS_DATA_MAX_LEN];
 
 #if (CS_DATA_MAX_LEN < 64)
@@ -93,9 +91,7 @@ int NetSendSetSoundSet(int condescriptor, char *filename)
             return(-1);
 
 
-        strncpy(lname, filename, CS_DATA_MAX_LEN);
-        /* Null terminate with a margin of 64 chars. */  
-        lname[CS_DATA_MAX_LEN - 64] = '\0';
+        strlcpy(lname, filename, sizeof(lname));
 
 
         /*
@@ -115,7 +111,7 @@ int NetSendSetSoundSet(int condescriptor, char *filename)
 
 int NetSendSetOCSN(int condescriptor, char *filename)
 {
-        char lname[CS_DATA_MAX_LEN];
+        char lname[CS_DATA_MAX_LEN - 64 + 1];	/* Leaves a margin of 64 chars. */
         char sndbuf[CS_DATA_MAX_LEN];
            
 #if (CS_DATA_MAX_LEN < 64)
@@ -128,9 +124,7 @@ int NetSendSetOCSN(int condescriptor, char *filename)
             return(-1);
         
         
-        strncpy(lname, filename, CS_DATA_MAX_LEN);
-        /* Null terminate with a margin of 64 chars. */
-        lname[CS_DATA_MAX_LEN - 64] = '\0';
+        strlcpy(lname, filename, sizeof(lname));
 
 
         /*

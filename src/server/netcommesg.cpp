@@ -18,7 +18,7 @@ int NetHandleComMesg(int condescriptor, char *arg)
         int tar_con_num;
         xsw_object_struct *src_obj_ptr;
 
-        char text[CS_MESG_MAX + 256];
+        char text[CS_MESG_MAX + 384];
         char larg[CS_DATA_MAX_LEN + 256];
         char message[CS_MESG_MAX + 256];
 

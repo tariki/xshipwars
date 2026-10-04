@@ -8,7 +8,7 @@ int NetHandleSetIntercept(int condescriptor, char *arg)
 {
         char *strptr;
         long object_num, con_object_num;
-        char sndbuf[CS_DATA_MAX_LEN];
+        char sndbuf[CS_DATA_MAX_LEN + 512];
         char intercept_arg[CS_DATA_MAX_LEN];
         xsw_object_struct *obj_ptr;
 

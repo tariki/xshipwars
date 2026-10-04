@@ -1286,7 +1286,7 @@ int REngDoHit(int wobj, int tobj)
 	int report_this = 1;	/* Log and export event. */
 	int can_count_kill = 1;	/* Can count as kill. */
 	double dx, theta;
-	char text[(3 * XSW_OBJ_NAME_MAX) + 512];
+	char text[(3 * XSW_OBJ_NAME_MAX) + 1536];
 	char tobj_name[XSW_OBJ_NAME_MAX + 80];
 	char wobj_name[XSW_OBJ_NAME_MAX + 80];
 	char wobj_owner_name[XSW_OBJ_NAME_MAX + 80];
@@ -2151,7 +2151,7 @@ int REngAI(int object_num)
 	double ovisibility;
 
         char obj_name[XSW_OBJ_NAME_MAX + 80];
-        char text[(3 * XSW_OBJ_NAME_MAX) + 256];
+        char text[(3 * XSW_OBJ_NAME_MAX) + 768];
 
         const int loc_str_len = 256;
         char loc_str[loc_str_len];

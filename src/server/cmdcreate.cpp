@@ -27,7 +27,7 @@ int CmdCreate(int condescriptor, const char *arg)
         char name2[XSW_OBJ_NAME_MAX + 80];
 
         char text[(2 * XSW_OBJ_NAME_MAX) + 512];
-        char sndbuf[CS_DATA_MAX_LEN];
+        char sndbuf[CS_DATA_MAX_LEN + 512];
 
 
         /* Get connection's object number (assumed valid). */

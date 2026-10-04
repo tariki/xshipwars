@@ -9,7 +9,7 @@ int CmdHandleInput(const char *input)
 {
         char *strptr;
 
-        char stringa[CLIENT_CMD_MAX];
+        char stringa[CLIENT_CMD_MAX + 64];
         char stringb[CLIENT_CMD_MAX];
         char arg[CLIENT_CMD_MAX];
         char command[CLIENT_CMD_MAX];

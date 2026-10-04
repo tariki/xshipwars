@@ -278,7 +278,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
 	char parm[CS_DATA_MAX_LEN];
 	char val[CS_DATA_MAX_LEN];
 
-        char sndbuf[CS_DATA_MAX_LEN];
+        char sndbuf[CS_DATA_MAX_LEN + 1024];
         char text[1024];
         char tmp_name1[XSW_OBJ_NAME_MAX];
         char tmp_name2[XSW_OBJ_NAME_MAX];

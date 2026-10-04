@@ -91,7 +91,7 @@ int DBEmergencySave(
         pid_t pid;
 
 	char text[PATH_MAX + NAME_MAX + 80];
-	char tmp_path[PATH_MAX + NAME_MAX];
+	char tmp_path[PATH_MAX + NAME_MAX + 32];
 
 
 	/* Get PID of current process. */
