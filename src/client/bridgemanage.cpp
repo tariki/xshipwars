@@ -818,8 +818,7 @@ int BridgeManage(event_t *event)
 	    {
 		char url[MAX_URL_LEN + (2 * XSW_OBJ_NAME_MAX)];
 
-                sprintf(
-		    url,
+                snprintf(url, sizeof(url),
 		    "swserv://%s:%s@%s:%i",
                     net_parms.login_name,
                     net_parms.login_password,

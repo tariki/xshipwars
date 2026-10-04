@@ -2811,7 +2811,7 @@ int NetHandleComMessage(char *arg)
 
 
 	/* Log com message. */
-	sprintf(stringb, "%s\n", stringa);
+	snprintf(stringb, sizeof(stringb), "%s\n", stringa);
 	if(option.log_net)
 	    LogAppendLineFormatted(fname.log, stringb);
 

@@ -502,8 +502,7 @@ int CmdEcoProductSet(int condescriptor, const char *arg)
         );
         tmp_name2[XSW_OBJ_NAME_MAX - 1] = '\0';
 
-        sprintf(
-	    sndbuf,
+        snprintf(sndbuf, sizeof(sndbuf),
 	    "ecoprodset: %s: Set product `%s' %s to value `%s'.",
             tmp_name1, product_name, parm, val
         );

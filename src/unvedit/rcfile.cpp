@@ -477,13 +477,13 @@ int RCSaveToFile(char *filename)
         );
 	WRITE
 
-        sprintf(buf, "ToplevelDir = %s\n", dname.toplevel);
+        snprintf(buf, sizeof(buf), "ToplevelDir = %s\n", dname.toplevel);
         WRITE
 
-        sprintf(buf, "ImagesDir = %s\n", dname.images);
+        snprintf(buf, sizeof(buf), "ImagesDir = %s\n", dname.images);
 	WRITE
 
-        sprintf(buf, "ServerDir = %s\n", dname.server); 
+        snprintf(buf, sizeof(buf), "ServerDir = %s\n", dname.server); 
         WRITE
 
         sprintf(buf, "\n");

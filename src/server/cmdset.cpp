@@ -1664,7 +1664,7 @@ static int CmdDoSet(int condescriptor, const char *arg)
 	    }
 	    else
 	    {
-                sprintf(sndbuf,
+                snprintf(sndbuf, sizeof(sndbuf),
          "%s: Cannot parse incomplete property `%s'.",
 		    THIS_CMD_NAME,
                     prop
@@ -1977,7 +1977,7 @@ static int CmdDoSet(int condescriptor, const char *arg)
 	/* Unknown property. */
 	else
 	{
-            sprintf(sndbuf,
+            snprintf(sndbuf, sizeof(sndbuf),
 		"%s: Unsupported property: `%s'",
 		THIS_CMD_NAME,
                 prop
@@ -2008,7 +2008,7 @@ static int CmdDoSet(int condescriptor, const char *arg)
         tmp_name2[XSW_OBJ_NAME_MAX - 1] = '\0';   
  
 
-        sprintf(sndbuf,
+        snprintf(sndbuf, sizeof(sndbuf),
 	    "%s: %s: Property `%s' to value `%s'.",
 	    THIS_CMD_NAME,
             tmp_name2,
@@ -2019,7 +2019,7 @@ static int CmdDoSet(int condescriptor, const char *arg)
 
 
         /* Log property setting. */
-        sprintf(stringa, "%s: Set %s: Property: `%s'  Value: `%s'",
+        snprintf(stringa, sizeof(stringa), "%s: Set %s: Property: `%s'  Value: `%s'",
                 tmp_name1,
 		tmp_name2,
                 prop,

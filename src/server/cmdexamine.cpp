@@ -118,7 +118,7 @@ int CmdExamine(int condescriptor, const char *arg)
         );
         name2[XSW_OBJ_NAME_MAX + 80 - 1] = '\0';
 
-        sprintf(sndbuf,
+        snprintf(sndbuf, sizeof(sndbuf),
  "%s  Owner: %s  Type: %s  UID: %i  Empire: %s  Credits: %0.2f",
             name1,
             name2,
@@ -243,7 +243,7 @@ int CmdExamine(int condescriptor, const char *arg)
         );
         name2[XSW_OBJ_NAME_MAX + 80 - 1] = '\0';
 
-        sprintf(sndbuf,
+        snprintf(sndbuf, sizeof(sndbuf),
  "Imageset: %i  Scanner Range: %.2f ru  Locked on: %s  Intercept: %s",
             obj_ptr->imageset,
             obj_ptr->scanner_range,

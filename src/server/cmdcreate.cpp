@@ -128,7 +128,7 @@ int CmdCreate(int condescriptor, const char *arg)
         /* Making sure the type is valid and non-garbage. */
         if(type <= XSW_OBJ_TYPE_GARBAGE)
         {
-            sprintf(sndbuf,
+            snprintf(sndbuf, sizeof(sndbuf),
                 "%s: Invalid object type `%s'.",
 		THIS_CMD_NAME,
                 new_type_name

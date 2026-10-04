@@ -113,7 +113,7 @@ int DBEmergencySave(
 	/* Plan A. */
 
 	/* Format new filename for emergency save. */
-	sprintf(tmp_path, "%s.EMERGENCY.%i", fname.unv_out, pid);
+	snprintf(tmp_path, sizeof(tmp_path), "%s.EMERGENCY.%i", fname.unv_out, pid);
 
 	/* Attempt to save. */
 	status = DBSaveToFile(tmp_path);

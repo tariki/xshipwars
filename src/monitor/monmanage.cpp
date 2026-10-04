@@ -831,7 +831,7 @@ void MonDraw(monitor_struct *m, int amount)
                         256
                     );
                     time_str2[255] = '\0';
-                    sprintf(text,
+                    snprintf(text, sizeof(text),
                         "Uptime: %s  Save: %s",
                         time_str1, time_str2
                     );

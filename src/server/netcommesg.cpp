@@ -109,8 +109,7 @@ int NetHandleComMesg(int condescriptor, char *arg)
 
 
         /* Log message. */
-        sprintf(
-	    text,
+        snprintf(text, sizeof(text),
 	    "%s: Channel %.2f: Message: \"%s\"",
             DBGetFormalNameStr(src_obj),
 	    (double)((double)channel / 100),

@@ -244,7 +244,7 @@ int CmdHandleInput(const char *input)
         }
         else 
         {
-            sprintf(stringa,
+            snprintf(stringa, sizeof(stringa),
                 "%s: no such command or macro.",
                 command
             );

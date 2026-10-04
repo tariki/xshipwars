@@ -68,7 +68,7 @@ int NetSendSetImageSet(int condescriptor, char *filename)
 	 *
 	 *	path
 	 */
-	sprintf(sndbuf, "%i %s\n",
+	snprintf(sndbuf, sizeof(sndbuf), "%i %s\n",
 		CS_CODE_IMAGESET,
 		lname
 	);
@@ -103,7 +103,7 @@ int NetSendSetSoundSet(int condescriptor, char *filename)
          *
          *      path
          */
-        sprintf(sndbuf, "%i %s\n",
+        snprintf(sndbuf, sizeof(sndbuf), "%i %s\n",
                 CS_CODE_SOUNDSET,
                 lname
         );
@@ -138,7 +138,7 @@ int NetSendSetOCSN(int condescriptor, char *filename)
          *
          *      path
          */
-        sprintf(sndbuf, "%i %i %s\n",
+        snprintf(sndbuf, sizeof(sndbuf), "%i %i %s\n",
 		CS_CODE_EXT,
                 SWEXTCMD_SETOCSN,
                 lname

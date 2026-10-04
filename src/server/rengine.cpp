@@ -1383,7 +1383,7 @@ int REngDoHit(int wobj, int tobj)
 	    switch(xsw_object[wobj]->type)
 	    {
 	      case XSW_OBJ_TYPE_WEAPON:
-	        sprintf(text,
+	        snprintf(text, sizeof(text),
 		    "%s hit by %s fired by %s at %s.",
 		    tobj_name, wobj_name, wobj_owner_name, loc_str
 	        );
@@ -1395,7 +1395,7 @@ int REngDoHit(int wobj, int tobj)
 	        break;
 
 	      default:	/* Stream or sphere weapon. */
-                sprintf(text,
+                snprintf(text, sizeof(text),
                     "%s hit by %s fired by %s at %s.",
                     tobj_name, wobj_name, wobj_owner_name, loc_str
                 );
@@ -2631,7 +2631,7 @@ int REngAI(int object_num)
                     wep_ptr->amount = 0;
 
 		/* Export projectile weapons fire. */
-                sprintf(text,
+                snprintf(text, sizeof(text),
                     "%s fired %s at %s.",
                     obj_name,
                     DBGetOCSOPMName(wep_ptr->ocs_code),

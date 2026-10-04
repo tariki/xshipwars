@@ -56,7 +56,7 @@ int NetHandleSetIntercept(int condescriptor, char *arg)
                (obj_ptr->intercepting_object < 0)
             )
             {
-                sprintf(sndbuf,
+                snprintf(sndbuf, sizeof(sndbuf),
                     "Intercept: %s: Cannot find object.",
                     intercept_arg
                 );

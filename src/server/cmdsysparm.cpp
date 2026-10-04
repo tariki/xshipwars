@@ -232,7 +232,7 @@ int CmdSysparm(int condescriptor, const char *arg)
                 );
                 unv_head.isr[PATH_MAX + NAME_MAX - 1] = '\0';
             }
-            sprintf(sndbuf,
+            snprintf(sndbuf, sizeof(sndbuf),
                 "%s = %s",
                 parm_name,
                 unv_head.isr
@@ -253,7 +253,7 @@ int CmdSysparm(int condescriptor, const char *arg)
                 );
                 unv_head.ocsn[PATH_MAX + NAME_MAX - 1] = '\0';
             }
-            sprintf(sndbuf,
+            snprintf(sndbuf, sizeof(sndbuf),
                 "%s = %s",
                 parm_name,
                 unv_head.ocsn   
@@ -274,7 +274,7 @@ int CmdSysparm(int condescriptor, const char *arg)
                 );
                 unv_head.ss[PATH_MAX + NAME_MAX - 1] = '\0';
             }
-            sprintf(sndbuf,
+            snprintf(sndbuf, sizeof(sndbuf),
                 "%s = %s",
                 parm_name,
                 unv_head.ss
