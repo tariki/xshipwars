@@ -61,16 +61,21 @@ cp "$ROOT/src/server/default.ocs" "$ROOT/src/server/default.opm" "$SRV/db/"
 awk '/^    Name = Earth$/ {e=1} e && /^    EngineState = / {sub(/= .*/, "= -1"); e=0} {print}' \
   "$ROOT/src/server/generic_in.unv" > "$SRV/db/generic_in.unv"
 
-ln -s "$ROOT/data/etc" "$XSW/etc"
+# etc はインストール後と同じ構成にする: client データ (data/etc) に、
+# client の make install が置く xshipwarsrc と universes (src/client) を重ねる
+mkdir -p "$XSW/etc"
+for f in "$ROOT"/data/etc/*; do ln -s "$f" "$XSW/etc/"; done
+ln -s "$ROOT/src/client/xshipwarsrc" "$ROOT/src/client/universes" "$XSW/etc/"
 ln -s "$ROOT/theme/sounds" "$XSW/sounds"
 for f in "$ROOT"/data/images/* "$ROOT"/theme/images/*; do ln -s "$f" "$XSW/images/"; done
 ln -s "$ROOT/src/unvedit/images" "$XSW/images/unvedit"
 
+# client は初回起動時に etc/xshipwarsrc を ~/.shipwars にコピーする。その代わりに、
+# パスだけをこの実行環境に合わせたものを置く
 sed -e "s#^ToplevelDir = .*#ToplevelDir = $XSW#" \
     -e "s#/home/learfox#$HOMEDIR#" \
-    -e "s#^UniverseListFile = .*#UniverseListFile = universes#" \
-    "$ROOT/data/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
-cp "$ROOT/data/etc/universes" "$HOMEDIR/.shipwars/"
+    "$XSW/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
+cp "$XSW/etc/universes" "$HOMEDIR/.shipwars/"
 printf 'ToplevelDir = %s\nImagesDir = %s/images\nServerDir = %s\n' \
   "$XSW" "$XSW" "$SRV" > "$HOMEDIR/.shipwars/unveditrc"
 

@@ -184,11 +184,11 @@ EndQuickMenuCommand
 BeginKeyMap
     Help = 67
     Exit = 53
-    TurnLeft = 100
-    TurnRight = 102
-    ThrottleIncrease = 98
-    ThrottleDecrease = 104
-    ThrottleIdle = 107
+    TurnLeft = 113
+    TurnRight = 114
+    ThrottleIncrease = 111
+    ThrottleDecrease = 116
+    ThrottleIdle = 119
     FireWeapon = 65
     OmniDirectionalThrust = 64
     ExternalDampers = 56
@@ -234,8 +234,8 @@ BeginKeyMap
     EnergySaverMode = 70
     NetIntervalDecrement = 34
     NetIntervalIncrement = 35
-    MessageScrollUp = 99
-    MessageScrollDown = 105
+    MessageScrollUp = 112
+    MessageScrollDown = 117
     MapEconomy = 47
     MapStarChart = 58
     NetConnect = 75
@@ -244,7 +244,7 @@ BeginKeyMap
     NetConnectLast = 96
     ClientCommand = 61
     ServerCommand = 26
-    ScreenShot = 111
+    ScreenShot = 107
 EndKeyMap
 
 

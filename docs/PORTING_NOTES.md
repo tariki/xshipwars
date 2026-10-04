@@ -42,20 +42,22 @@
   リポジトリでは画像が `data/images`（client, effects, *.page）と `theme/images`（celestial, vessels など）に
   分かれているので、両方を 1 つの `images/` にまとめる必要がある。ヘッドレス確認では `run-logs/xsw-root/` に
   シンボリックリンクで組み立て、`HOME` を `run-logs/xsw-home/` にして `.shipwars/xshipwarsrc` の `ToplevelDir` で指した。
-- `data/etc/xshipwarsrc` は 1.33 形式で、`JSCalibrationFile` が未知のパラメータとして警告される。
-  また `UniverseListFile = .shipwars/universes` は `~/.shipwars/` からの相対パスとして解釈されるので、
-  `~/.shipwars/.shipwars/universes` を探してしまう（`universes` とだけ書けば読まれる）。
+- （2026-10-04 訂正）当初 `data/etc/xshipwarsrc`（1.33 形式）を使って確認していたが、これは古い複製だった。
+  下の「client の設定ファイルのひな形」を参照。1.33 版の `UniverseListFile = .shipwars/universes` は
+  `~/.shipwars/` からの相対パスとして解釈され `~/.shipwars/.shipwars/universes` を探していたが、1.34 版は
+  `universes` で正しい。`JSCalibrationFile` の警告は版の古さではなく、ジョイスティックを無効にしたことが原因
+  （読み込み処理が `#ifdef JS_SUPPORT` の中にある）。害は無く、ジョイスティックを復活させるときのために行は残す。
 
 ## キー入力が効かない原因 (2026-10-03)
 
 - 設定ファイルの `BeginKeyMap` ... `EndKeyMap` には、**X のキーコード（番号）がそのまま**書かれている。
-  同梱の `data/etc/xshipwarsrc` の値は、旧 XFree86 キーボードドライバでの番号（TurnLeft=100, TurnRight=102,
+  同梱の設定ファイルの値は、旧 XFree86 キーボードドライバでの番号（TurnLeft=100, TurnRight=102,
   ThrottleIncrease=98, ThrottleDecrease=104, ThrottleIdle=107 など）。現在の Xorg/Xvfb（evdev/XKB）では
   Left=113, Right=114, Up=111, Down=116, Delete=119 なので、カーソル・ナビゲーションキーやテンキーに割り当てた操作が効かない。
   メインのキー（英数字、space=65、Esc=9、F1=67 など、番号 97 未満）は新旧で同じなので、そちらに割り当てた操作は効く。
 - キーシンボルからキーコードを引く既定値（`KeymapWinSetDefault()`、`osw_keycode.*`）は、キー設定画面の
   「Default」ボタンを押したときにしか使われない。
-- 対応: 同梱の `data/etc/xshipwarsrc` の `BeginKeyMap` で、新旧の番号が異なる 8 個を evdev の番号に書き換えた
+- 対応: 同梱の `src/client/xshipwarsrc` の `BeginKeyMap` で、新旧の番号が異なる 8 個を evdev の番号に書き換えた
   （コードと設定ファイルの形式は変更なし）。変換には `/usr/share/X11/xkb/keycodes/xfree86` と `evdev` を使い、
   キー名（`<RGHT>` など）を経由して番号を対応させた。
   TurnLeft 100→113, TurnRight 102→114, ThrottleIncrease 98→111, ThrottleDecrease 104→116, ThrottleIdle 107→119,
@@ -184,3 +186,14 @@
 - コンテナに `xfonts-base` が入ったので、Xvfb のフォントの別名による代用はもう必要ない。
 - `mkstemp()` に変えた一時ファイルは、server の df と client の mf（関数を直接呼ぶテスト）で確認した。
   どちらもファイルを 0600 で排他的に作り、外部コマンドが追記し、読み終えてから削除している。unvedit の印刷は未確認。
+
+## client の設定ファイルのひな形 (2026-10-04)
+
+- client は初回起動時に、`<ToplevelDir>/etc/xshipwarsrc` を `~/.shipwars/xshipwarsrc` にコピーして使う
+  （`universes` も同様）。インストールでこの `etc/` に置かれるのは、client の `make install` が入れる
+  `src/client/xshipwarsrc` と `src/client/universes`（1.34 版）。
+- リポジトリには `data/etc/xshipwarsrc`・`data/etc/universes`（1.33 版）もあったが、これは元の配布の
+  「client データ」パッケージに入っていた古い複製で、インストール時には 1.34 版で上書きされる。
+  キーコードの修正を最初はこちらにだけ入れてしまい、インストールされる 1.34 版は旧番号のままだった。
+  混乱を避けるため 1.33 版の 2 ファイルは削除し、キーコードの修正は 1.34 版に入れた（変更した 8 個は同じ）。
+- `scripts/smoke.sh` も、`etc/` をインストール後と同じ構成（`data/etc/*` に `src/client/` の 2 ファイルを重ねる）で組み立てる。
