@@ -105,6 +105,16 @@ echo "Host network detected as: $HOST_NETWORK"
 iptables -A INPUT -s "$HOST_NETWORK" -j ACCEPT
 iptables -A OUTPUT -d "$HOST_NETWORK" -j ACCEPT
 
+# Allow X11 (display :0, TCP 6000) to the Docker Desktop host only, so X clients
+# can be shown on the host's X server (XQuartz). Skipped if the name does not resolve.
+XHOST_IP=$(getent ahostsv4 host.docker.internal | awk 'NR == 1 {print $1}')
+if [[ "$XHOST_IP" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    echo "Allowing X11 (tcp/6000) to host.docker.internal ($XHOST_IP)"
+    iptables -A OUTPUT -p tcp -d "$XHOST_IP" --dport 6000 -j ACCEPT
+else
+    echo "host.docker.internal not resolvable; X11 to the host stays blocked"
+fi
+
 # Set default policies to DROP first
 iptables -P INPUT DROP
 iptables -P FORWARD DROP

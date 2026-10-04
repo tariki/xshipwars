@@ -227,3 +227,22 @@
   - server の `make install` は `plugins/` ディレクトリを作らないが、`default.conf` は `PluginsDir = plugins` を指定している
     ので、起動時に「No such directory」の警告が出ていた（プラグインを使わなければ動作に影響は無い）。元からのインストール手順の抜けで、
     `src/server/Makefile.install.UNIX` で `plugins/` も作るようにした。
+
+## ホストの XQuartz での表示 (2026-10-04)
+
+- `scripts/xquartz.sh` で、コンテナ内の server に接続した client・monitor・unvedit を、ホスト（macOS）の XQuartz に表示できる。
+  実行環境は `run-logs/xquartz/` に置き、HOME（キー割り当ての保存先）と server の宇宙は次回に引き継ぐ。
+- コンテナのファイアウォールは、ゲートウェイ（172.17.0.1）と同じ /24 しか許可していなかった。Docker Desktop の
+  `host.docker.internal`（192.168.65.254）はその範囲外なので、`.devcontainer/init-firewall.sh` に
+  「`host.docker.internal` の tcp/6000 だけを許可する」ルールを足した（名前が引けない環境では何もしない）。
+  起動時に使われるのはイメージに入れた `/usr/local/bin/init-firewall.sh` なので、反映にはリビルドが必要。
+- MIT-SHM（`USE_XSHM`）はネットワーク越しには使えず、プログラム側に自動で切り替える処理も無い。`--no_xshm` で無効にする
+  （osw-x.cpp の `OSWGUIConnect()` が解釈するので、client・monitor・unvedit のどれでも使える）。Xvfb で `--no_xshm` の
+  描画が SHM ありと同じになることを確認した。
+- XQuartz のキーコードは Xorg（evdev）と違う（macOS のキー番号 + 8 の見込み）ので、同梱のキー割り当ては効かない。
+  Key Mappings ウィンドウの「Default All」は一覧の表示を既定値（キーシンボルから引いたキーコード）に戻すだけで、
+  「Apply」（`KeymapWinApply()`）で初めて `xsw_keymap` に反映される。gdb から同じ関数を順に呼び、TurnRight を
+  999 にしておいた状態から 114 に戻ることを確認した。設定は正規の終了（runlevel 1。bridge ウィンドウを閉じる
+  `WM_DELETE_WINDOW` でも入る）のときに保存され、SIGTERM では保存されない。
+- unvedit は SIGTERM を受けると、`$HOME/univXXXXXX` に緊急保存する（mkstemp に置き換えた経路が動くことの確認にもなった）。
+- XQuartz 実機での表示（フォントの有無、キーコード）はまだ確認していない。
