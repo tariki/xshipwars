@@ -51,7 +51,7 @@
 
 int UEWMenuBarCB(void *ptr, int code)
 {
-	int i, n, j, uew_num;
+	int i, n, j;
 	uew_struct *uew_ptr = NULL;
 	char cwd[PATH_MAX];
 
@@ -71,7 +71,6 @@ int UEWMenuBarCB(void *ptr, int code)
 	if(uew_ptr == NULL)
 	    return(0);
 
-	uew_num = i;
 
 
 	/* Get current working dir. */

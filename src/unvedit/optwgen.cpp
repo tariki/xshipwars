@@ -1821,10 +1821,8 @@ void OptWGenMap()
 
 void OptWGenDoMapValues()
 {
-        optwgen_struct *ow;
             
             
-        ow = &optwgen;
 
 
 	/* Fetch values. */

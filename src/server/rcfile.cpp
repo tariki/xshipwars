@@ -19,10 +19,9 @@
 
 int RCLoadFromFile(char *filename)
 {
-	int i, n, status;
+	int i, n;
         char *strptr, *strptr2, *strptr3;
         FILE *fp;
-        off_t filesize;
         struct stat stat_buf;
 
         char parm[CFG_PARAMETER_MAX];
@@ -44,7 +43,6 @@ int RCLoadFromFile(char *filename)
         }
 
 	/* Get size of file. */
-        filesize = stat_buf.st_size;
 
         /* Open filename. */
         fp = fopen(filename, "r");
@@ -104,7 +102,7 @@ int RCLoadFromFile(char *filename)
 
 		port_num = atoi(val);
 
-		status = IncomingSocketInit(
+		IncomingSocketInit(
 		    port_num,
 		    INCOMING_SOCKET_TYPE_STANDARD
 		);
@@ -133,7 +131,7 @@ int RCLoadFromFile(char *filename)
 
                 port_num = atoi(val);
 
-                status = IncomingSocketInit(
+                IncomingSocketInit(
                     port_num,
                     INCOMING_SOCKET_TYPE_AUXSTATS
                 );

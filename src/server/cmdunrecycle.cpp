@@ -10,7 +10,7 @@
 int CmdUnrecycle(int condescriptor, const char *arg)
 {
         int obj_num, con_obj_num, owner;
-        xsw_object_struct *obj_ptr, *con_obj_ptr;
+        xsw_object_struct *obj_ptr;
         connection_struct *con_ptr;
 
         char name1[XSW_OBJ_NAME_MAX + 80];
@@ -23,7 +23,6 @@ int CmdUnrecycle(int condescriptor, const char *arg)
         /* Get connection's object number (assumed valid). */
         con_ptr = connection[condescriptor];
         con_obj_num = con_ptr->object_num;
-        con_obj_ptr = xsw_object[con_obj_num];
 
 
         /* Print listing of objects in recycle backup buffer? */

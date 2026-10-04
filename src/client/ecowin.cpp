@@ -960,7 +960,7 @@ int EcoWinResize()
 
 int EcoWinDraw()
 {
-	int y, proprietor_obj_num, player_obj_num;
+	int y, proprietor_obj_num;
 	xsw_object_struct *proprietor_obj_ptr, *player_obj_ptr;
 	win_t w;
 	pixmap_t pixmap;
@@ -1025,7 +1025,6 @@ int EcoWinDraw()
 	    }
 
 	    /* Get number and pointer to player object. */
-	    player_obj_num = net_parms.player_obj_num;
 	    player_obj_ptr = net_parms.player_obj_ptr;
 
 

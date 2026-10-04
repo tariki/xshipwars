@@ -7,7 +7,6 @@
 int NetHandleScore(int condescriptor, char *arg)
 {
 	int object_num;
-        xsw_object_struct *obj_ptr;
 
 
         /*
@@ -24,8 +23,6 @@ int NetHandleScore(int condescriptor, char *arg)
 
 	if(DBIsObjectGarbage(object_num))
 	    return(-1);
-	else
-	    obj_ptr = xsw_object[object_num];
 
 
 	NetSendScore(condescriptor, object_num);

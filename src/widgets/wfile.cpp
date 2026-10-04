@@ -45,7 +45,6 @@ image_t *WidgetLoadImageFromTgaFile(char *filename)
 {
         tga_data_struct *td;
         image_t *image = NULL;
-	void *ptr = NULL;
         off_t img_data_len = 0;
         int status = 0;
 
@@ -126,7 +125,7 @@ image_t *WidgetLoadImageFromTgaFile(char *filename)
 		    (int)(td->width * td->height * BYTES_PER_PIXEL8)
                 );
 
-		ptr = memcpy(
+		memcpy(
 		    image->data,        /* Target. */
 		    td->data,            /* Source. */
 		    img_data_len
@@ -151,7 +150,7 @@ image_t *WidgetLoadImageFromTgaFile(char *filename)
                     (int)(td->width * td->height * BYTES_PER_PIXEL16)
                 );
 
-                ptr = memcpy(
+                memcpy(
                     image->data,	/* Target. */
                     td->data,		/* Source. */
                     img_data_len
@@ -176,7 +175,7 @@ image_t *WidgetLoadImageFromTgaFile(char *filename)
 		    (int)(td->width * td->height * BYTES_PER_PIXEL32)
 		);
 
-                ptr = memcpy(
+                memcpy(
                     image->data,	/* Target. */
                     td->data,		/* Source. */
                     img_data_len

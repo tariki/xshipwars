@@ -36,12 +36,11 @@
  */
 void XSWActionCB(void *ptr, void *data, int action)
 {
-	int con_state, player_obj_num;
+	int player_obj_num;
 	xsw_object_struct *player_obj_ptr;
 
 
 	/* Get global variable values. */
-	con_state = net_parms.connection_state;
 	player_obj_num = net_parms.player_obj_num;
 	player_obj_ptr = net_parms.player_obj_ptr;
 

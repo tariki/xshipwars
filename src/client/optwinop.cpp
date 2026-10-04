@@ -920,7 +920,6 @@ check for any errors.\n"
  */
 int OptWinTestSoundPBCB(void *ptr)
 {
-        int status;
 
 
         /* Check if sound server was initialized. */
@@ -947,7 +946,7 @@ set the level of sounds to `all' then click on `apply'."
             );
 	    sleep(1);
             /* Play a test sound (left). */
-            status = SoundPlay(
+            SoundPlay(
                 SOUND_CODE_DEFAULT,
                 1.0,
 		0.0,
@@ -961,7 +960,7 @@ set the level of sounds to `all' then click on `apply'."
                 "Testing right channel...\n"
             );
             /* Play a test sound (right). */
-            status = SoundPlay(
+            SoundPlay(
                 SOUND_CODE_DEFAULT,
                 0.0,
                 1.0,
@@ -975,7 +974,7 @@ set the level of sounds to `all' then click on `apply'."
                 "Testing both channels...\n"
             );
             /* Play a test sound (both). */
-            status = SoundPlay(
+            SoundPlay(
                 SOUND_CODE_DEFAULT,
                 1.0,
                 1.0,

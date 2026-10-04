@@ -243,19 +243,17 @@ static void CmdNetstatPrintListening(int condescriptor)
 
 static void CmdNetstatPrintPlayer(int condescriptor, int object_num)
 {
-	int i, printed, c;
+	int i, printed;
         connection_struct **con_ptr;
 	char *strptr1, *strptr2;
 
         char num_str[80];
         char sndbuf[CS_DATA_MAX_LEN + XSW_OBJ_NAME_MAX + HOST_NAME_MAX];
 
-	xsw_object_struct *obj_ptr;
 
 
         /* Inputs assumed valid! */
 
-	obj_ptr = xsw_object[object_num];
 
 
         /* Heading. */
@@ -266,7 +264,7 @@ static void CmdNetstatPrintPlayer(int condescriptor, int object_num)
 
 
 	/* Get object's connection. */
-	for(i = 0, printed = 0, c = -1, con_ptr = connection;
+	for(i = 0, printed = 0, con_ptr = connection;
             i < total_connections;
             i++, con_ptr++
 	)

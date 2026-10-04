@@ -327,9 +327,8 @@ int XSWIsDescriptorValid(int s)
  */
 int XSWStartServer(char *cmd)
 {
-	pid_t p;
 #ifdef __WIN32__
-	p = Exec(".\\swserv.exe");
+	Exec(".\\swserv.exe");
 #else
 	char *strptr;
 	char cwd[PATH_MAX];
@@ -384,7 +383,7 @@ Path not absolute.\n",
 
 
 	/* Run server in background. */
-	p = Exec(cmd);
+	Exec(cmd);
 
 
 	/* Change back to previous working dir. */
@@ -1079,7 +1078,6 @@ void XSWDoRestackWindows()
 {
 /*
 	const int num_w = 8;
- */
 	win_t w[8];
 
 	w[0] = splash_win.toplevel;
@@ -1091,7 +1089,6 @@ void XSWDoRestackWindows()
 	w[6] = lg_mesg_win.toplevel;
 	w[7] = bridge_win.toplevel;
 
-/*
 	OSWRestackWindows(w, num_w);
  */
 

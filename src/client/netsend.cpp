@@ -485,14 +485,8 @@ int NetSendObjectThrottle(int object_num)
 
 int NetSendObjectValues(int object_num)
 {
-	char sndbuf[CS_DATA_MAX_LEN];
-	xsw_object_struct *obj_ptr;
-
-
         if(DBIsObjectGarbage(object_num))
             return(0);
-        else
-            obj_ptr = xsw_object[object_num];
 
 
 	/*   This function was originally used to send the throttle
@@ -500,10 +494,11 @@ int NetSendObjectValues(int object_num)
 	 *   NetSendObjectThrottle() to do that with less bandwidth.
 	 */
 
-sndbuf[0] = '\0';
-
-
 /*
+	char sndbuf[CS_DATA_MAX_LEN];
+
+	sndbuf[0] = '\0';
+
         NetSendData(sndbuf);
 */
 

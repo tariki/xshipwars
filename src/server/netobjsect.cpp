@@ -35,7 +35,6 @@ int NetHandleObjectSect(int condescriptor, char *arg)
         int object_num, con_object_num;  
 /*	long sect_dx, sect_dy, sect_dz; */
         long sect_x, sect_y, sect_z;
-        xsw_object_struct *obj_ptr;
 
 
         /* Get object_num. */
@@ -58,8 +57,6 @@ int NetHandleObjectSect(int condescriptor, char *arg)
 
         if(DBIsObjectGarbage(object_num))
             return(-1);
-	else
-            obj_ptr = xsw_object[object_num];
 
 
         /* Connection must own object. */

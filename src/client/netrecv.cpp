@@ -795,7 +795,6 @@ int NetHandleSetOCSN(char *arg)
 int NetHandleCreateObject(char *arg)
 {
 	char set_back_player_obj = 0;
-	char loaded_isref = 0;
 	int object_num;
         xsw_object_struct *obj_ptr;
 	int status;
@@ -996,7 +995,6 @@ int NetHandleCreateObject(char *arg)
 	     */
 	    ISRefLoad(isref_num);
 
-	    loaded_isref = 1;
 	}
           
  

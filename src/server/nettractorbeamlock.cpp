@@ -65,13 +65,10 @@ int NetSendTractorBeamLock(
 )
 {
 	char sndbuf[CS_DATA_MAX_LEN];
-        xsw_object_struct *obj_ptr;  
 
 
         if(DBIsObjectGarbage(src_obj))
             return(-1);
-        else
-            obj_ptr = xsw_object[src_obj];
 
 
         /*  

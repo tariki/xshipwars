@@ -138,7 +138,6 @@ void BridgeMessagesMark(
         int i, len;
         int x, y;  
         int start_line, end_line;
-        int delta_lines;
 
 
         /* Swap start and end as needed. */
@@ -176,7 +175,6 @@ void BridgeMessagesMark(
 
 
         /* Calculate delta lines. */
-        delta_lines = end_line - start_line;
 
 
         /* ***************************************************** */
@@ -578,7 +576,10 @@ int BridgeManagePromptExec(event_t *event)
  */
 int BridgeManage(event_t *event)
 {
-	int i, events_handled = 0;
+#ifdef JS_SUPPORT
+	int i;
+#endif	/* JS_SUPPORT */
+	int events_handled = 0;
 	double dx;
 	keycode_t keycode;
 	int object_num;

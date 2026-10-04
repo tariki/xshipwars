@@ -11,7 +11,6 @@ int CmdHandleInput(int condescriptor, const char *cmd)
 {
 	int status, con_obj_num;
 	char *strptr;
-	xsw_object_struct *con_obj_ptr;
 	connection_struct *con_ptr;
 
 	char arg[CS_DATA_MAX_LEN];    
@@ -47,10 +46,6 @@ int CmdHandleInput(int condescriptor, const char *cmd)
             );
             return(-1); 
         }
-	else
-	{
-	    con_obj_ptr = xsw_object[con_obj_num];
-	}
 
 
 	/* Begin parsing command. */

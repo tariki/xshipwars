@@ -9,7 +9,6 @@
  */
 int CmdMemory(const char *arg)
 {
-	int events;
 	xsw_mem_stat_struct buf;
         char text[PATH_MAX + NAME_MAX + 512];
         
@@ -19,7 +18,7 @@ int CmdMemory(const char *arg)
 
 
         /* Calculate memory consumed events. */
-        events = OSWEventsPending();
+        OSWEventsPending();
  
         /* Print memory statistics. */
         if((arg == NULL) ? 1 : (arg[0] == '\0'))

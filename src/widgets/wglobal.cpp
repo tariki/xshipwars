@@ -91,7 +91,6 @@ int WidgetInitGlobals(int argc, char *argv[])
 	WCursor *wcursor;
 	image_t *image;
 	pixmap_t pixmap;
-	char *strptr;
 	WColorStruct color;
 
 
@@ -337,7 +336,6 @@ int WidgetInitGlobals(int argc, char *argv[])
         if(pixmap == 0)  
             return(-1);
         OSWDestroyImage(&image);
-        strptr = NULL;
 
 	widget_global.std_bkg_pm = pixmap;
 
@@ -350,7 +348,6 @@ int WidgetInitGlobals(int argc, char *argv[])
         if(pixmap == 0)
             return(-1);
         OSWDestroyImage(&image);
-        strptr = NULL;
 
         widget_global.std_icon_pm = pixmap;
 

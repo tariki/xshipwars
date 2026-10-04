@@ -13,7 +13,7 @@
 int CmdRecyclePlayer(int condescriptor, const char *arg)
 {
         int con_obj_num, obj_num;
-        xsw_object_struct *obj_ptr, *con_obj_ptr;
+        xsw_object_struct *con_obj_ptr;
         connection_struct *con_ptr;
 
         char name1[XSW_OBJ_NAME_MAX + 80];
@@ -63,10 +63,6 @@ int CmdRecyclePlayer(int condescriptor, const char *arg)
             );
             NetSendLiveMessage(condescriptor, sndbuf);
             return(-1);
-        }
-        else
-        {
-            obj_ptr = xsw_object[obj_num];
         }
 
         /* Cannot recycle player #0. */

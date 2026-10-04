@@ -1154,9 +1154,7 @@ of the bounds of the paper. Continue printing?"
  */
 int PrintWinCancelPBCB(void *ptr)
 {
-        print_win_struct *pw;
         
-        pw = &print_win;
 
 
 
@@ -2013,7 +2011,6 @@ int PrintWinDraw(int amount)
 
 int PrintWinManage(event_t *event)
 {
-	keycode_t keycode;
 	int events_handled = 0;
         print_win_struct *pw;  
 	int i, x, y, px, py;
@@ -2041,7 +2038,6 @@ int PrintWinManage(event_t *event)
 	    if(!pw->is_in_focus)
 		return(events_handled);
 
-            keycode = event->xkey.keycode;
 
 
 	    break;
@@ -2051,7 +2047,6 @@ int PrintWinManage(event_t *event)
             if(!pw->is_in_focus)
                 return(events_handled);
 
-            keycode = event->xkey.keycode;
 
 
 

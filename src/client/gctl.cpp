@@ -30,12 +30,10 @@
  */
 int GCtlInit(int controller)
 {
-	int i, status, prev_controller;
+#ifdef JS_SUPPORT
+	int i, status;
 	char text[PATH_MAX + NAME_MAX + 10];
-
-
-	/* Record previous controller type. */
-	prev_controller = option.controller;
+#endif	/* JS_SUPPORT */
 
 
 	/* *********************************************************** */
@@ -145,16 +143,15 @@ void GCtlUpdate(int controller_type)
 			pks_omni_dir_thrust,
 			pks_external_dampers;
 
-        int i, n;
-
-	double	d1, d2,
-		pks_x_accel, pks_y_accel;
+	double	pks_x_accel, pks_y_accel;
 
 	/* For keyboard event handling from GUI. */
 	event_t event;
 	char key_state;		/* 0 = released, 1 = pressed. */
 
 #ifdef JS_SUPPORT
+	int i, n;
+	double d1, d2;
 	jsmap_struct *jsmap_ptr;
 	jsmap_axis_struct *jsmap_axis_ptr;
 	jsmap_button_struct *jsmap_button_ptr;
@@ -587,10 +584,10 @@ printf("Button %i: OFF\n", n);
  */
 void GCtlShutdown()
 {
+#ifdef JS_SUPPORT
 	int i;
 
 
-#ifdef JS_SUPPORT
 	/* Close all joysticks. */
 	for(i = 0; i < total_jsmaps; i++)
 	{

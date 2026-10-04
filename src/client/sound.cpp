@@ -224,7 +224,9 @@ int SoundPlay(
         int priority		/* 0 or 1. */
 )
 {
+#if defined(Y_H) || defined(ESD_H)
 	char *strptr;
+#endif	/* Y_H || ESD_H */
 #ifdef ESD_H
 	int id;
 	char buff[1024];
@@ -240,7 +242,9 @@ int SoundPlay(
 	/* Get filename by sound code. */
 	if(!SSIsAllocated(code))
 	    return(-1);
+#if defined(Y_H) || defined(ESD_H)
 	strptr = ss_item[code]->path;
+#endif	/* Y_H || ESD_H */
 
         /* Play by which sound server type: */
         switch(sound.server_type)
@@ -348,7 +352,9 @@ int SoundChangeBackgroundMusic(
         int priority            /* 0 or 1. */
 )
 {
+#if defined(Y_H) || defined(ESD_H)
         char *strptr = NULL;
+#endif	/* Y_H || ESD_H */
 #ifdef HAVE_ESD
 	int id;
 #endif /* HAVE_ESD */
@@ -358,9 +364,11 @@ int SoundChangeBackgroundMusic(
             return(-3);
 
 
+#if defined(Y_H) || defined(ESD_H)
 	/* Get filename by sound code. */
         if(SSIsAllocated(code))
 	    strptr = ss_item[code]->path;
+#endif	/* Y_H || ESD_H */
 
 
         /* Play by which sound server type: */

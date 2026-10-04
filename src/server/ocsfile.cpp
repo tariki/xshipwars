@@ -20,7 +20,6 @@ int OCSLoadFromFile(char *path)
 	int status;
         char *strptr, *strptr2;
         FILE *fp;
-        off_t filesize;
         struct stat stat_buf;
 
 	char parm[CFG_PARAMETER_MAX];
@@ -43,7 +42,6 @@ int OCSLoadFromFile(char *path)
         }
 
 	/* Get size of file. */
-        filesize = stat_buf.st_size;
 
 	/* Open file. */
 	fp = fopen(path, "r");

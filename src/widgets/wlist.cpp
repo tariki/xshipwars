@@ -1377,7 +1377,7 @@ void ListWinMapCVPrompt(list_window_struct *lw, int mode)
 {
         int x, y, entry_num, name_len;
         unsigned int width, height;
-	unsigned int icon_width, icon_height;
+	unsigned int icon_width;
 	list_window_entry_struct *entry_ptr;
 
 
@@ -1445,12 +1445,10 @@ void ListWinMapCVPrompt(list_window_struct *lw, int mode)
 	    if(entry_ptr->image != NULL)
 	    {
 		icon_width = entry_ptr->image->width;
-		icon_height = entry_ptr->image->height;
 	    }
 	    else
 	    {
 		icon_width = 0;
-		icon_height = 0;
 	    }
 
 	    /* Calculate position to place change values prompt. */

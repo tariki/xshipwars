@@ -549,7 +549,7 @@ void strpad(char *s, int n)
  */
 void straddflag(char *s, const char *flag, char operation, int len)
 {
-        int s_len, flag_len;
+        int s_len;
 
 
         if((s == NULL) ||   
@@ -559,7 +559,6 @@ void straddflag(char *s, const char *flag, char operation, int len)
             return;
 
         s_len = strlen(s);
-        flag_len = strlen(flag);
 
         /* Put operation after last flag if there is one. */
         if((s_len > 0) &&

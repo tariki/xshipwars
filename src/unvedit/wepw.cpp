@@ -530,7 +530,7 @@ int WepWListCB(void *ptr)
  */
 int WepWCreateCB(void *ptr)
 {
-        int i, wepw_num;
+        int i;
         wepw_struct *wepw_ptr = NULL;
 	colum_list_struct *list;
 	xsw_object_struct *obj_ptr;
@@ -554,8 +554,6 @@ int WepWCreateCB(void *ptr)
         }
         if(wepw_ptr == NULL)
             return(-1);
-        else
-            wepw_num = i;
 
         list = &wepw_ptr->list;
 
@@ -630,7 +628,6 @@ int WepWDeleteCB(void *ptr)
 {
         int i, n, sel_wep_num;
 
-	int wepw_num;
         wepw_struct *wepw_ptr = NULL;
 
         colum_list_struct *list;
@@ -654,8 +651,6 @@ int WepWDeleteCB(void *ptr)
         }       
         if(wepw_ptr == NULL)
             return(-1);
-        else
-            wepw_num = i;
 
 	/* Get pointer to list. */
         list = &wepw_ptr->list;

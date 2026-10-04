@@ -45,7 +45,6 @@ int PageLoadFromFile(
         char *strptr, *strptr2, *strptr3;
 
         FILE *fp;
-        off_t filesize;
         struct stat stat_buf;
 
         char parm[CFG_PARAMETER_MAX];
@@ -71,7 +70,6 @@ int PageLoadFromFile(
         }
 
         /* Get file size. */
-        filesize = stat_buf.st_size;
 
         /* Open file. */
         fp = fopen(filename, "r");

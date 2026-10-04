@@ -176,7 +176,6 @@ int DialogWinDraw(
         int x, y, n;
 	unsigned int width, height;
         int len;
-	char size_change;
 
 	int line_x_pos, line_y_pos;
         char *strptr;
@@ -194,13 +193,8 @@ int DialogWinDraw(
 
 
 	/* Is there a new message for dialog window? */
-	if(mesg == NULL)
+	if(mesg != NULL)
 	{
-	    size_change = 0;
-	}
-	else
-	{
-	    size_change = 1;
 
 	    /* Free old message. */
 	    free(dw->mesg);

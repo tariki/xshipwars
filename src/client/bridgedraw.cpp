@@ -3489,7 +3489,6 @@ void BridgeWinDrawPanel(
 {
 	font_t	*font,
 		*prev_font;
-	pixel_t pix;
 	pixmap_t pixmap_buf = 0;
 	win_t w = 0;
 	xsw_object_struct *obj_ptr = NULL;
@@ -3507,7 +3506,6 @@ void BridgeWinDrawPanel(
 
 
 	font = xsw_font.console_standard;
-	pix = widget_global.editable_text_pix;
 
 	pixmap_buf = bridge_win.pan_buf;
 

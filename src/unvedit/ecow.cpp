@@ -642,7 +642,7 @@ int EcoWListCB(void *ptr)
  */
 int EcoWCreateCB(void *ptr)
 {
-        int i, ecow_num;
+        int i;
         ecow_struct *ecow_ptr = NULL;
 
 	colum_list_struct *list;
@@ -668,8 +668,6 @@ int EcoWCreateCB(void *ptr)
         }
         if(ecow_ptr == NULL)
             return(-1);
-        else
-            ecow_num = i;
 
 	/* Get pointer to list. */
         list = &ecow_ptr->list;
@@ -755,7 +753,6 @@ int EcoWDeleteCB(void *ptr)
 {
         int i, n, sel_prod_num;
 
-	int ecow_num;
         ecow_struct *ecow_ptr = NULL;
 
         colum_list_struct *list;
@@ -780,8 +777,6 @@ int EcoWDeleteCB(void *ptr)
         }       
         if(ecow_ptr == NULL)
             return(-1);
-        else
-            ecow_num = i;
 
 	/* Get pointer to list. */
         list = &ecow_ptr->list;

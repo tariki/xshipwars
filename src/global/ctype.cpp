@@ -55,9 +55,7 @@ bool isblankInt(int c)
  */
 void ctype_dummy_func()
 {
-	int x;
 
-	x = 1;
 
 	return;
 }

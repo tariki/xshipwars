@@ -127,7 +127,6 @@ void MesgWinUpdateMark(
         int i, len;
         int x, y;
         int start_line, end_line;
-        int delta_lines;
 	mesgwin_mesg_struct **mesg;
 
 
@@ -177,7 +176,6 @@ void MesgWinUpdateMark(
 
 
         /* Calculate delta lines. */
-        delta_lines = end_line - start_line;
 
         /*   Begin marking.
          *

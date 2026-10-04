@@ -67,7 +67,6 @@ int RCLoadFromFile(char *filename)
         char *strptr, *strptr2, *strptr3;
 
         FILE *fp;
-        off_t filesize;
         struct stat stat_buf;
 
         char parm[CFG_PARAMETER_MAX];
@@ -91,7 +90,6 @@ int RCLoadFromFile(char *filename)
 	}
 
 	/* Get size of file. */
-        filesize = stat_buf.st_size;
 
         /* Open filename. */
         fp = fopen(filename, "r");
@@ -1885,7 +1883,10 @@ void RC_PRINT_COLOR_STRING(
  */
 int RCSaveToFile(char *filename)
 {
-	int i, n;
+	int i;
+#ifdef JS_SUPPORT
+	int n;
+#endif	/* JS_SUPPORT */
 	FILE *fp;
 
         char tmp_path[PATH_MAX + NAME_MAX];

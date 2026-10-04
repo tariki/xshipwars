@@ -376,7 +376,6 @@ void AboutWinDraw(int amount)
 
 int AboutWinManage(event_t *event)
 {
-        keycode_t keycode;
         int events_handled = 0;
         about_win_struct *aw;
                 
@@ -397,7 +396,6 @@ int AboutWinManage(event_t *event)
             if(!aw->is_in_focus)
                 return(events_handled);
 
-            keycode = event->xkey.keycode;
 
 	    break;
 
@@ -406,7 +404,6 @@ int AboutWinManage(event_t *event)
             if(!aw->is_in_focus)
                 return(events_handled);
  
-            keycode = event->xkey.keycode;
  
             break;
 

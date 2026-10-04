@@ -253,7 +253,6 @@ double PStepperGetWidgetValue(
         push_button_struct *pbtn;
         list_window_struct *lw;
         progress_bar_struct *pbar;
-        prompt_window_struct *prompt;
         popup_list_struct *pulist;
         scale_bar_struct *scalebar;  
         toggle_button_array_struct *tba;
@@ -292,7 +291,6 @@ double PStepperGetWidgetValue(
             break;
 
           case WTYPE_CODE_PROMPT:
-            prompt = (prompt_window_struct *)ptr;
             return((double)0);
             break;
 
@@ -589,7 +587,6 @@ int PStepperInit(
 )
 {
 	int i;
-	char stringa[256];
 
 
 	if((ps == NULL) ||
@@ -691,9 +688,9 @@ int PStepperInit(
             )
         )
             return(-1);
-        stringa[0] = 0x1b;	/* Escape. */
-        stringa[1] = '\0';
 /*
+        stringa[0] = 0x1b;	(Escape)
+        stringa[1] = '\0';
         PBtnSetHotKeys(   
             &ps->prev_btn,
             stringa
@@ -717,9 +714,9 @@ int PStepperInit(
             )
         )       
             return(-1);
+/*
 	stringa[0] = '\n';
 	stringa[1] = '\0';
-/*
         PBtnSetHotKeys(
             &ps->next_btn,
 	    stringa

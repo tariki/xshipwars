@@ -63,7 +63,7 @@ void NetWeaponDisarmSyncObjectValues(
 int NetHandleWeaponDisarm(int condescriptor, char *arg)
 {
 	int i, src_obj, tar_obj, con_object_num;
-	xsw_object_struct *wep_obj_ptr, *con_obj_ptr, **ptr;
+	xsw_object_struct *wep_obj_ptr, **ptr;
 
 
         if(!ConIsLoggedIn(condescriptor))
@@ -72,8 +72,6 @@ int NetHandleWeaponDisarm(int condescriptor, char *arg)
         con_object_num = connection[condescriptor]->object_num;
         if(DBIsObjectGarbage(con_object_num))
             return(-1);
-        else
-            con_obj_ptr = xsw_object[con_object_num];
  
 
         /*

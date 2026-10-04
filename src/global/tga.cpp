@@ -788,7 +788,6 @@ int TgaReadFromFile(
 
 	u_int8_t pix[4], r, g, b;
 
-	int pix_total;
 	int colum_count, row_count;
 
 
@@ -907,7 +906,6 @@ int TgaReadFromFile(
 	{
 	    /* READ RIGHTSIDE UP. */
 
-            pix_total = td->width * td->height;
             colum_count = 0;
             row_count = 0;
             data_pos = row_count * td->width * bytes_per_pixel;
@@ -1144,7 +1142,6 @@ int TgaReadFromFile(
 	{
 	    /* READ UPSIDE DOWN. */
 
-            pix_total = td->width * td->height;
             colum_count = 0;
             row_count = (int)td->height - 1;
             data_pos = row_count * td->width * bytes_per_pixel;
@@ -1412,7 +1409,6 @@ int TgaReadFromData(
 
         u_int8_t pix[4], r, g, b;
 
-        int pix_total;
         int colum_count, row_count;
 
 
@@ -1522,7 +1518,6 @@ int TgaReadFromData(
         {
             /* READ RIGHTSIDE UP. */
 
-            pix_total = td->width * td->height;
             colum_count = 0;
             row_count = 0;
             data_pos = row_count * td->width * bytes_per_pixel;
@@ -1761,7 +1756,6 @@ int TgaReadFromData(
         {
             /* READ UPSIDE DOWN. */
 
-            pix_total = td->width * td->height;
             colum_count = 0;
             row_count = (int)td->height - 1;
             data_pos = row_count * td->width * bytes_per_pixel;
@@ -2151,7 +2145,6 @@ int TgaReadPartialFromFile(
 
         u_int8_t pix[4], r, g, b;
 
-        int pix_total;
         int colum_count, row_count;
 
 
@@ -2273,7 +2266,6 @@ int TgaReadPartialFromFile(
         {
             /* READ RIGHTSIDE UP. */
 
-            pix_total = td->width * td->height;
             colum_count = (int)td->cur_load_pixel % (int)td->width;
             row_count = (int)td->cur_load_pixel / (int)td->width;
             data_pos = ((row_count * (int)td->width) + colum_count) *
@@ -2503,7 +2495,6 @@ int TgaReadPartialFromFile(
         {
             /* READ UPSIDE DOWN. */
 
-            pix_total = td->width * td->height;
             colum_count = (int)td->cur_load_pixel % (int)td->width;
             row_count = MAX(
 		(int)td->height - 1 -

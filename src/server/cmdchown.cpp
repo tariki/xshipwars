@@ -11,7 +11,7 @@ int CmdChown(int condescriptor, const char *arg)
         char *strptr;
         const char *arg_ptr;
 	int tar_obj_num, con_obj_num, new_owner_obj_num;
-	xsw_object_struct *tar_obj_ptr, *con_obj_ptr, *new_owner_obj_ptr;
+	xsw_object_struct *tar_obj_ptr, *con_obj_ptr;
 	connection_struct *con_ptr;
 
         char sndbuf[CS_DATA_MAX_LEN];
@@ -126,10 +126,6 @@ int CmdChown(int condescriptor, const char *arg)
 
             return(-1);
         }
-	else
-	{
-	    new_owner_obj_ptr = xsw_object[new_owner_obj_num];
-	}
 
 
 	/* Check if target object's current owner is the same

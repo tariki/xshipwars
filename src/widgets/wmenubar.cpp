@@ -282,7 +282,6 @@ int MenuBarAddItemMenuItem(
         int pos                 /* Can be -1 for append. */
 )
 {
-	int status;
 	menu_struct *menu;
 
 
@@ -293,7 +292,7 @@ int MenuBarAddItemMenuItem(
 
 
 	/* Add menu item. */
-	status = MenuAddItem(
+	MenuAddItem(
 	    menu,
 	    name,
 	    type,

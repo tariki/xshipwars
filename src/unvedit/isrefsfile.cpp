@@ -89,7 +89,6 @@ isref_struct **ISRefLoadFromFile(
 	char text[PATH_MAX + NAME_MAX + 256];
 
 	FILE *fp;
-        off_t filesize;
 	struct stat stat_buf;
 
 	char parm[CFG_PARAMETER_MAX];
@@ -150,7 +149,6 @@ isref_struct **ISRefLoadFromFile(
 	}
 
 	/* Get file size. */
-	filesize = stat_buf.st_size;
 
 	/* Open file. */
 	fp = fopen(tmp_filename, "r");

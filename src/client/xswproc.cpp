@@ -497,15 +497,11 @@ void XSWDoHit(
 {
 	double vol_left, vol_right;
         int sound_code = SOUND_CODE_DEFAULT;
-	xsw_object_struct *src_obj_ptr, *tar_obj_ptr, *camera_obj_ptr;
+	xsw_object_struct *tar_obj_ptr, *camera_obj_ptr;
 	char text[(2 * XSW_OBJ_NAME_MAX) + 512];
 
 
 	/* Get pointers to source and target objects. */
-	if(DBIsObjectGarbage(src_obj))
-	    src_obj_ptr = NULL;
-	else
-	    src_obj_ptr = xsw_object[src_obj];
 
         if(DBIsObjectGarbage(tar_obj))
             tar_obj_ptr = NULL;
@@ -667,15 +663,11 @@ void XSWDoDestroyed(
 	int reason	/* Reason code (sent from server). */
 )
 {
-        xsw_object_struct *src_obj_ptr, *tar_obj_ptr;
+        xsw_object_struct *tar_obj_ptr;
 	char text[(2 * XSW_OBJ_NAME_MAX) + 512];
 
 
         /* Get pointers to source and target objects. */
-        if(DBIsObjectGarbage(src_obj))
-            src_obj_ptr = NULL;
-        else
-            src_obj_ptr = xsw_object[src_obj];
 
         if(DBIsObjectGarbage(tar_obj))
             tar_obj_ptr = NULL;

@@ -11,7 +11,7 @@
 int CmdScore(int condescriptor, const char *arg)
 {
         int con_obj_num, obj_num;
-        xsw_object_struct *obj_ptr, *con_obj_ptr;
+        xsw_object_struct *obj_ptr;
         connection_struct *con_ptr;
 
         char sndbuf[CS_DATA_MAX_LEN]; 
@@ -20,7 +20,6 @@ int CmdScore(int condescriptor, const char *arg)
         /* Get connection's object number (assumed valid). */
         con_ptr = connection[condescriptor];
         con_obj_num = con_ptr->object_num;
-        con_obj_ptr = xsw_object[con_obj_num];
 
         /* Parse object number. */
         if((arg == NULL) ? 1 : (*arg == '\0'))

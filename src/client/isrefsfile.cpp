@@ -25,7 +25,6 @@ int ISRefLoadFromFile(char *filename)
 	char stringa[1024];
 
 	FILE *fp;
-        off_t filesize;
 	struct stat stat_buf;
 
 	char parm[CFG_PARAMETER_MAX];
@@ -51,7 +50,6 @@ int ISRefLoadFromFile(char *filename)
 	}
 
 	/* Get file size. */
-	filesize = stat_buf.st_size;
 
 	/* Open file. */
 	fp = fopen(filename, "r");

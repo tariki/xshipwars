@@ -56,10 +56,10 @@ void REngMoveObject(xsw_object_struct *obj_ptr, char allow_sect_change)
 
 	double thrust_dir, thrust_mag, thrust_magc;
 	double velocity_mag, velocity_magc;
-	double x_vel, y_vel, z_vel;	/* Velocity delta. */
-	double x_velc, y_velc, z_velc;	/* Velocity delta /w time compensation. */
-	double x_thr, y_thr, z_thr;	/* Thrust. */
-	double x_thrc, y_thrc, z_thrc;	/* Thrust delta /w time compensation. */
+	double x_vel, y_vel;	/* Velocity delta. */
+	double x_velc, y_velc;	/* Velocity delta /w time compensation. */
+	double x_thr, y_thr;	/* Thrust. */
+	double x_thrc, y_thrc;	/* Thrust delta /w time compensation. */
 /*	double x_res, y_res, z_res;	*/	/* Resultant. */
 
 	int owner_object, trac_object;
@@ -106,11 +106,9 @@ void REngMoveObject(xsw_object_struct *obj_ptr, char allow_sect_change)
 	 */
 	x_velc = obj_ptr->momentum_vector_compoent.i * velocity_magc;
 	y_velc = obj_ptr->momentum_vector_compoent.j * velocity_magc;
-	z_velc = obj_ptr->momentum_vector_compoent.k * velocity_magc;
 
 	x_vel = obj_ptr->momentum_vector_compoent.i * velocity_mag;
 	y_vel = obj_ptr->momentum_vector_compoent.j * velocity_mag;
-	z_vel = obj_ptr->momentum_vector_compoent.k * velocity_mag;
 
 
 	/* Calculate (not object relative) thrust direction. */
@@ -146,11 +144,9 @@ void REngMoveObject(xsw_object_struct *obj_ptr, char allow_sect_change)
 	 */
 	x_thrc = thrust_magc * sin(thrust_dir);
         y_thrc = thrust_magc * cos(thrust_dir);
-        z_thrc = 0;
 
         x_thr = thrust_mag * sin(thrust_dir);
         y_thr = thrust_mag * cos(thrust_dir);
-        z_thr = 0;
 
 
         /* Move object by adding the calculated velocity and thrust

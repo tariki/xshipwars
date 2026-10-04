@@ -46,12 +46,11 @@ void BlitBufTile8(
 {
         int src_x_start, src_y_start;
 
-        int tar_x_col, tar_y_row;
+        int tar_x_col;
         int src_x_col, src_y_row;
 
         unsigned int src_x_col_inc, src_y_row_inc;
 
-        int tar_width_bytes;     /* tar_width * BYTES_PER_PIXEL8 */
         int src_width_bytes;     /* src_width * BYTES_PER_PIXEL8 */
 
         int tar_width2, tar_height2;
@@ -80,7 +79,6 @@ void BlitBufTile8(
 
 
         /* Get widths in units of bytes (must calculate before conversion). */
-        tar_width_bytes = (int)tar_width * BYTES_PER_PIXEL8;
         src_width_bytes = (int)src_width * BYTES_PER_PIXEL8;
 
         /* Calculate zoom applyed target width and height. */
@@ -136,7 +134,6 @@ void BlitBufTile8(
 
         /* Set target starting positions. */
         tar_x_col = 0;
-        tar_y_row = 0;
 
 
         /* Get starting buffer pointers. */
@@ -202,12 +199,11 @@ void BlitBufTile16(
 {
 	int src_x_start, src_y_start;
 
-	int tar_x_col, tar_y_row;
+	int tar_x_col;
 	int src_x_col, src_y_row;
 
 	unsigned int src_x_col_inc, src_y_row_inc;
 
-	int tar_width_bytes;     /* tar_width * BYTES_PER_PIXEL16 */
 	int src_width_bytes;     /* src_width * BYTES_PER_PIXEL16 */
 
 	int tar_width2, tar_height2;
@@ -235,7 +231,6 @@ void BlitBufTile16(
 	    magnification = 1;
 
         /* Get widths in units of bytes (must calculate before conversion). */
-        tar_width_bytes = (int)tar_width * BYTES_PER_PIXEL16;
         src_width_bytes = (int)src_width * BYTES_PER_PIXEL16;
 
 	/* Calculate zoom applyed target width and height. */
@@ -291,7 +286,6 @@ void BlitBufTile16(
 
 	/* Set target starting positions. */
         tar_x_col = 0;
-        tar_y_row = 0;
 
 
 	/* Get starting buffer pointers. */
@@ -357,12 +351,11 @@ void BlitBufTile32(
 {
         int src_x_start, src_y_start;
 
-        int tar_x_col, tar_y_row;
+        int tar_x_col;
         int src_x_col, src_y_row;
 
         unsigned int src_x_col_inc, src_y_row_inc;
 
-        int tar_width_bytes;     /* tar_width * BYTES_PER_PIXEL32 */
         int src_width_bytes;     /* src_width * BYTES_PER_PIXEL32 */
 
         int tar_width2, tar_height2;
@@ -391,7 +384,6 @@ void BlitBufTile32(
 
 
         /* Get widths in units of bytes (must calculate before conversion). */
-        tar_width_bytes = (int)tar_width * BYTES_PER_PIXEL32;
         src_width_bytes = (int)src_width * BYTES_PER_PIXEL32;
 
         /* Calculate zoom applyed target width and height. */
@@ -447,7 +439,6 @@ void BlitBufTile32(
 
         /* Set target starting positions. */
         tar_x_col = 0;
-        tar_y_row = 0;
 
 
         /* Get starting buffer pointers. */

@@ -229,7 +229,6 @@ void MesgWinUpdateMark(
         int i, len;
         int x, y;  
         int start_line, end_line;
-        int delta_lines;
 
 
         /* Swap start and end as needed. */
@@ -267,7 +266,6 @@ void MesgWinUpdateMark(
 
 
         /* Calculate delta lines. */
-        delta_lines = end_line - start_line;
 
         /*   Begin marking (backwards).
          *

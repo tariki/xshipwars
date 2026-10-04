@@ -357,7 +357,7 @@ int DBObjectDoSetSector(
 {
 	int i, tract_obj_num;
         xsw_object_struct *obj_ptr, *tract_obj_ptr;
-        long sect_dx, sect_dy, sect_dz;
+        long sect_dx, sect_dy;
 
 
 	if(DBIsObjectGarbage(object_num))
@@ -374,7 +374,6 @@ int DBObjectDoSetSector(
 	    /* Get sector change deltas. */
             sect_dx = sect_x - obj_ptr->sect_x;
             sect_dy = sect_y - obj_ptr->sect_y; 
-            sect_dz = sect_z - obj_ptr->sect_z;
 
 
 	    if(allow_wrapping)

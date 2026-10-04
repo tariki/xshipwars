@@ -849,7 +849,7 @@ void PROMPT_UNFOCUS_REDRAW_ALL(prompt_window_struct *except_prompt)
  */
 int PromptDraw(prompt_window_struct *prompt, int amount)
 {
-	int x = 0, y = 0, z;
+	int x = 0, y = 0;
 	unsigned int width = 1, height = 1;
 	unsigned int len;	/* strlen of prompt->buf. */
 
@@ -1078,7 +1078,6 @@ int PromptDraw(prompt_window_struct *prompt, int amount)
 	/* Draw text. */
 	x = 0;
 	y = 0;
-	z = 0;
 	char_draw_count = 0;
 	if((prompt->buf_sel_start >= 0) &&
 	   (prompt->buf_sel_end >= 0) &&

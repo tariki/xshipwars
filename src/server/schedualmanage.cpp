@@ -32,7 +32,7 @@ int SchedualHandle(int schedual_num)
 	double dx;
 	schedual_struct *shptr;
 
-	long owner_obj_num, src_obj_num, tar_obj_num;
+	long src_obj_num, tar_obj_num;
 	xsw_object_struct *src_obj_ptr, *tar_obj_ptr;
 
 
@@ -41,7 +41,6 @@ int SchedualHandle(int schedual_num)
 
 
 	/* Get heading values. */
-	owner_obj_num = shptr->run_owner;
 	src_obj_num = shptr->run_src_obj;
 	tar_obj_num = shptr->run_tar_obj;
 

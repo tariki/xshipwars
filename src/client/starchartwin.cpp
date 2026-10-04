@@ -363,7 +363,6 @@ void SChtUpdateFilter(
         char *strptr, *strptr2, *strptr3, *filter_end;
 const int len = 256;
         char name[len];
-	int and_name = 0;
         char empire[len];
 	int and_empire = 0;
 	regex_t preg;
@@ -419,7 +418,6 @@ const int len = 256;
 	    else		/* Name (all else). */
 	    {
 		strptr2 = name;
-		and_name = is_and;
 	    }
 	    *strptr2 = '\0';	/* Reset pattern string buffer. */
 

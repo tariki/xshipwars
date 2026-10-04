@@ -270,7 +270,7 @@ int EcoStartTransfer(
 {
 	int sh_num;
 	schedual_struct *sh_ptr;
-	xsw_object_struct *src_obj_ptr, *tar_obj_ptr;	
+	xsw_object_struct *src_obj_ptr;	
 
 
 	/* Error checks. */
@@ -281,8 +281,6 @@ int EcoStartTransfer(
 
         if(DBIsObjectGarbage(run_tar_obj))
             return(-1);
-        else
-            tar_obj_ptr = xsw_object[run_tar_obj];
 
 
 	/* ************************************************************ */

@@ -707,7 +707,6 @@ int EcoDoSell(
 {
         int ep_num = -1;
         int schedual_act_item_code = -1;
-        double schedual_act_inc_limit;
 
         xswo_credits_t d_credits = 0.0;
         double d_amount = 0.0;
@@ -863,7 +862,6 @@ int EcoDoSell(
                     * real_product_ptr->sell_price);
 
             /* Calculate increment limit. */
-            schedual_act_inc_limit = d_amount;
 
 
             /* Transfer amount all at once from the customer. */
@@ -915,7 +913,6 @@ int EcoDoSell(
                     * real_product_ptr->sell_price);
 
             /* Calculate increment limit. */
-            schedual_act_inc_limit = d_amount;
 
 
             /* Transfer amount all at once from the customer. */
@@ -975,7 +972,6 @@ int EcoDoSell(
                     (2 - tax));
 
             /* Calculate increment limit. */
-            schedual_act_inc_limit = d_amount;
 
             /* Transfer amount all at once from the customer. */
             customer_product_ptr->amount -= d_amount;
