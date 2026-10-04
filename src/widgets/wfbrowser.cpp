@@ -10,7 +10,7 @@
 	int FBrowserHasMask(char *path)
 	char *FBrowserGetPathMask(char *path)
 	char *FBrowserGetJustPath(char *path)
-	char *FBrowserGetFileSystemString(int fs_type)
+	const char *FBrowserGetFileSystemString(int fs_type)
 	int FBrowserGetFileSystemType(char *fs_name)
 	fb_object_struct *FBrowserGetSelObject(fbrowser_struct *fb)
 	int FBrowserDoOK(fbrowser_struct *fb)
@@ -343,7 +343,7 @@ char *FBrowserGetPathMask(char *path)
 	    return("*");
 
         if(!FBrowserHasMask(path))
-            return("*");
+            { strcpy(search_str, "*"); return(search_str); }
 
 
 	strptr = strrchr(path, '/');
@@ -369,7 +369,7 @@ char *FBrowserGetJustPath(char *path)
 
 
         if(path == NULL)
-            return("/");
+            { strcpy(just_path, "/"); return(just_path); }
 
 	if(!FBrowserHasMask(path))
         {
@@ -415,7 +415,7 @@ char *FBrowserGetJustPath(char *path)
  *
  *	If the type is unknown, then "unknown" is returned.
  */
-char *FBrowserGetFileSystemString(int fs_type)
+const char *FBrowserGetFileSystemString(int fs_type)
 {
 	switch(fs_type)
 	{
@@ -1562,7 +1562,7 @@ int FBrowserMountPBCB(void *ptr)
 
 	char need_continue;
 
-	char *filesystemtype = NULL;
+	const char *filesystemtype = NULL;
 	unsigned long rwflag = 0;
 
         fb_device_struct *dev_ptr;

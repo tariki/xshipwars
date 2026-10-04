@@ -26,7 +26,7 @@ char *LogGetCurrentTimeString(void)
         /* Get current time. */
         tm_ptr = localtime(&ct);
         if(tm_ptr == NULL)
-            return("");
+            { s[0] = '\0'; return(s); }
 
         /* Format time string. */
         len = strftime(

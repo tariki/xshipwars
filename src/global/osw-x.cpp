@@ -20,7 +20,7 @@
 		bool_t alt,
 		bool_t ctrl
 	)
-	char *OSWGetKeyCodeName(keycode_t keycode)
+	const char *OSWGetKeyCodeName(keycode_t keycode)
 	void OSWManageEvent(event_t *event)
         int OSWIsModifierKey(keycode_t keycode)
 
@@ -1746,7 +1746,7 @@ char OSWGetASCIIFromKeyCode(
  *
  *	This function never returns NULL.
  */
-char *OSWGetKeyCodeName(keycode_t keycode)
+const char *OSWGetKeyCodeName(keycode_t keycode)
 {
 	keysym_t keysym;
 	static char rtn_str[128];

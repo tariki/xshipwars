@@ -1020,20 +1020,20 @@ char *StringCfgParseValue(const char *string)
 
         /* Is string empty? */
         if(string == NULL)
-            return("");
+            { value[0] = '\0'; return(value); }
 	if((string[0] == '\0') ||
            (string[0] == '\r') ||
            (string[0] == '\n')
         )
-            return("");
+            { value[0] = '\0'; return(value); }
 
         /* Is string a comment? */
         if(StringIsComment(string, UNIXCFG_COMMENT_CHAR))
-            return("");
+            { value[0] = '\0'; return(value); }
 
         /* Does string have a delimiter? */
         if(strchr(string, CFG_PARAMETER_DELIMITER) == NULL)
-            return("");
+            { value[0] = '\0'; return(value); }
 
 
         /* Begin fetching value from string. */
@@ -1303,7 +1303,7 @@ char *StringGetNetArgument(const char *str)
 	static char arg[CS_DATA_MAX_LEN];
 
         if(str == NULL)
-            return("");
+            { arg[0] = '\0'; return(arg); }
 
         strncpy(arg, str, CS_DATA_MAX_LEN);
         arg[CS_DATA_MAX_LEN - 1] = '\0';
@@ -1317,7 +1317,7 @@ char *StringGetNetArgument(const char *str)
             return(strptr);
         }
 
-        return("");
+        { arg[0] = '\0'; return(arg); }
 }
 
 
@@ -1345,9 +1345,9 @@ char *StringCurrentTimeFormat(const char *format)
 
 
         if(format == NULL)
-            return("");
+            { s[0] = '\0'; return(s); }
         if((*format) == '\0')
-            return("");
+            { s[0] = '\0'; return(s); }
 
 	/* Get current time. */
         time(&current);
@@ -1385,9 +1385,9 @@ char *StringTimeFormat(const char *format, time_t seconds)
 
 
         if(format == NULL)
-            return("");
+            { s[0] = '\0'; return(s); }
         if((*format) == '\0')
-            return("");
+            { s[0] = '\0'; return(s); }
 
         tm_ptr = localtime(&seconds);
 	if(tm_ptr == NULL)

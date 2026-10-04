@@ -1720,7 +1720,7 @@ extern "C" char *GETSELECTIONNAME(fbrowser_struct *fb);
 
 extern "C" char *FBrowserGetPathMask(char *path);
 extern "C" char *FBrowserGetJustPath(char *path);
-extern "C" char *FBrowserGetFileSystemString(int fs_type);
+extern "C" const char *FBrowserGetFileSystemString(int fs_type);
 extern "C" int FBrowserGetFileSystemType(char *fs_name);
 extern "C" fb_object_struct *FBrowserGetSelObject(fbrowser_struct *fb);
 extern "C" int FBrowserDoOK(fbrowser_struct *fb);

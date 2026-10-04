@@ -958,7 +958,7 @@ char *PrefixPaths(const char *parent, const char *child)
            (child == NULL) ||
            (parent == child)
         )
-            return("/");
+            { strcpy(rtn_path, "/"); return(rtn_path); }
 
         /* If child is absolute, copy child and return. */
         if((*child) == DIR_DELIMINATOR)
@@ -1183,7 +1183,7 @@ char *GetParentDir(const char *path)
 
 
         if(path == NULL)
-            return("/");
+            { strcpy(rtn_path, "/"); return(rtn_path); }
 
         i = 0;
         strptr1 = path;

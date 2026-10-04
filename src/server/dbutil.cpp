@@ -27,7 +27,7 @@
 
 	void DBSortEconomyProducts(int object_num)
 
-        char *DBGetTypeName(int type)
+        const char *DBGetTypeName(int type)
         char *DBGetFormalNameStr(int object_num)
 	char *DBGetOCSOPMName(int ocs_num)
 
@@ -596,7 +596,7 @@ void DBSortEconomyProducts(int object_num)
  *      Return a statically allocated string containing the official
  *      name for the given object type code.
  */     
-char *DBGetTypeName(int type)
+const char *DBGetTypeName(int type)
 {
         switch(type)
         {

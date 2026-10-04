@@ -24,7 +24,7 @@
         int DBGetTopObjectNumber()
 	int DBGetObjectNumByPtr(xsw_object_struct *obj_ptr)
 	char *DBGetFormalNameStr(int object_num)
-        char *DBGetObjectVectorName(double theta)
+        const char *DBGetObjectVectorName(double theta)
 
 	int DBSetPlayerObject(int object_num)
 
@@ -514,7 +514,7 @@ char *DBGetFormalNameStr(int object_num)
  *      Returns the appropriate `shipsman direction' name
  *      based on theta in radians.
  */
-char *DBGetObjectVectorName(double theta)
+const char *DBGetObjectVectorName(double theta)
 {
         if(theta < 0.39269908) return("forward");
         else if(theta < 1.1780972) return("starboard bow");

@@ -1224,7 +1224,7 @@ extern int DBObjectDoSetSector(
 
 extern void DBSortEconomyProducts(int object_num);
 
-extern char *DBGetTypeName(int type);
+extern const char *DBGetTypeName(int type);
 extern char *DBGetFormalNameStr(int object_num);
 extern char *DBGetOCSOPMName(int ocs_code);
 

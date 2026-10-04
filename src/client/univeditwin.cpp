@@ -3,7 +3,7 @@
 
 	Functions:
 
-	char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
+	const char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
 	void UnivEditUnfocusPrompts()
 	int UnivEditApplyChanges()
 
@@ -49,7 +49,7 @@ xsw_univ_edit_win_struct univ_edit_win;
  *	Returns a statically allocated string containing the
  *	last time connected in verbose form.
  */
-char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
+const char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
 {
 	time_t dt, l;
 	int len2;
@@ -485,7 +485,7 @@ int UnivEditWinInit()
 int UnivEditWinDraw()
 {
 	int y;
-	char *strptr;
+	const char *strptr;
 	char timestr[256];
 	int entry_num;
 	univ_entry_struct *univ_entry_ptr;

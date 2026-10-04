@@ -772,7 +772,7 @@ extern char OSWGetASCIIFromKeyCode(
         bool_t alt,
         bool_t ctrl
 );
-extern char *OSWGetKeyCodeName(keycode_t keycode);
+extern const char *OSWGetKeyCodeName(keycode_t keycode);
 extern int OSWIsModifierKey(keycode_t keycode);
 extern void OSWKBAutoRepeatOff(void);
 extern void OSWKBAutoRepeatOn(void);

@@ -1985,7 +1985,7 @@ extern "C" double DBGetObjectVisibilityPtr(xsw_object_struct *obj_ptr);
 extern "C" int DBGetTopObjectNumber(void);
 extern "C" int DBGetObjectNumByPtr(xsw_object_struct *obj_ptr);
 extern "C" char *DBGetFormalNameStr(int object_num);
-extern "C" char *DBGetObjectVectorName(double theta);
+extern "C" const char *DBGetObjectVectorName(double theta);
 extern "C" double DBGetObjectVisibility(int object_num);
 extern "C" double DBGetObjectVisibilityPtr(xsw_object_struct *obj_ptr);
 
