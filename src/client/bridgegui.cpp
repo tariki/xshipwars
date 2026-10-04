@@ -319,6 +319,9 @@ int BridgeWinInit(int argc, char *argv[])
         )
             return(-1);
 
+	/* Other windows open on the bridge window's monitor. */
+	OSWSetMainWindow(bridge_win.toplevel);
+
         /* WM properties. */
         sprintf(title, "%s: Untitled", PROG_NAME);
         if(IMGIsImageNumAllocated(IMG_CODE_XSW_ICON))

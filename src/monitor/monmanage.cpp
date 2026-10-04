@@ -414,6 +414,10 @@ int MonInit(monitor_struct *m, int argc, char *argv[])
         )
             return(-1);
 
+	/* Other windows open on the first monitor window's monitor. */
+	if(OSWGetMainWindow() == 0)
+	    OSWSetMainWindow(m->toplevel);
+
         OSWSetWindowWMProperties(
             m->toplevel,
             title,		/* Title. */

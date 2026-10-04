@@ -888,6 +888,8 @@ extern void OSWSetWindowWMProperties(
 );
 extern void OSWSetWindowInput(win_t w, eventmask_t eventmask);
 extern void OSWSetTransientFor(win_t wbum, win_t wshelter);
+extern void OSWSetMainWindow(win_t w);
+extern win_t OSWGetMainWindow(void);
 extern void OSWMapWindow(win_t w);
 extern void OSWMapRaised(win_t w);
 extern void OSWMapSubwindows(win_t w);  

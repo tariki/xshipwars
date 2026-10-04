@@ -130,6 +130,10 @@ int UEWInit(int n)
 	)
             return(-1);
 
+	/* Other windows open on the first editor window's monitor. */
+	if(OSWGetMainWindow() == 0)
+	    OSWSetMainWindow(uew_ptr->toplevel);
+
 	sprintf(title, "%s: %s",
 	    UEW_DEF_TITLE, DEF_UNIVERSE_TITLE
  	);

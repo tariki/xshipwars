@@ -441,6 +441,20 @@ namespace static_osw_x {
 
 
 osw_gui_struct osw_gui[1];
+
+/*   Multi-monitor placement: toplevel windows (children of the root
+ *   window) are moved onto the monitor of the program's main window
+ *   when they are mapped. See OSWSetMainWindow().
+ */
+namespace static_osw_x_placement {
+	win_t main_win;			/* 0 if not set. */
+	win_t *toplevel;		/* Toplevel windows created. */
+	int total_toplevels;
+#ifdef HAVE_XINERAMA
+	XineramaScreenInfo *monitor;	/* NULL if not multi-monitor. */
+	int total_monitors;
+#endif	/* HAVE_XINERAMA */
+}
 osw_keycode_struct osw_keycode;
 osw_atom_struct osw_atom;
 
@@ -1012,8 +1026,17 @@ if(vptr != NULL)
 		    break;
 		}
 	    }
-	    if(monitor != NULL)
+
+	    /* Keep the monitor list for OSWPlaceOnMainMonitor(). */
+	    if(total_monitors > 1)
+	    {
+		static_osw_x_placement::monitor = monitor;
+		static_osw_x_placement::total_monitors = total_monitors;
+	    }
+	    else if(monitor != NULL)
+	    {
 		XFree(monitor);
+	    }
 	}
 #endif	/* HAVE_XINERAMA */
 
@@ -3536,6 +3559,17 @@ int OSWCreateWindow(
 	/* If the parent is root_win, set wm_delete_window property atom. */
 	if(parent == gui->root_win)
 	{
+	    /* Remember toplevel windows for OSWPlaceOnMainMonitor(). */
+	    win_t *tl = (win_t *)realloc(
+		static_osw_x_placement::toplevel,
+		(static_osw_x_placement::total_toplevels + 1) * sizeof(win_t)
+	    );
+	    if(tl != NULL)
+	    {
+		tl[static_osw_x_placement::total_toplevels++] = *w;
+		static_osw_x_placement::toplevel = tl;
+	    }
+
 /*	    event_t rse; */	/* Resize event. */
 
 
@@ -3648,6 +3682,22 @@ void OSWDestroyWindow(win_t *w)
 
 	if(*w != 0)
 	{
+	    int i;
+
+	    /* Forget it as a toplevel and as the main window. */
+	    for(i = 0; i < static_osw_x_placement::total_toplevels; i++)
+	    {
+		if(static_osw_x_placement::toplevel[i] == *w)
+		{
+		    static_osw_x_placement::toplevel[i] = static_osw_x_placement::toplevel[
+			--static_osw_x_placement::total_toplevels
+		    ];
+		    break;
+		}
+	    }
+	    if(static_osw_x_placement::main_win == *w)
+		static_osw_x_placement::main_win = 0;
+
 	    XDestroyWindow(osw_gui[0].display, *w);
 	    *w = 0;
 	}
@@ -4453,6 +4503,107 @@ bool_t OSWCheckWindowAncestory(win_t grand_parent, win_t grand_child)
 /*
  *	Map window w.
  */
+/*
+ *	Sets the program's main window. Toplevel windows mapped while
+ *	the main window is shown are placed on the monitor that the main
+ *	window is on.
+ */
+void OSWSetMainWindow(win_t w)
+{
+	static_osw_x_placement::main_win = w;
+}
+
+win_t OSWGetMainWindow(void)
+{
+	return(static_osw_x_placement::main_win);
+}
+
+#ifdef HAVE_XINERAMA
+/*
+ *	Returns the index of the monitor containing the point x, y, or
+ *	-1 if none does.
+ */
+static int OSWMonitorAt(int x, int y)
+{
+	int i;
+	const XineramaScreenInfo *m = static_osw_x_placement::monitor;
+
+	for(i = 0; i < static_osw_x_placement::total_monitors; i++)
+	{
+	    if((x >= m[i].x_org) && (x < m[i].x_org + m[i].width) &&
+	       (y >= m[i].y_org) && (y < m[i].y_org + m[i].height)
+	    )
+		return(i);
+	}
+	return(-1);
+}
+#endif	/* HAVE_XINERAMA */
+
+/*
+ *	If w is an unmapped toplevel window (other than the main window)
+ *	on a different monitor than the main window, moves it to the same
+ *	place relative to the main window's monitor.
+ */
+static void OSWPlaceOnMainMonitor(win_t w)
+{
+#ifdef HAVE_XINERAMA
+	int i, x, y, mx, my, src, dst, nx, ny;
+	win_t child;
+	XWindowAttributes wattr, mattr;
+	const XineramaScreenInfo *m = static_osw_x_placement::monitor;
+	Display *dpy = osw_gui[0].display;
+	win_t root = osw_gui[0].root_win;
+	win_t main_win = static_osw_x_placement::main_win;
+
+	if((m == NULL) || (main_win == 0) || (w == main_win))
+	    return;
+
+	for(i = 0; i < static_osw_x_placement::total_toplevels; i++)
+	{
+	    if(static_osw_x_placement::toplevel[i] == w)
+		break;
+	}
+	if(i >= static_osw_x_placement::total_toplevels)
+	    return;
+
+	/* Only place windows being shown, never ones already shown. */
+	if(!XGetWindowAttributes(dpy, w, &wattr) ||
+	   (wattr.map_state != IsUnmapped)
+	)
+	    return;
+	if(!XGetWindowAttributes(dpy, main_win, &mattr) ||
+	   (mattr.map_state != IsViewable)
+	)
+	    return;
+
+	/* Monitor of the main window's center and of this window. */
+	XTranslateCoordinates(dpy, main_win, root,
+	    mattr.width / 2, mattr.height / 2, &mx, &my, &child
+	);
+	XTranslateCoordinates(dpy, w, root, 0, 0, &x, &y, &child);
+	dst = OSWMonitorAt(mx, my);
+	src = OSWMonitorAt(x + (wattr.width / 2), y + (wattr.height / 2));
+	if(src < 0)
+	    src = OSWMonitorAt(0, 0);
+	if((dst < 0) || (src < 0) || (dst == src))
+	    return;
+
+	/* Same offset from the monitor's corner, kept on the monitor. */
+	nx = m[dst].x_org + (x - m[src].x_org);
+	ny = m[dst].y_org + (y - m[src].y_org);
+	if(nx + wattr.width > m[dst].x_org + m[dst].width)
+	    nx = m[dst].x_org + m[dst].width - wattr.width;
+	if(ny + wattr.height > m[dst].y_org + m[dst].height)
+	    ny = m[dst].y_org + m[dst].height - wattr.height;
+	if(nx < m[dst].x_org)
+	    nx = m[dst].x_org;
+	if(ny < m[dst].y_org)
+	    ny = m[dst].y_org;
+
+	XMoveWindow(dpy, w, nx, ny);
+#endif	/* HAVE_XINERAMA */
+}
+
 void OSWMapWindow(win_t w)
 {
 	if(!IDC() ||
@@ -4460,6 +4611,7 @@ void OSWMapWindow(win_t w)
 	)
 	    return;
 
+	OSWPlaceOnMainMonitor(w);
 	XMapWindow(osw_gui[0].display, w);
 
 
@@ -4489,6 +4641,7 @@ void OSWMapRaised(win_t w)
 
 	gui = &osw_gui[0];
 
+	OSWPlaceOnMainMonitor(w);
 	XMapRaised(gui->display, w);
 /*
 	OSWGUISync(False);
