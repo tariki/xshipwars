@@ -752,6 +752,24 @@ image_t *PrintWinCreateSpool(print_win_struct *pw)
 
 
 /*
+ *	Returns a newly allocated mkstemp() template for a spool file in
+ *	dir (or P_tmpdir if dir is not set), or NULL on error.
+ */
+static char *PrintWinSpoolTemplate(const char *dir)
+{
+	char *s;
+
+	if((dir == NULL) || (*dir == '\0'))
+	    dir = P_tmpdir;
+
+	s = (char *)malloc(strlen(dir) + 32);
+	if(s != NULL)
+	    sprintf(s, "%s/print_spoolXXXXXX", dir);
+
+	return(s);
+}
+
+/*
  *	Procedure to do printing.
  */
 int PrintWinDoPrint(print_win_struct *pw)
@@ -1023,11 +1041,8 @@ of the bounds of the paper. Continue printing?"
 	{
 	    /* Print to file. */
 
-	    /* Get tmp file name. */
-	    strptr = tempnam(
-		PromptGetS(&pw->spool_dir),
-		"print_spool"
-	    );
+	    /* Get spool file name template (PrinterPrintImage() fills in XXXXXX). */
+	    strptr = PrintWinSpoolTemplate(PromptGetS(&pw->spool_dir));
 
 	    if(strptr != NULL)
 	    {
@@ -1083,11 +1098,8 @@ of the bounds of the paper. Continue printing?"
 	{
 	    /* Print to printer. */
 
-            /* Get tmp file name. */
-            strptr = tempnam(
-                PromptGetS(&pw->spool_dir),
-                "print_spool"
-            );
+            /* Get spool file name template (PrinterPrintImage() fills in XXXXXX). */
+            strptr = PrintWinSpoolTemplate(PromptGetS(&pw->spool_dir));
 
             if(strptr != NULL)
             {

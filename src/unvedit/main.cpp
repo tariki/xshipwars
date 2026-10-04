@@ -124,6 +124,7 @@ int UEDoEmergencySaveAll()
 	int i, status;
 	const char *dir_name;
 	char *tmp_name;
+	int tmp_fd;
 	struct stat stat_buf;
 
 
@@ -144,10 +145,18 @@ int UEDoEmergencySaveAll()
 	    if(stat(dir_name, &stat_buf))
 		dir_name = "/";
 
-	    /* Create a tempory file name. */
-	    tmp_name = tempnam(dir_name, "univ");
+	    /* Create a unique file for the emergency save. */
+	    tmp_name = (char *)malloc(strlen(dir_name) + 16);
 	    if(tmp_name == NULL)
 		continue;
+	    sprintf(tmp_name, "%s/univXXXXXX", dir_name);
+	    tmp_fd = mkstemp(tmp_name);
+	    if(tmp_fd < 0)
+	    {
+		free(tmp_name);
+		continue;
+	    }
+	    close(tmp_fd);
 
             /* Update universe header. */
             strncpy(

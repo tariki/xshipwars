@@ -39,6 +39,7 @@ int MemoryFree(mf_stat_struct *buf)
 	int i;
 	char *strptr, *strptr2;
 	char tmp_file[PATH_MAX + NAME_MAX];
+	int tmp_fd;
 	pid_t p;
 	struct stat stat_buf;
 
@@ -55,18 +56,12 @@ int MemoryFree(mf_stat_struct *buf)
 	    memset(buf, 0, sizeof(mf_stat_struct));
 
 
-	/* Get tempory file name. */
-	strptr = tmpnam(NULL);
-	if(strptr == NULL)
+	/* Create a unique tempory file for the program's output. */
+	strcpy(tmp_file, P_tmpdir "/sw_mfXXXXXX");
+	tmp_fd = mkstemp(tmp_file);
+	if(tmp_fd < 0)
 	    return(-1);
-
-	strncpy(tmp_file, strptr, PATH_MAX + NAME_MAX);
-	tmp_file[PATH_MAX + NAME_MAX - 1] = '\0';
-
-
-	/* Make sure temp file does NOT exist before running. */
-	if(!stat(tmp_file, &stat_buf))
-	    return(-1);
+	close(tmp_fd);
 
 	/* Run df program, blocking execution. */
 	p = ExecBAO(FREE_CMD, tmp_file);

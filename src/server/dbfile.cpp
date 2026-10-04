@@ -86,7 +86,7 @@ int DBEmergencySave(
         int total
 )
 {
-        int status;
+        int status, tmp_fd;
 	char *strptr;
         pid_t pid;
 
@@ -140,8 +140,21 @@ int DBEmergencySave(
         /* ********************************************************** */
         /* Plan B. */
 
-        /* Format new filename for emergency save. */
-	strptr = tempnam(P_tmpdir, "sw_unv");
+        /* Create a unique file for the emergency save. */
+	strptr = strdup(P_tmpdir "/sw_unvXXXXXX");
+	if(strptr != NULL)
+	{
+	    tmp_fd = mkstemp(strptr);
+	    if(tmp_fd < 0)
+	    {
+		free(strptr);
+		strptr = NULL;
+	    }
+	    else
+	    {
+		close(tmp_fd);
+	    }
+	}
 
         /* Attempt to save. */
         status = DBSaveToFile(strptr);

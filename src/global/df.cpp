@@ -23,6 +23,7 @@ df_stat_struct **DiskFreeGetListing(int *total)
 	int i, n;
 	char *strptr, *strptr2;
 	char tmp_file[PATH_MAX + NAME_MAX];
+	int tmp_fd;
 	pid_t p;
 	struct stat stat_buf;
 
@@ -47,18 +48,12 @@ df_stat_struct **DiskFreeGetListing(int *total)
 	    *total = 0;
 
 
-	/* Get tempory file name. */
-	strptr = tmpnam(NULL);
-	if(strptr == NULL)
+	/* Create a unique tempory file for the program's output. */
+	strcpy(tmp_file, P_tmpdir "/sw_dfXXXXXX");
+	tmp_fd = mkstemp(tmp_file);
+	if(tmp_fd < 0)
 	    return(df_stat);
-
-	strncpy(tmp_file, strptr, PATH_MAX + NAME_MAX);
-	tmp_file[PATH_MAX + NAME_MAX - 1] = '\0';
-
-
-	/* Make sure temp file does NOT exist before running. */
-	if(!stat(tmp_file, &stat_buf))
-	    return(df_stat);
+	close(tmp_fd);
 
 
 	/* Run df program, blocking execution. */

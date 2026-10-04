@@ -714,11 +714,9 @@ int PrinterPrintImage(
         printer_parm_struct *parm
 )
 {
-	int status;
-	char *strptr;
+	int status, fd;
         char tmp_name[PATH_MAX + NAME_MAX];
 
-	struct stat stat_buf;
 	FILE *fp;
 
 
@@ -746,31 +744,30 @@ int PrinterPrintImage(
 	/* ********************************************************* */
 	/* Create tempory .ps file. */
 
-        /* Get tempory file name. */
+	/*   Create a new, uniquely named tempory file. If tmp_file is
+	 *   given it is a mkstemp() template ending in XXXXXX, which is
+	 *   updated in place with the name of the created file.
+	 */
 	if(tmp_file == NULL)
 	{
-            strptr = tmpnam(NULL);
-            if(strptr == NULL)
-                return(PrinterError);
-
+	    strcpy(tmp_name, P_tmpdir "/sw_printXXXXXX");
+	    fd = mkstemp(tmp_name);
 	}
 	else
 	{
-	    strptr = tmp_file;
+	    fd = mkstemp(tmp_file);
+	    strlcpy(tmp_name, tmp_file, PATH_MAX + NAME_MAX);
 	}
-        strncpy(tmp_name, strptr, PATH_MAX + NAME_MAX);
-        tmp_name[PATH_MAX + NAME_MAX - 1] = '\0';
-
-
-	/* Make sure tempory file does not exist. */
-	if(!stat(tmp_name, &stat_buf))
+	if(fd < 0)
 	    return(PrinterError);
 
-
-	/* Create tempory file. */
-	fp = fopen(tmp_name, "w");
+	fp = fdopen(fd, "w");
 	if(fp == NULL)
+	{
+	    close(fd);
+	    unlink(tmp_name);
 	    return(PrinterError);
+	}
 
 	status = PrinterWritePSImage(
 	    fp,
