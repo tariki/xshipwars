@@ -216,4 +216,11 @@
    - `data/images` と `theme/images` で名前が重なると、何も書かずにエラーで止まる。`-n` で配置内容だけを表示する
    - インストール先を変えたときは、`~/.shipwars/xshipwarsrc` の `ToplevelDir` をそこに合わせる
 - `scripts/smoke.sh` は、client・monitor・unvedit 用のデータをこのスクリプトでインストールしてから使う。
-- 2 の `make install` は実際には試していない（スモークテストは 3 だけを通している）。
+- 2 の `make install` は、`PREFIX` を変えて試した（`run-logs/make-install-test/`）。client・monitor・unvedit を
+  同じ PREFIX に、server を別の PREFIX に入れ、3 を重ねてから、インストールしたプログラムで接続・表示・unvedit の
+  読み込みまで確認した。インストールされた xshipwarsrc のキー割り当ても修正後の番号（TurnLeft=113 など）だった。
+  - client は初回起動時に、既定の `/usr/share/games/xshipwars/etc` から rc をコピーする。既定以外の場所に
+    データを入れたときは、`ToplevelDir` を合わせた `~/.shipwars/xshipwarsrc` を先に用意する必要がある。
+  - server と一緒に入る `restart` は csh のサンプルスクリプトで、設定ファイルとして `etc/generic.conf` を参照するが、
+    `make install` が置くのは `etc/default.conf`。使うときはコピーするかスクリプトを書き換える
+    （コメントにも「環境に合わせて書き換えること」とある）。コンテナには csh が入っていない。
