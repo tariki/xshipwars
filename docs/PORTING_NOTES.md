@@ -155,3 +155,19 @@
   移植するときは、自前の実装が必要になる。
 - `strncpy` のあとに終端していなかった箇所（server の cmdeco.cpp の parm/val、cmdnetstat.cpp の larg、global/disk.cpp の fullpath）は、
   長い入力で終端の無い文字列になっていた。`strlcpy` にしたことで終端されるようになった。
+- 4 つすべてが gcc 14 `-Wall` で警告 0（リンカの警告も含む）になった。一括抑止（`-Wno-*`、`-fpermissive`、`-w`）は使っていない。
+- **キャストを使った唯一の箇所**: libXpm の `XpmCreatePixmapFromData()` は引数が `char **` のまま（const 非対応）だが、
+  データを書き換えない。XPM のカーソルデータを `const char *[]` にしたので、`WidgetCreateCursorFromData()` から渡す
+  1 か所だけ `const_cast<char **>` を使っている（widgets/wutils.cpp、理由をコメントに記載）。
+- X11 の `XClassHint` のメンバーも `char *` なので、こちらはキャストせず、書き換え可能な静的配列（"Eterm"）を指すようにした。
+- 文字列リテラルを返していた関数は、2 通りで直した。常に読み取り専用の文字列を返すものは戻り値を `const char *` にした。
+  普段は静的バッファを返し、エラー時だけ `""` などを返していたものは、エラー時も静的バッファにその文字列を入れて返す。
+- `tmpnam()`/`tempnam()` は `mkstemp()` にした。作られるファイルの権限が 0600 になる（以前は 0666 & ~umask）。対象は
+  server の df（ディスク使用量）、client/unvedit の mf（メモリ統計）、server・unvedit の緊急保存、unvedit の印刷用一時ファイル。
+  `PrinterPrintImage()` に渡す `tmp_file` は、末尾が XXXXXX の `mkstemp()` の雛形になった（実際の名前に書き換えられる）。
+  このうち、df・mf・印刷は実際には動かして確認していない。
+- `-Wformat-truncation`: 書き込み先はどれも通信やファイルの形式ではないので、最悪の長さが入る大きさにした。
+  server の応答メッセージは、渡し先の `NetSendLiveMessage()` が CS_MESG_MAX(128) に切るので、クライアントに届く内容は変わらない。
+  netfile.cpp のファイル名は、元から 192 文字で切って通信の 1 行（256 バイト）に 64 文字の余裕を残しており、
+  その上限を配列の大きさで表した（上限そのものは変えていない）。
+- Makefile はヘッダの依存関係を追跡しないので、ヘッダを変えたときは `clean` してから再ビルドすること。
