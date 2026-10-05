@@ -147,7 +147,7 @@ void OptWinFetchGlobals()
 	options_win.music_tb.state = ((option.music) ? True : False);
 
 	/* Sound server type. */
-        if(INRANGEINC(sound.server_type, 0, 3))
+        if(INRANGEINC(sound.server_type, SNDSERV_TYPE_NONE, SNDSERV_TYPE_SDL))
             options_win.server_type_tba.armed_tb = sound.server_type;
 	else
 	    options_win.server_type_tba.armed_tb = 0;
@@ -412,7 +412,7 @@ int OptWinApplyChanges()
 
         /* Sound server type. */
 	i = options_win.server_type_tba.armed_tb;
-        if(INRANGEINC(i, 0, 3))
+        if(INRANGEINC(i, SNDSERV_TYPE_NONE, SNDSERV_TYPE_SDL))
         {
 	    /* Must shutdown sound server if there is a change
 	     * in the type of sound server.

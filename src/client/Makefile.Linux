@@ -37,6 +37,10 @@ PREFIX = /usr
 #       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
 #				(Xinerama) screen. Requires -lXinerama.
 #
+#       HAVE_SDL_MIXER		Play sound effects with SDL2_mixer (sound server
+#				type 4). Remove it and the SDL_* lines below to
+#				build without sound.
+#
 #       JS_SUPPORT              Enable joystick support, requires libjsw
 #                               which comes with X Joystick Caliberator.
 #                               Add -ljsw to the LIB line farther below
@@ -60,7 +64,8 @@ PREFIX = /usr
 #				this option unless you are attempting
 #				to debug the program.
 #
-CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall
+SDL_CFLAGS != pkg-config --cflags SDL2_mixer
+CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -DHAVE_SDL_MIXER -O2 -g -Wall $(SDL_CFLAGS)
 
 
 # ########################################################################
@@ -74,7 +79,8 @@ CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall
 #   to the LIB line depending on what you have set in the CFLAGS line
 #   farther above.
 #
-LIB = -lm -lX11 -lXpm -lXext -lXinerama
+SDL_LIBS != pkg-config --libs SDL2_mixer
+LIB = -lm -lX11 -lXpm -lXext -lXinerama $(SDL_LIBS)
 
 # Library Directories:
 #

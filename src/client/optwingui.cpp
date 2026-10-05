@@ -109,7 +109,8 @@ const char *sound_server_names[] = {
         "None",
         "YIFF",
         "EsounD",
-        "MikMod"
+        "MikMod",
+        "SDL"
 };
 
 
@@ -917,10 +918,10 @@ int OptWinInit()
                 &options_win.server_type_tba,
                 options_win.toplevel,   
                 80, 120,	/* x, y. */
-                4,		/* Number of buttons. */   
+                5,		/* Number of buttons. */   
                 0,		/* Default armed button. */
                 sound_server_names,	/* Array of names. */
-                4,		/* Number of names. */
+                5,		/* Number of names. */
                 TGBTN_ARRAY_ALIGN_HORIZONTAL
 	    )
         )
@@ -931,6 +932,11 @@ int OptWinInit()
 	options_win.server_type_tba.tb[1]->disabled = True;
 	options_win.server_type_tba.tb[2]->disabled = True;
         options_win.server_type_tba.tb[3]->disabled = True;
+#ifdef HAVE_SDL_MIXER
+	options_win.server_type_tba.tb[4]->disabled = False;
+#else
+	options_win.server_type_tba.tb[4]->disabled = True;
+#endif	/* HAVE_SDL_MIXER */
 
 
 	if(

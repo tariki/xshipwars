@@ -785,6 +785,7 @@ typedef struct {
 #define SNDSERV_TYPE_YIFF       1
 #define SNDSERV_TYPE_ESOUND     2
 #define SNDSERV_TYPE_MIKMOD     3       /* Not supported. */
+#define SNDSERV_TYPE_SDL        4       /* SDL2_mixer (HAVE_SDL_MIXER). */
         int server_type;
 
 	/* Script file that starts sound server. */

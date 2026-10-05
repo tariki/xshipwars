@@ -552,9 +552,11 @@ int CmdSet(const char *arg)
                     sound.server_type = SNDSERV_TYPE_ESOUND;
                 else if(strcasepfx(val, "mikmod"))
                     sound.server_type = SNDSERV_TYPE_MIKMOD;
+                else if(strcasepfx(val, "sdl"))
+                    sound.server_type = SNDSERV_TYPE_SDL;
 		else
 		    MesgAdd(
- "Available sound_server_type values: none  yiff  esound  mikmod",
+ "Available sound_server_type values: none  yiff  esound  mikmod  sdl",
 			xsw_color.bp_standard_text
 		    );
 	    }
@@ -575,6 +577,10 @@ int CmdSet(const char *arg)
 
               case SNDSERV_TYPE_MIKMOD:
                 sprintf(text, "sound_server_type = mikmod");
+                break;
+
+              case SNDSERV_TYPE_SDL:
+                sprintf(text, "sound_server_type = sdl");
                 break;
 
               default:
