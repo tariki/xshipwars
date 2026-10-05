@@ -926,17 +926,10 @@ int OptWinInit()
         )
             return(-1);
 
+	/* YIFF, EsounD and MikMod are no longer available. */
 	options_win.server_type_tba.tb[0]->disabled = False;
-#ifdef HAVE_Y2
-	options_win.server_type_tba.tb[1]->disabled = False;
-#else
 	options_win.server_type_tba.tb[1]->disabled = True;
-#endif	/* HAVE_Y2 */
-#ifdef HAVE_ESD
-        options_win.server_type_tba.tb[2]->disabled = False;
-#else
 	options_win.server_type_tba.tb[2]->disabled = True;
-#endif	/* HAVE_ESD */
         options_win.server_type_tba.tb[3]->disabled = True;
 
 

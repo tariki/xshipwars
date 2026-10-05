@@ -44,24 +44,6 @@ PREFIX = /usr
 #                               LIB line farther below and not define this
 #                               to exclude this.
 #
-#       HAVE_YIFF               Enables YIFF Sound Systems client
-#                               support, requires libY2 which comes with
-#                               YIFF. Add -lY2 to the LIB line farther  
-#                               below if you enable this. Or remove -lY2   
-#                               from from the LIB line farther below
-#                               and not define this to excude this.
-#                               YIFF Sound Systems is available at:
-#                               http://wolfpack.twu.net/YIFF
-#
-#       HAVE_ESD                Enables Enlightenment Sound Daemon client
-#                               support, requires libesd which comes with
-#                               the Enlightenment Sound Daemon and
-#                               libaudiofile. Add -laudiofile and
-#                               -lesd to the LIB line farther below if you    
-#                               enable this. Or remove -laudiofile and -lesd  
-#                               from the LIB line farther below and not define
-#                               this to excude this.
-#
 #   Other arguments include:
 #
 #	-O#			Specifies the optimization level the

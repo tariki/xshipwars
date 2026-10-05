@@ -1741,11 +1741,7 @@ int XSWInit(int argc, char *argv[])
 	option.clear_chart_on_connect = 1;
 	option.save_on_exit = 1;
 
-#ifdef HAVE_Y2
-        sound.server_type = SNDSERV_TYPE_YIFF;
-#else
 	sound.server_type = SNDSERV_TYPE_NONE;
-#endif	/* HAVE_Y2 */
 
 	strncpy(
 	    sound.start_cmd,
