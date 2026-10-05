@@ -195,14 +195,17 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
 ### サウンド
 
 効果音は SDL2_mixer で鳴らします（元の YIFF / EsounD サウンドサーバは現在は無いため置き換えました）。
-同梱の設定では音は無効なので、次のどちらかで有効にします。
+同梱の設定では、音は最初から有効です（`SoundServerType = 4`、`Sounds = 3`）。変えるときは次のどちらかで行います。
 
-- client の右クリック → Options... → Sounds タブで、Sound Server Type に「SDL」、Amount level に Events・Engines・All の
-  どれかを選んで OK
-- `~/.shipwars/xshipwarsrc` で `SoundServerType = 4`、`Sounds = 1`〜`3`（1: イベント、2: ＋エンジン、3: すべて）
+- client の右クリック → Options... → Sounds タブの Sound Server Type（「SDL」か「None」）と Amount level
+- `~/.shipwars/xshipwarsrc` の `SoundServerType`（4: SDL、0: なし）と `Sounds`（0: なし、1: イベント、2: ＋エンジン、3: すべて。
+  今は 1〜3 で鳴る音は同じ）
+
+古い版で作られた `~/.shipwars/xshipwarsrc` が残っている場合は、音が無効のままなので、上の方法で有効にしてください。
 
 Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴ります。音声デバイスが無いなどで初期化に失敗したときは、
-メッセージを出して音を無効にし、そのまま動きます。
+メッセージ（ALSA の警告が続けて出ることもあります）を出して音を無効にし、そのまま動きます。このとき、client を終了すると
+`Sounds = 0` が設定ファイルに保存されるので、音声デバイスのある環境で遊ぶときは、上の方法でもう一度有効にしてください。
 
 - **背景音楽（MIDI）はまだ鳴りません**（Music の設定は効きません）。MIDI を鳴らす音源の扱いは今後の課題です。
 - **macOS の Docker（Dev Container）の中では音を聞けません**。Docker Desktop のコンテナには音声の出力が無いので、

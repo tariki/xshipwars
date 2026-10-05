@@ -73,11 +73,9 @@ fi
 
 # client は初回起動時に etc/xshipwarsrc を ~/.shipwars にコピーする。その代わりに、
 # パスだけをこの実行環境に合わせたものを置く
-# 音は SDL2_mixer（SoundServerType = 4）で、すべての効果音を鳴らす（Sounds = 3）
+# （音の設定は同梱の既定値のまま: SDL2_mixer で鳴らす SoundServerType = 4、Sounds = 3）
 sed -e "s#^ToplevelDir = .*#ToplevelDir = $XSW#" \
     -e "s#/home/learfox#$HOMEDIR#" \
-    -e "s#^SoundServerType = .*#SoundServerType = 4#" \
-    -e "s#^Sounds = .*#Sounds = 3#" \
     "$XSW/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
 cp "$XSW/etc/universes" "$HOMEDIR/.shipwars/"
 printf 'ToplevelDir = %s\nImagesDir = %s/images\nServerDir = %s\n' \
