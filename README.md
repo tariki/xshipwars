@@ -29,7 +29,7 @@ FreeBSD の実機ではまだ試せていません。
 Debian / Ubuntu 系なら、次のパッケージを入れます。
 
 ```sh
-sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-dev xfonts-base
+sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-dev libsdl2-mixer-dev xfonts-base
 ```
 
 `xfonts-base` は実行時に必要です。client は X のコアフォント `7x14` と `6x10` が無いと起動しません。
@@ -37,7 +37,7 @@ sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-d
 FreeBSD では、次のパッケージが必要なはずです（未確認）。スクリプト類（`scripts/*.sh`）を使うなら `bash` も必要です。
 
 ```sh
-pkg install libX11 libXext libXpm libXinerama font-misc-misc
+pkg install libX11 libXext libXpm libXinerama sdl2_mixer font-misc-misc
 ```
 
 ### ビルド
@@ -192,10 +192,27 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
 
 実行環境は `run-logs/xquartz/` に作られ、キーの割り当てと宇宙の状態は次回に引き継がれます。
 
+### サウンド
+
+効果音は SDL2_mixer で鳴らします（元の YIFF / EsounD サウンドサーバは現在は無いため置き換えました）。
+同梱の設定では音は無効なので、次のどちらかで有効にします。
+
+- client の右クリック → Options... → Sounds タブで、Sound Server Type に「SDL」、Amount level に Events・Engines・All の
+  どれかを選んで OK
+- `~/.shipwars/xshipwarsrc` で `SoundServerType = 4`、`Sounds = 1`〜`3`（1: イベント、2: ＋エンジン、3: すべて）
+
+Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴ります。音声デバイスが無いなどで初期化に失敗したときは、
+メッセージを出して音を無効にし、そのまま動きます。
+
+- **背景音楽（MIDI）はまだ鳴りません**（Music の設定は効きません）。MIDI を鳴らす音源の扱いは今後の課題です。
+- **macOS の Docker（Dev Container）の中では音を聞けません**。Docker Desktop のコンテナには音声の出力が無いので、
+  XQuartz で遊んでいても音は鳴りません。音を聞くには、Linux や FreeBSD のデスクトップで直接動かしてください。
+
 ### 既知の制限
 
-- **サウンドとジョイスティックは無効**です（元のライブラリ YIFF / ESD / libjsw が現在は無いため）。
+- **ジョイスティックは無効**です（元のライブラリ libjsw が現在は無いため）。
   設定ファイルの `JSCalibrationFile` が「Unknown parameter」と警告されるのは、このためで害はありません。
+- **背景音楽（MIDI）は鳴りません**（上記）。
 - **キー割り当ては X サーバに依存**します（上記）。
 - 表示が遅い環境（ネットワーク越しの XQuartz など）では、ログイン直後に物体の名前が届かず、"Object 3" のように
   表示されることがあります。クイックメニューの「Refresh」で直ります。
@@ -238,7 +255,8 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
   - `USE_XSHM`: MIT-SHM で描画する。ネットワーク越しの X サーバでは実行時に `--no_xshm` を付けて無効にする
   - `HAVE_XINERAMA`: 複数ディスプレイを考慮してウィンドウを配置する（`-lXinerama`）
   - `PLUGIN_SUPPORT`（server）
-  - `JS_SUPPORT`・`HAVE_YIFF`・`HAVE_ESD` は外してある
+  - `HAVE_SDL_MIXER`（client）: SDL2_mixer で効果音を鳴らす。フラグは `pkg-config SDL2_mixer` から取る
+  - `JS_SUPPORT` は外してある（YIFF / ESD 用の `HAVE_YIFF`・`HAVE_ESD` とそのコードは削除した）
 - **Makefile はヘッダの依存関係を追跡しません。** ヘッダを変えたら `make -f Makefile.Linux clean` してからビルドしてください。
 
 ### スクリプト
@@ -263,6 +281,8 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
   （client の内部の値を gdb で読んで判定する）
 - `EngineState = -1` の物体が、server と unvedit の保存を通っても -1 のまま（arm64 の char 符号の回帰テスト）
 - unvedit で開いて保存し直したファイルが、元と完全に同じ
+- client の効果音が SDL2_mixer から出力される（SDL の disk 出力 `SDL_AUDIODRIVER=disk` でファイルに書かせ、
+  起動時のロゴの音が入っているかを調べる）
 
 ヘッドレスで個別に調べるときのコツ:
 
@@ -285,7 +305,8 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
 
 ### 残っている課題
 
-- サウンド・ジョイスティックの代替実装（SDL2 など）
+- 背景音楽（MIDI）の再生（音源の選択と配布の検討が必要）
+- ジョイスティックの代替実装（SDL2 など）
 - ビルドシステムの改修（ヘッダの依存関係、pconf の改修や CMake 化）
 - キー割り当てを X サーバに依存しない形にすること（設定ファイルの形式に関わるので保留）
 - ログイン直後に物体の名前を取りこぼす件の原因調査（送信キューのあふれと推測）

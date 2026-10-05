@@ -329,3 +329,25 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
   - server のプラグイン読み込み（plugins.cpp）は `__linux__` のときだけ有効。FreeBSD でも dlopen は使えるが、
     機能を増やすことになるので変えていない。
   - clang の `-Wall` での警告は確認できていない（この環境には gcc しかない）。
+
+## サウンド: SDL2_mixer への置き換え (2026-10-05)
+
+- 元の client は YIFF と EsounD のサウンドサーバに対応していたが、どちらも今は無い。`sound.cpp` は
+  `sound.server_type` で方式を切り替える作りで、呼び出し側（`SoundPlay()` だけで 34 か所）は方式を意識していない。
+  server は `CS_CODE_PLAYSOUND`（音の番号と音量）を送るだけなので、方式を変えてもプロトコルは変わらない。
+- YIFF / EsounD のコードと同梱の YIFF ヘッダ（`src/include/Y2/`）を削除した。EsounD のコードには接続を表すポインタを
+  int にキャストする 64bit で壊れる書き方もあった。設定の `SoundServerType` の 1〜3（YIFF / EsounD / MikMod）は
+  読み込めるが音は鳴らない。
+- `SoundServerType = 4`（`SNDSERV_TYPE_SDL`）を追加した。`HAVE_SDL_MIXER` を定義したときだけ有効。
+  - 初期化: `SDL_InitSubSystem(SDL_INIT_AUDIO)` と `Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024)`、16 チャンネル。
+    失敗すると -1 を返し、client は音を無効にして続ける（既存の処理）。
+  - 効果音: サウンドスキームの WAV（同梱はすべて PCM 8bit ステレオ 11025Hz）を初めて鳴らすときに読み、パスと一緒に保持する。
+    再生は `Mix_GroupAvailable(-1)` で空きチャンネルを選び、`Mix_SetPanning()` で左右の音量を設定してから
+    `Mix_PlayChannel()` で始める（先に再生すると、最初の数十ミリ秒が前の音量で鳴りうるため）。
+  - 背景音楽（同梱は MIDI 3 曲）は未対応。MIDI には音源（Timidity の freepats や FluidSynth の SoundFont）が要る。
+- 検証: 音声デバイスの無いコンテナでは、SDL の disk 出力（`SDL_AUDIODRIVER=disk SDL_DISKAUDIOFILE=<file>`）で
+  ミキサーの出力を 16bit ステレオ 44.1kHz の raw ファイルに書かせて調べた。起動時のロゴの音（2.59 秒）、
+  エンジンのオン・オフ（重なって再生）、オプション画面の Test Sound の左だけ・右だけ・両方（反対側は振幅 0）を確認した。
+  gdb から `SoundPlay()` を呼ぶと音声スレッドも止まるので、再生と左右の設定の順序の問題は gdb では見えないことに注意。
+  スモークテストにも、起動時のロゴの音が出力されるかの項目を足した。
+- macOS の Docker Desktop のコンテナには音声の出力が無いので、XQuartz 経由で遊んでいても音は聞けない。
