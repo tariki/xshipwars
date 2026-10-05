@@ -10,6 +10,7 @@
 #     (client の内部の値を gdb で読んで判定する)
 #   - EngineState = -1 の物体が server と unvedit の保存を通っても -1 のまま
 #   - unvedit で開いて保存し直したファイルが元と同一
+#   - client の効果音が SDL2_mixer から出力される（SDL の disk 出力をファイルに書かせて調べる）
 # client/monitor/unvedit のデータは scripts/install-data.sh でインストールしたものを使う。
 # 各項目を PASS/FAIL で表示し、FAIL があれば終了コード 1。
 # 事前に scripts/build.sh all でビルドしておくこと。
@@ -72,8 +73,11 @@ fi
 
 # client は初回起動時に etc/xshipwarsrc を ~/.shipwars にコピーする。その代わりに、
 # パスだけをこの実行環境に合わせたものを置く
+# 音は SDL2_mixer（SoundServerType = 4）で、すべての効果音を鳴らす（Sounds = 3）
 sed -e "s#^ToplevelDir = .*#ToplevelDir = $XSW#" \
     -e "s#/home/learfox#$HOMEDIR#" \
+    -e "s#^SoundServerType = .*#SoundServerType = 4#" \
+    -e "s#^Sounds = .*#Sounds = 3#" \
     "$XSW/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
 cp "$XSW/etc/universes" "$HOMEDIR/.shipwars/"
 printf 'ToplevelDir = %s\nImagesDir = %s/images\nServerDir = %s\n' \
@@ -117,7 +121,9 @@ fi
 
 # ------------------------------------------------------------------
 # client (URL を引数に渡して Guest で接続)
-HOME="$HOMEDIR" "$ROOT/src/client/xsw" "swserv://Guest:guest@localhost:1701" \
+# 音声デバイスは無いので、SDL の disk 出力でミキサーの出力をファイルに書かせる
+HOME="$HOMEDIR" SDL_AUDIODRIVER=disk SDL_DISKAUDIOFILE="$OUT/client-sound.raw" \
+  "$ROOT/src/client/xsw" "swserv://Guest:guest@localhost:1701" \
   > "$OUT/client.log" 2>&1 &
 XSW_PID=$!; PIDS+=("$XSW_PID")
 bridge=""
@@ -174,6 +180,25 @@ fi
 
 if alive "$XSW_PID"; then pass "client が動き続けている"; else fail "client が終了した"; fi
 kill "$XSW_PID" "$MON_PID" 2>/dev/null; pause 2
+
+# 起動時のロゴの音（xsw_logo01.wav, 約 2.6 秒）が出力の先頭付近にあるか
+# （16bit ステレオ 44.1kHz。振幅 200 を超える 10ms の区間を数える）
+loud=$(python3 - "$OUT/client-sound.raw" <<'PY'
+import sys, array
+a = array.array('h')
+try:
+    a.frombytes(open(sys.argv[1], 'rb').read(44100 * 4 * 5))
+except OSError:
+    pass
+win = 441 * 2
+print(sum(1 for i in range(0, len(a), win) if max((abs(x) for x in a[i:i + win]), default=0) > 200))
+PY
+)
+if [ "${loud:-0}" -ge 100 ]; then
+  pass "SDL2_mixer で効果音が出力された (起動 5 秒間に音のある 10ms 区間が ${loud} 個)"
+else
+  fail "SDL2_mixer の効果音が出力されていない (音のある 10ms 区間 ${loud:-0} 個)"
+fi
 
 # ------------------------------------------------------------------
 # server を終了させ、保存されたユニバースを確認する
