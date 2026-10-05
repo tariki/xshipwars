@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential gdb valgrind strace ltrace bear \
   libx11-dev libxext-dev libxpm-dev libxt-dev libxinerama-dev x11proto-dev \
+  libsdl2-mixer-dev \
   xvfb xauth x11-apps x11-utils xdotool imagemagick \
   xfonts-base \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
