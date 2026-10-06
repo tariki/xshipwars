@@ -1,5 +1,7 @@
 # 変更履歴 (Changelog)
 
+[English](CHANGELOG.md) | 日本語
+
 このプロジェクトの変更履歴を記録します。[Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) の形式に準拠します。
 版番号はこの移植版のものです。ゲーム本体の版（プログラムが表示する版、設定ファイル・宇宙ファイルに書かれる版）は
 元の XShipWars 1.34.0 のままです。
@@ -24,4 +26,4 @@
   - `scripts/install-data.sh`: client が読むデータ（画像・音・設定）のインストール
   - `scripts/smoke.sh`: 4 つのプログラムを Xvfb 上で起動して主要な動作を自動確認
   - `scripts/xquartz.sh`: Dev Container から macOS の XQuartz に表示
-- 既知の問題は README の「残っている課題」を参照
+- 既知の問題は [README の「残っている課題」](README.ja.md#残っている課題)を参照

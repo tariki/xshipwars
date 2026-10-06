@@ -1,5 +1,7 @@
 # XShipWars — 現代の Linux 向け移植版
 
+[English](README.md) | 日本語
+
 XShipWars は、WolfPack Entertainment が 1999〜2001 年に開発した、X Window System 用のネットワーク対戦型
 宇宙船ゲームです（このリポジトリの元は バージョン 1.34.0）。このリポジトリは、それを最新の Linux
 （Debian trixie / gcc 14 / 64bit）でビルド・実行できるようにしたものです。
