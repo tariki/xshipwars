@@ -764,15 +764,10 @@ Available values are: galactic_core  vessel\n",
 		}
 		fname.js_calib[NAME_MAX + PATH_MAX - 1] = '\0';
 
-		if(stat(fname.js_calib, &stat_buf))
-		{
-		    fprintf(stderr,
-                        "%s: Line %i: Warning: %s: No such file.\n",
-			filename,
-			lines_read,
-			fname.js_calib
-		    );
-		}
+		/*   Joysticks are read with SDL (jsw-sdl.cpp), which does
+		 *   not use libjsw calibration files, so the file is only
+		 *   kept to be saved back and need not exist.
+		 */
             }
 #endif /* JS_SUPPORT */
 	    /* MainPageFile */

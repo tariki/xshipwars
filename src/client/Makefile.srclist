@@ -9,7 +9,7 @@ SRC = autointerval.cpp blitbeam.cpp blitcircle.cpp blitcursor.cpp blitfade.cpp \
       cmdrefresh.cpp cmdservscript.cpp cmdset.cpp cmdsynctime.cpp cmdtest.cpp \
       cmdversion.cpp ctype.cpp db.cpp dbinrange.cpp dbutil.cpp disk.cpp \
       ecowin.cpp fio.cpp gctl.cpp images.cpp imglabels.cpp isrefs.cpp isrefsfile.cpp \
-      jsmap.cpp jsmapwin.cpp keymapwin.cpp log.cpp main.cpp mesgwin.cpp mf.cpp net.cpp \
+      jsmap.cpp jsmapwin.cpp jsw-sdl.cpp keymapwin.cpp log.cpp main.cpp mesgwin.cpp mf.cpp net.cpp \
       netio.cpp netrecv.cpp netsend.cpp ocsnames.cpp ocsnamesfile.cpp \
       optwingui.cpp optwinop.cpp osw-x.cpp page.cpp pagefile.cpp prochandle.cpp \
       qmenu.cpp rcfile.cpp rengine.cpp scanner.cpp serverscript.cpp sound.cpp \

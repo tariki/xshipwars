@@ -41,7 +41,9 @@ PREFIX = /usr
 #				type 4). Remove it and the SDL_* lines below to
 #				build without sound.
 #
-#	JS_SUPPORT		Enable joystick support.
+#       JS_SUPPORT		Enable joystick support, read with SDL2's
+#				joystick API (jsw-sdl.cpp in place of the
+#				old libjsw). Needs the SDL_* lines below.
 #
 #   Other arguments include:
 #
@@ -60,7 +62,7 @@ PREFIX = /usr
 #                               to debug the program.
 #
 SDL_CFLAGS != pkg-config --cflags SDL2_mixer
-CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -DHAVE_SDL_MIXER -O2 -g -Wall $(SDL_CFLAGS)
+CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -DHAVE_SDL_MIXER -DJS_SUPPORT -O2 -g -Wall $(SDL_CFLAGS)
 
 
 # ########################################################################
