@@ -26,7 +26,7 @@
 #ifdef JS_SUPPORT
 // Dan S
 extern "C" {
-# include <jsw.h>
+# include "../include/jsw.h"
 }
 #endif  /* JS_SUPPORT */
 

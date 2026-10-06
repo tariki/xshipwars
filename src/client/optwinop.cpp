@@ -283,12 +283,9 @@ void OptWinFetchGlobals()
 
 #ifdef JS_SUPPORT
 	/* Joystick calibration file location. */
-	strptr = getenv("HOME");
-	if(strptr == NULL)
-	    strptr = "/";
         strncpy(tmp_path, fname.js_calib, PATH_MAX + NAME_MAX);
 	tmp_path[PATH_MAX + NAME_MAX - 1] = '\0';
-        StripParentPath(tmp_path, strptr);
+        StripParentPath(tmp_path, dname.home);
         PromptSetS(
             &options_win.js_calib_path_prompt,
             tmp_path

@@ -37,6 +37,8 @@
 
 #ifdef JS_SUPPORT
 
+#include <stdint.h>
+
 #include "jsmapwin.h"
 #include "xsw.h"
 
@@ -282,7 +284,7 @@ int JSMWDoSelectJoystick(int n)
 	    CListSetItemDataPtr(
 		list,
 		i, 1,		/* Row, colum. */
-		(void *)jsmap_ptr->button[i]->keycode
+		(void *)(uintptr_t)jsmap_ptr->button[i]->keycode
 	    );
 	}
 
@@ -399,7 +401,7 @@ int JSMWDoApplyJoystick(int n)
 	    /* Get keycode value from item's client data pointer
 	     * value.
 	     */
-	    jsmap_button_ptr->keycode = (keycode_t)CListGetItemDataPtr(
+	    jsmap_button_ptr->keycode = (keycode_t)(uintptr_t)CListGetItemDataPtr(
 		list,
 		i, 1	/* Row, colum. */
 	    );
@@ -1369,7 +1371,7 @@ int JSMWManage(event_t *event)
 		    CListSetItemDataPtr(
 			list,
 			i, 1,
-			(void *)keycode
+			(void *)(uintptr_t)keycode
 		    );
 		}
 
@@ -1435,7 +1437,7 @@ int JSMWManage(event_t *event)
 			CListSetItemDataPtr(
                             list,
                             i, 1,	/* Row, colum. */
-			    (void *)keycode
+			    (void *)(uintptr_t)keycode
 			);
 			break;
 
