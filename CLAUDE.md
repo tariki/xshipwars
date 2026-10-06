@@ -52,7 +52,8 @@
   前提にしている箇所は固定幅型（`int32_t` 等）にする。警告を黙らせるだけのキャストはしない
 - サウンドは SDL2_mixer で置き換えた（client の `HAVE_SDL_MIXER`、設定の `SoundServerType = 4`）。背景音楽（MIDI）は
   FluidSynth と SoundFont（Debian では `libfluidsynth3`・`timgm6mb-soundfont`）で鳴らす。
-  YIFF / ESD のコードは削除済み。ジョイスティック (libjsw) は無効のままで、代替実装は別フェーズ
+  YIFF / ESD のコードは削除済み。ジョイスティックは
+  libjsw の代わりに SDL2 で読む（client の `JS_SUPPORT`、`jsw-sdl.cpp`。実機では未確認）
 - `-fpermissive`・`-w`・警告の一括抑止でごまかさない
 - 修正は小さな単位でコミットし、メッセージに「現代の環境で何が壊れていたか」を書く
 

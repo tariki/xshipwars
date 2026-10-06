@@ -386,3 +386,37 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
 - 検証: スモークテストで、ログイン後に曲 100 が再生中（`Mix_PlayingMusic()`）であること、gdb から 102 に切り替えて再生中、
   104（割り当て無し）で停止すること、detach 後にゲームが通常の曲 100 に戻して再生することを確かめる。
   disk 出力で 3 曲とも音が出ることも確かめた。スモークテストは雛形の既定値によらず `Music = on` にして実行する。
+
+## ジョイスティック: libjsw を SDL2 で置き換え (2026-10-06)
+
+- libjsw（wolfpack.twu.net）は Debian にも FreeBSD ports にも無い。FreeBSD の Linux 互換 `/dev/input/js*`（linux-js）も
+  2013 年に廃止された。Linux と FreeBSD の両方で読めるように、SDL2 の Joystick API を使う（SDL2 はサウンドで既にリンクしている）。
+- client が使う libjsw の関数は `JSInit`・`JSUpdate`・`JSGetAxisCoeff`・`JSGetAxisCoeffNZ`・`JSClose` の 5 つだけで、
+  構造体は `js_data_struct` の軸・ボタンの数、ボタンの状態、`fd` だけ。この 5 つを `src/client/jsw-sdl.cpp` に SDL2 で書き、
+  同梱の `src/include/jsw.h` をそのまま使う。gctl.cpp・jsmap.cpp・jsmapwin.cpp・設定ファイルの形式は変えていない。
+  - `fd` には SDL のジョイスティックのインスタンス ID を入れる。開いているかどうかは `fd` ではなく `JSFlagIsInit` で判定する
+    （calloc しただけの構造体は `fd` が 0 で、SDL のインスタンス ID は 0 から始まるため）。
+  - デバイス名の末尾の数字を SDL のデバイス番号にする（`/dev/js0` → 0）。数字が無ければ `JSBadValue`。
+  - 軸は SDL の -32768〜32767。ハットは、libjsw が使っていた Linux の joystick ドライバと同じく、軸の後ろに 2 本ずつ（x, y）並べる。
+  - 不感帯は libjsw の未校正時の既定値（中心 500・最大 1000 に対して 100 = 振れ幅の 20%）。
+    `JSGetAxisCoeffNZ` は不感帯を 0 にし、その外側を -1〜1 に広げる。
+  - SDL の初期化で `SDL_HINT_NO_SIGNAL_HANDLERS` を立てる（ジョイスティックの初期化はイベント機能も初期化し、
+    既定では SIGINT・SIGTERM のハンドラを入れるため）。読み取りは `SDL_JoystickUpdate()` のポーリングで、
+    `SDL_JoystickEventState(SDL_IGNORE)` にして SDL のイベントキューには溜めない。
+  - 抜かれたジョイスティックは `JSUpdate` が `JSNoEvent` を返すだけで、client はそのまま動く（仮想ジョイスティックで確認）。
+- libjsw の校正ファイル（`JSCalibrationFile`）は読まない。作るツール（jscalibrator）も無い。設定の行は読み書きを続け、
+  存在しなくても警告しないようにした（以前は JS_SUPPORT 無しで「Unknown parameter」、有効にすると「No such file」が出ていた）。
+- 軸の向き: gctl.cpp は Normal モードの推力を `(coeff + 1) / 2`、ズームを `(coeff - 1) / -2` で求める。SDL も Linux の joystick
+  ドライバも、前に倒すと負の値なので、推力はスティックを手前に引くと上がる。元は libjsw の校正（`JSAxisFlagFlipped`）で
+  反転させる前提だったと思われる。反転の手段は今は無い。
+- JS_SUPPORT を有効にしてビルドすると、20 年以上コンパイルされていなかったコードに 64bit の問題があった:
+  jsmapwin.cpp がボタンのキーコードを `(void *)keycode` で一覧のデータポインタに入れ、`(keycode_t)` で取り出していた
+  （64bit では int へのキャストがエラー）。keymapwin.cpp と同じく `uintptr_t` を経由させた。
+  optwinop.cpp の校正ファイルの欄では、文字列リテラルを `char *` に入れていたので、隣の欄と同じく `dname.home` を使うようにした。
+  `xsw.h` は `<jsw.h>`（システムの libjsw）ではなく同梱の `../include/jsw.h` を読むようにした。
+- 検証: コンテナには `/dev/input` も `/dev/uinput` も無いので、SDL2 の仮想ジョイスティック（`SDL_JoystickAttachVirtual`）を
+  gdb から client の中に作って確かめた。仮想デバイスは SDL のジョイスティック機能が終了すると消えるので、
+  先に `SDL_InitSubSystem(SDL_INIT_JOYSTICK)` で参照を 1 つ持たせてから `GCtlInit(CONTROLLER_JOYSTICK)` を呼ぶ。
+  スモークテストでは、設定ファイルに割り当て（軸 0 = 旋回、ボタン 0 = F8）を入れ、軸を倒して旋回すること、
+  ボタンで推力モードが進むことを判定する。割り当て画面（Map Joystick）で「Refresh」を押すと、軸 4 本（軸 2・ハット 1）と
+  ボタン 1 個が読み込まれることも見た。
