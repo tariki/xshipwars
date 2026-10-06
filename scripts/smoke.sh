@@ -73,9 +73,11 @@ fi
 
 # client は初回起動時に etc/xshipwarsrc を ~/.shipwars にコピーする。その代わりに、
 # パスだけをこの実行環境に合わせたものを置く
-# （音の設定は同梱の既定値のまま: SDL2_mixer で鳴らす SoundServerType = 4、Sounds = 3）
+# （音の設定は同梱の既定値のまま: SDL2_mixer で鳴らす SoundServerType = 4、Sounds = 3。
+#   背景音楽は既定値によらず確かめるため Music = on にする）
 sed -e "s#^ToplevelDir = .*#ToplevelDir = $XSW#" \
     -e "s#/home/learfox#$HOMEDIR#" \
+    -e "s#^Music = .*#Music = on#" \
     "$XSW/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
 cp "$XSW/etc/universes" "$HOMEDIR/.shipwars/"
 printf 'ToplevelDir = %s\nImagesDir = %s/images\nServerDir = %s\n' \
@@ -173,6 +175,26 @@ if [ "$tm_ok" -eq 1 ]; then
   pass "Shift+F8 で推力モードを逆に一周できた ($seq_tm)"
 else
   fail "Shift+F8 の推力モードの逆回し ($seq_tm)"
+fi
+
+# 背景音楽: ログイン後は通常の曲 (100) が流れていること、戦闘の曲 (102) に切り替わり、
+# 割り当ての無いメインメニューの曲 (104) では止まること
+# (ゲームは状況から曲を選び直すので、切り替えと確認は 1 回の attach の中で行い、
+#  detach 後には通常の曲に戻ることを確かめる)
+music=$(timeout 30 gdb -batch -p "$XSW_PID" \
+  -ex 'print sound.bkg_mood_code' -ex 'print (int)Mix_PlayingMusic()' \
+  -ex 'call (void)SoundChangeBackgroundMusic(102, 0, 0)' \
+  -ex 'print sound.bkg_mood_code' -ex 'print (int)Mix_PlayingMusic()' \
+  -ex 'call (void)SoundChangeBackgroundMusic(104, 0, 0)' \
+  -ex 'print (int)Mix_PlayingMusic()' 2>/dev/null |
+  sed -n 's/^\$[0-9]* = //p' | tr '\n' ' ')
+pause 2
+mood_after=$(gdbval "$XSW_PID" 'sound.bkg_mood_code')
+playing_after=$(gdbval "$XSW_PID" '(int)Mix_PlayingMusic()')
+if [ "$music" = "100 1 102 1 0 " ] && [ "$mood_after" = 100 ] && [ "$playing_after" = 1 ]; then
+  pass "背景音楽 (MIDI) が流れ、曲の切り替えと停止ができた"
+else
+  fail "背景音楽 (曲/再生中: ${music}-> 戻った後 $mood_after $playing_after)"
 fi
 "$ROOT/scripts/headless.sh" shot "$OUT/bridge-2.png" >/dev/null
 
