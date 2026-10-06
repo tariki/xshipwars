@@ -355,6 +355,11 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 - キー割り当てを X サーバに依存しない形にすること（設定ファイルの形式に関わるので保留）
 - ログイン直後に物体の名前を取りこぼす件の原因調査（送信キューのあふれと推測）
 - server の `restart` スクリプトが csh で、`etc/generic.conf` を前提にしていること
+- FreeBSD: `free` コマンドが無いので、client のオプションウィンドウのメモリ表示が 0 になる
+- FreeBSD: server のプラグイン読み込みが Linux のときだけ有効になっている（FreeBSD でも dlopen は使えるが、
+  機能を増やすことになるので変えていない）
+- 背景音楽の `theme/sounds/aquarium.mid` に「Copyright © 1999 by Ramon Pajares Box - All Rights Reserved」という
+  権利表示がある（曲は Saint-Saëns で、元の配布物にも入っていたファイル）。扱い（そのまま残す・差し替える）は未定
 
 ---
 
