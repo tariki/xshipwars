@@ -344,7 +344,7 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
   - 効果音: サウンドスキームの WAV（同梱はすべて PCM 8bit ステレオ 11025Hz）を初めて鳴らすときに読み、パスと一緒に保持する。
     再生は `Mix_GroupAvailable(-1)` で空きチャンネルを選び、`Mix_SetPanning()` で左右の音量を設定してから
     `Mix_PlayChannel()` で始める（先に再生すると、最初の数十ミリ秒が前の音量で鳴りうるため）。
-  - 背景音楽（同梱は MIDI 3 曲）は未対応。MIDI には音源（Timidity の freepats や FluidSynth の SoundFont）が要る。
+  - 背景音楽（同梱は MIDI 3 曲）は、後に対応した（下の「背景音楽 (MIDI)」）。
 - 検証: 音声デバイスの無いコンテナでは、SDL の disk 出力（`SDL_AUDIODRIVER=disk SDL_DISKAUDIOFILE=<file>`）で
   ミキサーの出力を 16bit ステレオ 44.1kHz の raw ファイルに書かせて調べた。起動時のロゴの音（2.59 秒）、
   エンジンのオン・オフ（重なって再生）、オプション画面の Test Sound の左だけ・右だけ・両方（反対側は振幅 0）を確認した。
@@ -356,3 +356,33 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
   音声デバイスの無い環境では、ALSA の警告と初期化失敗のメッセージを出して音を無効にし、client はそのまま動く。
   このとき `option.sounds` が 0 になり、終了時に `Sounds = 0` が保存されるので、その HOME では次から音が無効になる
   （元からの作り。XQuartz 用の `run-logs/xquartz/home` もこうなる）。スモークテストは、同梱の既定値のまま音を確認する。
+
+## 背景音楽 (MIDI) (2026-10-06)
+
+- 曲の選択は元のまま: `XSWDoChangeBackgroundMusic()`（main.cpp）が状況から雰囲気のコードを決め
+  （メインメニュー 104、通常 100、星雲の中 103、戦闘 102）、`sound.bkg_mood_code` と違うときだけ
+  `SoundChangeBackgroundMusic()` を呼ぶ。呼ばれるのはイベント時（自分の物体が決まったとき、ロックの変化、
+  星雲の出入り、メインメニューの表示・非表示、オプションの適用）で、`option.music`（設定の `Music`）が on のときだけ。
+- 同梱の `default.ss` は 100・101 が bluedanube.mid、102 が marsbringerofwar.mid、103 が aquarium.mid。104（メインメニュー）と
+  105 には割り当てが無い。元の YIFF 版は、割り当ての無いコードでは前の曲を止めるだけなので、メインメニューは無音。これも同じにした。
+- SDL 版: 前の曲を `Mix_HaltMusic()`・`Mix_FreeMusic()` で止めて、`Mix_LoadMUS()`・`Mix_PlayMusic(music, -1)` で
+  無限ループ再生する（YIFF 版の `total_repeats = -1` と同じ）。読み込みに失敗してもコードは記録するので、同じ雰囲気の間は再試行しない。
+- MIDI の音源: Debian の SDL2_mixer は、MIDI を FluidSynth（`libfluidsynth.so.3` を実行時に dlopen）か、組み込みの
+  Timidity で鳴らす。**`libsdl2-mixer-dev` を入れても `libfluidsynth3` も SoundFont も入らない**（依存関係に無い）。
+  - FluidSynth の SoundFont は既定で `/usr/share/sounds/sf3/default-GM.sf3` と `/usr/share/sounds/sf2/FluidR3_GM.sf2` を探す。
+    Debian の SoundFont パッケージは alternatives で `default-GM.sf3` も登録するので、`timgm6mb-soundfont` を入れるだけで見つかる
+    （中身は sf2 だが FluidSynth は問題なく読む）。環境変数 `SDL_SOUNDFONTS` は、既定の場所に SoundFont が無いときか、
+    `SDL_FORCE_SOUNDFONTS=1` のときだけ使われる。
+  - SoundFont が見つからないと Timidity に落ち、エラーは「Couldn't open timidity.cfg」になる。
+  - freepats（Timidity 用）は楽器が欠けていることがあるので選ばなかった。marsbringerofwar.mid は 11 種類、aquarium.mid は 9 種類の
+    GM 音色とドラムを使う。
+  - `fluid-soundfont-gm`（約 140MB）ではなく `timgm6mb-soundfont`（約 6MB）にしたのは、SDL2_mixer が曲を読むたびに
+    SoundFont を読み込み直すため（雰囲気が変わるたびに main ループの中で読む）。TimGM6mb で、読み込みは初回 約 130ms（FluidSynth の dlopen を含む）、
+    2 回目以降 約 40ms（arm64 コンテナ）。
+- 同梱の MIDI の中身: marsbringerofwar.mid と aquarium.mid にはテキストのメタイベント 0x21（MIDI port）があり、FluidSynth が
+  読み込みのたびに「Ignoring unrecognized meta event type 0x21」を 20 行ほど出す。害は無い。
+  aquarium.mid には「Copyright © 1999 by Ramon Pajares Box - All Rights Reserved」、marsbringerofwar.mid には
+  「Sequenced by Jack Hines」という記載がある（曲自体は Saint-Saëns、Holst）。元の配布物にも入っていたファイル。
+- 検証: スモークテストで、ログイン後に曲 100 が再生中（`Mix_PlayingMusic()`）であること、gdb から 102 に切り替えて再生中、
+  104（割り当て無し）で停止すること、detach 後にゲームが通常の曲 100 に戻して再生することを確かめる。
+  disk 出力で 3 曲とも音が出ることも確かめた。スモークテストは雛形の既定値によらず `Music = on` にして実行する。

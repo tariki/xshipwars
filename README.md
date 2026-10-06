@@ -29,16 +29,20 @@ FreeBSD の実機ではまだ試せていません。
 Debian / Ubuntu 系なら、次のパッケージを入れます。
 
 ```sh
-sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-dev libsdl2-mixer-dev xfonts-base
+sudo apt install build-essential libx11-dev libxext-dev libxpm-dev libxinerama-dev libsdl2-mixer-dev xfonts-base \
+  libfluidsynth3 timgm6mb-soundfont
 ```
 
 `xfonts-base` は実行時に必要です。client は X のコアフォント `7x14` と `6x10` が無いと起動しません。
+`libfluidsynth3` と `timgm6mb-soundfont` は背景音楽（MIDI）を鳴らすときだけ必要です（「サウンド」を参照）。
 
 FreeBSD では、次のパッケージが必要なはずです（未確認）。スクリプト類（`scripts/*.sh`）を使うなら `bash` も必要です。
 
 ```sh
 pkg install libX11 libXext libXpm libXinerama sdl2_mixer font-misc-misc
 ```
+
+背景音楽には、さらに FluidSynth と GM の SoundFont が要ります（「サウンド」を参照。未確認）。
 
 ### ビルド
 
@@ -194,7 +198,7 @@ Dev Container の中で server を動かし、画面を macOS の XQuartz に表
 
 ### サウンド
 
-効果音は SDL2_mixer で鳴らします（元の YIFF / EsounD サウンドサーバは現在は無いため置き換えました）。
+効果音と背景音楽は SDL2_mixer で鳴らします（元の YIFF / EsounD サウンドサーバは現在は無いため置き換えました）。
 同梱の設定では、音は最初から有効です（`SoundServerType = 4`、`Sounds = 3`）。変えるときは次のどちらかで行います。
 
 - client の右クリック → Options... → Sounds タブの Sound Server Type（「SDL」か「None」）と Amount level
@@ -207,7 +211,19 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 メッセージ（ALSA の警告が続けて出ることもあります）を出して音を無効にし、そのまま動きます。このとき、client を終了すると
 `Sounds = 0` が設定ファイルに保存されるので、音声デバイスのある環境で遊ぶときは、上の方法でもう一度有効にしてください。
 
-- **背景音楽（MIDI）はまだ鳴りません**（Music の設定は効きません）。MIDI を鳴らす音源の扱いは今後の課題です。
+- **背景音楽（MIDI）は既定では無効**です。有効にするには、Options... → Sounds タブの Music をオンにするか、
+  `~/.shipwars/xshipwarsrc` を `Music = on` にします。曲は状況（通常・星雲の中・戦闘）に合わせて切り替わり、
+  メインメニューでは鳴りません（元のゲームと同じ）。
+  - MIDI を鳴らすには、SDL2_mixer が使う FluidSynth と GM の SoundFont が必要です。Debian / Ubuntu では
+    `libfluidsynth3` と `timgm6mb-soundfont`（約 6MB）を入れれば、追加の設定なしで鳴ります。
+    `fluid-soundfont-gm`（約 140MB）など、`/usr/share/sounds/sf3/default-GM.sf3` に登録される別の SoundFont でもかまいません。
+  - 別の場所の SoundFont を使うときは、環境変数 `SDL_SOUNDFONTS=<.sf2 のパス>` を指定します
+    （上の既定の場所にも SoundFont があるときは、`SDL_FORCE_SOUNDFONTS=1` も必要です）。
+  - SoundFont が見つからないと、`bluedanube.mid: Couldn't open timidity.cfg` のようなメッセージを出して、
+    背景音楽なしで動きます。曲によっては FluidSynth が `Ignoring unrecognized meta event type 0x21` を
+    何十行か出しますが、害はありません。
+  - FreeBSD では `fluidsynth` と SoundFont（`fluid-soundfont` など）を入れ、必要なら `SDL_SOUNDFONTS` で
+    場所を指定すれば鳴るはずです（未確認）。
 - **macOS の Docker（Dev Container）の中では音を聞けません**。Docker Desktop のコンテナには音声の出力が無いので、
   XQuartz で遊んでいても音は鳴りません。音を聞くには、Linux や FreeBSD のデスクトップで直接動かしてください。
 
@@ -215,7 +231,6 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 
 - **ジョイスティックは無効**です（元のライブラリ libjsw が現在は無いため）。
   設定ファイルの `JSCalibrationFile` が「Unknown parameter」と警告されるのは、このためで害はありません。
-- **背景音楽（MIDI）は鳴りません**（上記）。
 - **キー割り当ては X サーバに依存**します（上記）。
 - 表示が遅い環境（ネットワーク越しの XQuartz など）では、ログイン直後に物体の名前が届かず、"Object 3" のように
   表示されることがあります。クイックメニューの「Refresh」で直ります。
@@ -258,7 +273,7 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
   - `USE_XSHM`: MIT-SHM で描画する。ネットワーク越しの X サーバでは実行時に `--no_xshm` を付けて無効にする
   - `HAVE_XINERAMA`: 複数ディスプレイを考慮してウィンドウを配置する（`-lXinerama`）
   - `PLUGIN_SUPPORT`（server）
-  - `HAVE_SDL_MIXER`（client）: SDL2_mixer で効果音を鳴らす。フラグは `pkg-config SDL2_mixer` から取る
+  - `HAVE_SDL_MIXER`（client）: SDL2_mixer で効果音と背景音楽を鳴らす。フラグは `pkg-config SDL2_mixer` から取る
   - `JS_SUPPORT` は外してある（YIFF / ESD 用の `HAVE_YIFF`・`HAVE_ESD` とそのコードは削除した）
 - **Makefile はヘッダの依存関係を追跡しません。** ヘッダを変えたら `make -f Makefile.Linux clean` してからビルドしてください。
 
@@ -286,6 +301,8 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 - unvedit で開いて保存し直したファイルが、元と完全に同じ
 - client の効果音が SDL2_mixer から出力される（SDL の disk 出力 `SDL_AUDIODRIVER=disk` でファイルに書かせ、
   起動時のロゴの音が入っているかを調べる）
+- client の背景音楽（MIDI）が流れ、曲の切り替えと、割り当ての無い曲での停止ができる
+  （client の中で gdb から曲を切り替え、その後ゲームが通常の曲に戻すことも確かめる）
 
 ヘッドレスで個別に調べるときのコツ:
 
@@ -308,7 +325,6 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 
 ### 残っている課題
 
-- 背景音楽（MIDI）の再生（音源の選択と配布の検討が必要）
 - ジョイスティックの代替実装（SDL2 など）
 - ビルドシステムの改修（ヘッダの依存関係、pconf の改修や CMake 化）
 - キー割り当てを X サーバに依存しない形にすること（設定ファイルの形式に関わるので保留）
