@@ -75,9 +75,23 @@ fi
 # パスだけをこの実行環境に合わせたものを置く
 # （音の設定は同梱の既定値のまま: SDL2_mixer で鳴らす SoundServerType = 4、Sounds = 3。
 #   背景音楽は既定値によらず確かめるため Music = on にする）
+# ジョイスティック 0 の割り当て: 軸 0 = 旋回、ボタン 0 = 推力モードの切り替え (F8、キーコード 74)。
+# 操作はキーボードのまま始め、後で gdb から SDL の仮想ジョイスティックをつないで切り替える
+cat > "$OUT/jsmap.rc" <<'EOF'
+BeginJSMap
+    DeviceName = /dev/js0
+    BeginAxis
+        OpCode = 0
+    EndAxis
+    BeginButton
+        Keycode = 74
+    EndButton
+EndJSMap
+EOF
 sed -e "s#^ToplevelDir = .*#ToplevelDir = $XSW#" \
     -e "s#/home/learfox#$HOMEDIR#" \
     -e "s#^Music = .*#Music = on#" \
+    -e "/^# Joystick mappings:/r $OUT/jsmap.rc" \
     "$XSW/etc/xshipwarsrc" > "$HOMEDIR/.shipwars/xshipwarsrc"
 cp "$XSW/etc/universes" "$HOMEDIR/.shipwars/"
 printf 'ToplevelDir = %s\nImagesDir = %s/images\nServerDir = %s\n' \
@@ -195,6 +209,32 @@ if [ "$music" = "100 1 102 1 0 " ] && [ "$mood_after" = 100 ] && [ "$playing_aft
   pass "背景音楽 (MIDI) が流れ、曲の切り替えと停止ができた"
 else
   fail "背景音楽 (曲/再生中: ${music}-> 戻った後 $mood_after $playing_after)"
+fi
+# ジョイスティック: 実機が無いので、SDL の仮想ジョイスティック (軸 2・ボタン 1・ハット 1) を
+# gdb からつなぐ。先に SDL のジョイスティック機能を 1 回初期化しておくのは、GCtlInit() が
+# 開き直すときに仮想デバイスが消えないようにするため
+js=$(timeout 30 gdb -batch -p "$XSW_PID" \
+  -ex 'print (int)SDL_InitSubSystem(0x200)' \
+  -ex 'print (int)SDL_JoystickAttachVirtual(1, 2, 1, 1)' \
+  -ex 'print GCtlInit(1)' \
+  -ex 'print jsmap[0]->jsd.total_axises' -ex 'print jsmap[0]->jsd.total_buttons' \
+  -ex 'print (int)SDL_JoystickSetVirtualAxis((void *)SDL_JoystickFromInstanceID(jsmap[0]->jsd.fd), 0, 32767)' \
+  2>/dev/null | sed -n 's/^\$[0-9]* = //p' | tr '\n' ' ')
+hd0=$(gdbval "$XSW_PID" 'net_parms.player_obj_ptr->heading')
+pause 1
+turn=$(gdbval "$XSW_PID" 'gctl[0].turn')
+hd1=$(gdbval "$XSW_PID" 'net_parms.player_obj_ptr->heading')
+tm0=$(gdbval "$XSW_PID" 'option.throttle_mode')
+gdbval "$XSW_PID" '(int)SDL_JoystickSetVirtualButton((void *)SDL_JoystickFromInstanceID(jsmap[0]->jsd.fd), 0, 1)' >/dev/null
+pause 0.5
+gdbval "$XSW_PID" '(int)SDL_JoystickSetVirtualButton((void *)SDL_JoystickFromInstanceID(jsmap[0]->jsd.fd), 0, 0)' >/dev/null
+pause 0.5
+tm1=$(gdbval "$XSW_PID" 'option.throttle_mode')
+if [ "$js" = "0 0 0 4 1 0 " ] && [ "$turn" = 1 ] && [ "$hd0" != "$hd1" ] &&
+   [[ "$tm0" =~ ^[0-9]+$ ]] && [ "$tm1" = "$(( (tm0 + 1) % 3 ))" ]; then
+  pass "仮想ジョイスティックの軸で旋回し、ボタンで推力モードが変わった (heading $hd0 -> $hd1, モード $tm0 -> $tm1)"
+else
+  fail "仮想ジョイスティック (初期化: ${js}旋回 '$turn' heading '$hd0' -> '$hd1', モード '$tm0' -> '$tm1')"
 fi
 "$ROOT/scripts/headless.sh" shot "$OUT/bridge-2.png" >/dev/null
 
