@@ -60,3 +60,7 @@
 ## 記録
 - 移植中に判明した非自明な事項（プロトコル上の型のサイズ、ファイル形式の前提、無効化した機能など）は
   `docs/PORTING_NOTES.md` に追記する
+- `README.md`・`CHANGELOG.md`（英語）と `README.ja.md`・`CHANGELOG.ja.md`（日本語）は、同じ内容を同時に更新する。
+  英語版は日本語版を省略せずに訳す。`docs/PORTING_NOTES.md` と `CLAUDE.md` は日本語のみ
+- リリースは、`CHANGELOG.md` と `CHANGELOG.ja.md` の先頭に新しい版の節（`## x.y.z`、日付なし）を足し、注釈付きタグ `vx.y.z` を付ける。
+  GitHub の Release の本文は、その節の英語・日本語を続けたもの。版番号は移植版のもので、プログラムの `PROG_VERSION`（1.34.0）は変えない
