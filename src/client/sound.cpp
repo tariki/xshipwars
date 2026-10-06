@@ -24,7 +24,8 @@
 	---
 
 	Sound is played with SDL2_mixer (SNDSERV_TYPE_SDL, needs
-	HAVE_SDL_MIXER). The YIFF and EsounD sound servers this file used
+	HAVE_SDL_MIXER). Background music (MIDI) needs SDL2_mixer's
+	MIDI support and a SoundFont or Timidity patches installed. The YIFF and EsounD sound servers this file used
 	to talk to no longer exist, so their code has been removed.
 	sound.server_type still accepts SNDSERV_TYPE_YIFF/ESOUND/MIKMOD
 	from old configuration files, but they produce no sound.
@@ -59,6 +60,9 @@ namespace static_sound_sdl {
 	};
 	cached_chunk *cache;
 	int total_cached;
+
+	/* Background music being played (also in sound.bkg_playid). */
+	Mix_Music *music;
 }
 
 /*
@@ -123,6 +127,18 @@ static void SoundSDLFreeChunks(void)
 	free(static_sound_sdl::cache);
 	static_sound_sdl::cache = NULL;
 	static_sound_sdl::total_cached = 0;
+}
+
+/*
+ *	Stops and frees the background music, if any.
+ */
+static void SoundSDLFreeMusic(void)
+{
+	if(static_sound_sdl::music == NULL)
+	    return;
+	Mix_HaltMusic();
+	Mix_FreeMusic(static_sound_sdl::music);
+	static_sound_sdl::music = NULL;
 }
 
 /*
@@ -272,12 +288,45 @@ int SoundChangeBackgroundMusic(
         int priority            /* 0 or 1. */
 )
 {
+        const char *path = NULL;
+
         if(sound.con_data == NULL)
             return(-3);
+
+	/*   Get filename by sound code. Codes without one (such as
+	 *   the main menu in the default scheme) just stop the music.
+	 */
+	if(SSIsAllocated(code))
+	    path = ss_item[code]->path;
 
         /* Play by which sound server type: */
         switch(sound.server_type)
         {
+#ifdef HAVE_SDL_MIXER
+	  case SNDSERV_TYPE_SDL:
+	    SoundSDLFreeMusic();
+	    if(path != NULL)
+	    {
+		Mix_Music *music = Mix_LoadMUS(path);
+
+		if(music == NULL)
+		{
+		    fprintf(stderr, "%s: %s\n", path, Mix_GetError());
+		}
+		else if(Mix_PlayMusic(music, -1) < 0)	/* Loop forever. */
+		{
+		    fprintf(stderr, "%s: %s\n", path, Mix_GetError());
+		    Mix_FreeMusic(music);
+		}
+		else
+		{
+		    static_sound_sdl::music = music;
+		}
+	    }
+	    sound.bkg_playid = (void *)static_sound_sdl::music;
+	    break;
+#endif	/* HAVE_SDL_MIXER */
+
 	  default:
 	    break;
         }
@@ -295,6 +344,12 @@ int SoundStopBackgroundMusic()
 
 	switch(sound.server_type)
 	{
+#ifdef HAVE_SDL_MIXER
+	  case SNDSERV_TYPE_SDL:
+	    SoundSDLFreeMusic();
+	    break;
+#endif	/* HAVE_SDL_MIXER */
+
 	  default:
 	    break;
         }
@@ -331,6 +386,7 @@ void SoundShutdown()
 	  case SNDSERV_TYPE_SDL:
 	    if(sound.con_data != NULL)
 	    {
+		SoundSDLFreeMusic();
 		Mix_HaltChannel(-1);
 		SoundSDLFreeChunks();
 		Mix_CloseAudio();
