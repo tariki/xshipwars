@@ -1099,7 +1099,6 @@ void XSWManageGUI()
 {
 	char need_continue;
 	int events_handled;
-	int total_events_handled = 0;
 	event_t event;
 	keycode_t keycode;
 
@@ -1244,9 +1243,6 @@ void XSWManageGUI()
 	    /* Allow widget event manager to see event. */
 	    WidgetManage(&event);
 
-
-	    /* Add up total events handled so far. */
-	    total_events_handled += events_handled;
 	}
 
 
@@ -1263,11 +1259,8 @@ void XSWManageGUI()
  */
 void XSWManageSound()
 {
-	int total_events_handled = 0;
-
-
 	/* Manage sound events. */
-        total_events_handled += SoundManageEvents();
+        SoundManageEvents();
 
 
 	return;

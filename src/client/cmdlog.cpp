@@ -28,9 +28,9 @@ int CmdLog(const char *arg)
                     filesize = stat_buf.st_size;
 
 		sprintf(stringa,
-                    "log: on  log file: %s  log size:  %ld bytes",
+                    "log: on  log file: %s  log size:  %lld bytes",
 		    fname.log,
-		    filesize
+		    (long long)filesize
 		);
 	    }
 	    else
@@ -82,9 +82,9 @@ int CmdLog(const char *arg)
                 option.log_errors = 1;
 
 		sprintf(stringa,
-		    "log: on  log file: %s  log size:  %ld bytes",
+		    "log: on  log file: %s  log size:  %lld bytes",
 		    fname.log,
-		    filesize
+		    (long long)filesize
 	        );
             }   
             else
@@ -112,9 +112,9 @@ int CmdLog(const char *arg)
                     filesize = stat_buf.st_size;
 
                 sprintf(stringa,
-		    "log: on  log file: %s  log size:  %ld bytes",
+		    "log: on  log file: %s  log size:  %lld bytes",
 		    fname.log,
-		    filesize
+		    (long long)filesize
 		);
 	    }
 	    else
