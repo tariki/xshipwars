@@ -49,21 +49,20 @@ done
 
 # 同じインストール先に入る項目どうしで名前が重なっていないか確認する
 # (data/images と theme/images など。黙って上書きしないようにする)
-declare -A owner
-conflict=0
-check() {  # check <インストール先の相対パス> <コピー元の表示名>
-  if [ -n "${owner[$1]:-}" ]; then
-    echo "ERROR: $1 が ${owner[$1]} と $2 の両方にあります" >&2
-    conflict=1
-  fi
-  owner[$1]="$2"
+# macOS の /bin/bash は 3.2 で連想配列 (declare -A) が無いので、awk で調べる
+list_targets() {  # 1 行に「インストール先の相対パス<TAB>コピー元の表示名」
+  for s in "${SOURCES[@]}"; do
+    src="${s%%:*}"; dst="${s#*:}"
+    for e in "$ROOT/$src"/*; do printf '%s\t%s\n' "$dst/$(basename "$e")" "$src"; done
+  done
+  for f in "${FILES[@]}"; do printf '%s\t%s\n' "${f#*:}" "${f%%:*}"; done
 }
-for s in "${SOURCES[@]}"; do
-  src="${s%%:*}"; dst="${s#*:}"
-  for e in "$ROOT/$src"/*; do check "$dst/$(basename "$e")" "$src"; done
-done
-for f in "${FILES[@]}"; do check "${f#*:}" "${f%%:*}"; done
-[ "$conflict" -eq 0 ] || exit 1
+if ! list_targets | awk -F'\t' '
+  ($1 in owner) { printf "ERROR: %s が %s と %s の両方にあります\n", $1, owner[$1], $2; bad = 1 }
+  { owner[$1] = $2 }
+  END { exit bad }' >&2; then
+  exit 1
+fi
 
 echo "インストール先: $DEST"
 if [ "$dry" -eq 1 ]; then
