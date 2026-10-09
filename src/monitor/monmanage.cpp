@@ -761,8 +761,8 @@ void MonDraw(monitor_struct *m, int amount)
 		  case 1:
                     /* Full memory info and break down. */
                     sprintf(text,
-                        "Total Memory Used: %ld bytes",
-			m->stats.mem_total
+                        "Total Memory Used: %lld bytes",
+			(long long)m->stats.mem_total
 		    );
                     OSWDrawString(pixmap,
                         x + 4,
@@ -771,8 +771,8 @@ void MonDraw(monitor_struct *m, int amount)
                     );
 
                     sprintf(text,
-                        "Objects Memory: %ld bytes",
-                        m->stats.mem_obj
+                        "Objects Memory: %lld bytes",
+                        (long long)m->stats.mem_obj
                     );
                     OSWDrawString(pixmap,
                         x + 4,
@@ -781,8 +781,8 @@ void MonDraw(monitor_struct *m, int amount)
                     );
 
                     sprintf(text,
-                        "Connections Memory: %ld bytes",
-                        m->stats.mem_con
+                        "Connections Memory: %lld bytes",
+                        (long long)m->stats.mem_con
                     );
                     OSWDrawString(pixmap,
                         x + 4,
@@ -807,9 +807,9 @@ void MonDraw(monitor_struct *m, int amount)
 
 	            /* Objects. */
                     sprintf(text,
-		        "Objects: %i  %ld bytes",
+		        "Objects: %i  %lld bytes",
 		        m->stats.total_objects,
-		        m->stats.mem_obj
+		        (long long)m->stats.mem_obj
 	            );
                     OSWDrawString(pixmap,
                         x + 4,

@@ -66,9 +66,9 @@ SWServGetOSStats();
 	    if(!stat(fname.unv_in, &stat_buf))
 	    {
                 sprintf(sndbuf,
- "Universe in: %s  %ld bytes",
+ "Universe in: %s  %lld bytes",
 		    fname.unv_in,
-		    stat_buf.st_size
+		    (long long)stat_buf.st_size
                 );
                 NetSendLiveMessage(condescriptor, sndbuf);
             }
@@ -77,9 +77,9 @@ SWServGetOSStats();
             if(!stat(fname.unv_out, &stat_buf))
             {
                 sprintf(sndbuf,
- "Universe out: %s  %ld bytes",
+ "Universe out: %s  %lld bytes",
                     fname.unv_out,
-                    stat_buf.st_size
+                    (long long)stat_buf.st_size
                 );
                 NetSendLiveMessage(condescriptor, sndbuf);
             }
@@ -88,9 +88,9 @@ SWServGetOSStats();
             if(!stat(fname.primary_log, &stat_buf))
             {
                 sprintf(sndbuf,
- "Primary log: %s  %ld bytes",
+ "Primary log: %s  %lld bytes",
                     fname.primary_log,
-                    stat_buf.st_size
+                    (long long)stat_buf.st_size
                 );
                 NetSendLiveMessage(condescriptor, sndbuf);
             }
@@ -99,9 +99,9 @@ SWServGetOSStats();
             if(!stat(fname.events_export, &stat_buf))
             {
                 sprintf(sndbuf,
- "Events export log: %s  %ld bytes",
+ "Events export log: %s  %lld bytes",
                     fname.events_export,
-                    stat_buf.st_size
+                    (long long)stat_buf.st_size
                 );
                 NetSendLiveMessage(condescriptor, sndbuf);
             }
