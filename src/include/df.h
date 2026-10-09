@@ -26,6 +26,11 @@
 # define DF_CMD		"df -P --no-sync"
 #endif
 
+/* macOS's df -P reports 512-byte blocks unless -k is given. */
+#if defined(__APPLE__)
+# define DF_CMD		"df -P -k"
+#endif
+
 /* All else, assume POSIX responsive. */
 #ifndef DF_CMD
 # define DF_CMD		"df -P"
