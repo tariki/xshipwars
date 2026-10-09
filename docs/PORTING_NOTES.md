@@ -439,3 +439,45 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
   `-D` はインストール先のルートを指定するオプションで意味が違う。`mkdir -p` で親を作ってから `install -m 0644` にした。
   BSD の `wc -l` は数字の前に空白を付けるので、件数の表示は算術展開で数字だけにした。直す前と後で、インストール結果
   （中身・パーミッション・シンボリックリンク）が同一なことを確かめた。`declare -A` は bash 4 以降が要るが、FreeBSD の bash パッケージで足りる。
+
+## macOS: 段階 1（XQuartz の Xlib でのビルド） (2026-10-09)
+
+macOS 27（Apple Silicon）、Apple clang 21、XQuartz（`/opt/X11`）で確認した。この段階の X11 版は、SDL2 版の OSW 層ができるまでの
+つなぎ（clang や libc の違いを先に片付けるため）。
+
+- `src/{server,monitor,unvedit}/Makefile.Darwin` を作った。オブジェクトと実行ファイルは `src/<component>/build-darwin/` にでき、
+  コンテナの Linux 版（ソースと同じ場所にできる）と混ざらない。macOS の make は GNU make 3.81 で、Linux の Makefile の
+  `VAR != cmd`（4.0 以降）が使えないので、pkg-config などを使うときは `$(shell ...)` にする。
+  crypt() と dlopen() は libSystem にあるので、server の `-lcrypt -ldl` は要らない。X11 は `-I/-L $(X11BASE)`（/opt/X11）。
+- `scripts/build.sh` は macOS では `Makefile.Darwin` を使い、ログは `build-logs/darwin/` に出す（Linux ではこれまでどおりコンテナ専用）。
+  `build.sh <c> clean all` は、clean を先に別の make で実行するようにした。同じ make の中で clean と all を続けると、
+  make が clean の前のファイルの状態を覚えていて「Nothing to be done」になる（Linux の clean は実行ファイルを消さないので表に出ていなかった）。
+- clang（`-Wall`）で gcc では出なかった警告:
+  - `off_t` を `%ld` で表示していた（server の cmddisk.cpp の 4 か所、monitor の monmanage.cpp のメモリ表示 4 か所）。
+    macOS の `off_t` は `long long`（Linux LP64 と FreeBSD は `long`）。サイズは同じなので値は正しく出ていたが、`%lld` と
+    `(long long)` にそろえた。cmddisk はクライアントに送る文字列だが、表示される数字は変わらない。
+  - `-Wunused-but-set-variable`: 加算するだけで読まない変数（monitor/unvedit の `events_handled`、unvedit の rcfile.cpp の
+    `bytes_written`、client の blittile.cpp の `tar_x_col`）。gcc は `x++` や `x += f()` を「使用」とみなすので警告しない。変数を削除し、関数の呼び出しは残した。
+  - Apple の SDK は `sprintf`/`vsprintf` を非推奨（deprecated）にしていて、呼び出しのたびに警告が出る（ソース全体で約 960 か所。
+    server だけで約 400 件）。`_POSIX_C_SOURCE` が未定義のときだけ付く印。コードの誤りではないので、
+    `Makefile.Darwin` に `-Wno-deprecated-declarations` を付けて抑止した（警告の一括抑止をしない方針の例外。ユーザーと決めた）。
+    ほかの非推奨の警告も macOS では見えなくなるが、Linux と FreeBSD のビルドの `-Wall` では引き続き出る。
+    `_POSIX_C_SOURCE` を定義する方法は、Darwin の拡張（BSD の関数など）の宣言まで消えるので採らなかった。
+- macOS は `__linux__` でも `__FreeBSD__` でもないので、Linux 以外の分岐（「POSIX」の扱い）に入る。確認した結果:
+  - `df.h`: macOS の `df -P` は 512 バイト単位で表示する（`-k` を付けると 1024 バイト単位）。df.cpp は 1024 バイト単位を前提にしているので、
+    容量が 2 倍になっていた。macOS では `df -P -k` にした。DiskFreeGetListing() の結果が `df -k` と一致することを確かめた。
+  - `mf.h`: macOS にも `free` コマンドが無いので、FreeBSD と同じくメモリ統計は 0 になる（未対応）。
+  - server のプラグイン（plugins.cpp）は `__linux__` のときだけ dlopen する。FreeBSD と同じく、macOS でもプラグインは読み込めない（機能を増やさない）。
+  - `os.h` の固定幅型: macOS の `<sys/types.h>` は `__BIT_TYPES_DEFINED__` を定義しないので os.h の自前の typedef が通るが、
+    型はシステムと同じ（`int64_t` は両方 `long long`）なので衝突しない。
+  - 独自の `strcasestr()`（global/string.cpp）は macOS でも使われる。libc の宣言（C リンケージ）と同じ型なのでビルドは通り、
+    プログラム内では独自版（NULL を渡しても落ちない）が使われる。
+- 動作確認（ホスト）:
+  - server: 1701/1702 で待ち受け、AUX に統計を返し、SIGTERM で「shut down normally」と出して終了した。
+    保存したユニバースで `EngineState = -1` が保たれた（macOS arm64 の char は signed なので、もともと問題は起きない）。
+  - monitor: XQuartz の Xvfb（`/opt/X11/bin/Xvfb`）で server の AUX につなぎ、統計が表示された。
+    macOS では Xvfb が `/tmp/.X11-unix` を作れない（root でない）ので、`-nolisten unix -listen tcp` で起動し、`DISPLAY=127.0.0.1:<n>` にする。
+  - unvedit: generic_in.unv を開き、SIGTERM の緊急保存（`UEDoEmergencySaveAll()`）で書き出したファイルが元と 1 バイトも違わなかった。
+- 共有コードの変更（blittile.cpp など）は、コンテナで 4 つのクリーンビルド（警告 0）、`g++ -U__linux__` でのビルド（警告 0）、
+  スモークテスト（全項目 PASS）で確かめた。
+- 未了: client（Homebrew の SDL2・SDL2_mixer が要る）。
