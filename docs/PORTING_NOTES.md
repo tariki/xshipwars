@@ -420,3 +420,18 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
   スモークテストでは、設定ファイルに割り当て（軸 0 = 旋回、ボタン 0 = F8）を入れ、軸を倒して旋回すること、
   ボタンで推力モードが進むことを判定する。割り当て画面（Map Joystick）で「Refresh」を押すと、軸 4 本（軸 2・ハット 1）と
   ボタン 1 個が読み込まれることも見た。
+
+## Linux 以外の分岐のビルド確認 (2026-10-09)
+
+- FreeBSD 用 Makefile は Linux 上の GNU make でビルドして確かめていたが、それでは `__linux__` が定義されたままで、
+  `#ifdef __linux__` の外側（FreeBSD で通る側）は一度もコンパイルされていなかった。`g++ -U__linux__` でビルドすると次が出た:
+  - client: `DEF_JS_CALIBRATION_FILE` が `xsw.h` で `#ifdef __linux__` の中にしか無く、main.cpp と optwinop.cpp で未定義になる
+    （ジョイスティックを SDL2 で有効にしたときに入った、**FreeBSD での client のビルドエラー**）。SDL2 で読むので OS によらない値にした。
+  - server の plugins.cpp（dlerror の結果）と widgets/wfbrowser.cpp（mount・umount）に、Linux の分岐の中でしか使わない変数があり、
+    FreeBSD では -Wunused-variable の警告になる。宣言を `#ifdef __linux__` の中に移した。
+  - unvedit: `os.h` が `<sys/types.h>` を Linux と FreeBSD のときしか読まないので、`__linux__` を外すと `__BIT_TYPES_DEFINED__` が
+    未定義のまま自前の `int64_t`（long long）を定義し、glibc の `int64_t`（long）と衝突した。FreeBSD 自体では自前の定義を
+    飛ばすので実害は無いが、確認のじゃまになるので `<sys/types.h>` は常に読むようにした（POSIX の標準ヘッダ）。
+- `-D__FreeBSD__` も付けると、gcc の stddef.h が FreeBSD 用の `sys/_types.h` を探して失敗するので、FreeBSD をまねるのはここまで。
+  clang の警告や FreeBSD のヘッダの違いは、実機でないと分からない。
+- 確認の手順: `make clean` のあと `scripts/build.sh all CPP="g++ -U__linux__"` で 4 つとも警告 0 になること。
