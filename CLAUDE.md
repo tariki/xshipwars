@@ -66,7 +66,8 @@
   FluidSynth と SoundFont（Debian では `libfluidsynth3`・`timgm6mb-soundfont`）で鳴らす。
   YIFF / ESD のコードは削除済み。ジョイスティックは
   libjsw の代わりに SDL2 で読む（client の `JS_SUPPORT`、`jsw-sdl.cpp`。実機では未確認）
-- `-fpermissive`・`-w`・警告の一括抑止でごまかさない（clang で新たに出る警告も同じ）
+- `-fpermissive`・`-w`・警告の一括抑止でごまかさない（clang で新たに出る警告も同じ）。
+  例外: macOS の SDK が sprintf/vsprintf を非推奨にしている警告だけは、`Makefile.Darwin` の `-Wno-deprecated-declarations` で抑止する
 - 修正は小さな単位でコミットし、メッセージに「現代の環境で何が壊れていたか」を書く
 
 ## macOS 対応

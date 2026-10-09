@@ -8,3 +8,4 @@ compile_commands.json
 /src/client/xsw
 /src/monitor/monitor
 /src/unvedit/unvedit
+build-darwin/

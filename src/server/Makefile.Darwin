@@ -1,0 +1,99 @@
+# ########################################################################
+#
+#                   Makefile for ShipWars Server (macOS)
+#
+#                        * Edit as needed *
+#
+#       If no arguments are givin, the program is just built
+#       (not installed) by default.
+#
+#       Objects and the program are built in $(OBJDIR), so that they
+#       do not mix with the Linux build in the same source tree.
+#
+
+
+# ########################################################################
+# Installation Options:
+#
+#   You may modify any value as needed. Change only the ones you are
+#   absolutly sure that requires modification.
+#
+PREFIX = /home
+
+
+# ########################################################################
+# Compiler Flags:
+#
+#   These are definations to enable or disable certain compile time
+#   options. Omitting a defination turns that option off.
+#
+#   The syntax for each defination is:
+#       -D<option>
+#
+#       USE_GETDENTS            Use getdents() instead of readdir().
+#
+#	PLUGIN_SUPPORT		Enable plugin support.
+#
+#   -Wno-deprecated-declarations: the macOS SDK marks sprintf() and
+#   vsprintf() deprecated, which warns at every call. Other deprecations
+#   are still reported by the Linux and FreeBSD builds.
+#
+CFLAGS = -DPLUGIN_SUPPORT -O2 -g -Wall -Wno-deprecated-declarations
+
+
+# ########################################################################
+# Dependant Libraries:
+#
+#   crypt() and dlopen() are in libSystem on macOS.
+#
+LIB = -lm
+
+# Library Directories:
+#
+LIB_DIR =
+
+# Header File Directories:
+#
+INC =
+
+
+# ########################################################################
+# Program Source and Header Files:
+#
+include Makefile.srclist
+
+CPP    = c++
+OBJDIR = build-darwin
+BIN    = $(OBJDIR)/swserv
+OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(OBJDIR)
+	$(CPP) -c $< -o $@ $(INC) $(CFLAGS)
+
+
+# ########################################################################
+# Build Rules:
+#
+$(BIN): $(OBJ)
+	$(CPP) $(OBJ) -o $(BIN) $(LIB) $(LIB_DIR)
+
+all: $(BIN)
+
+
+# ########################################################################
+# Install Rules:
+#
+#   This rule is defined externally.
+#
+include Makefile.install.UNIX
+
+
+# ########################################################################
+# Maintainance and Misc Rules:
+#
+clean:
+	rm -rf $(OBJDIR)
+
+
+# ########################################################################

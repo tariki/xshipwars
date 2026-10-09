@@ -1,0 +1,106 @@
+# ########################################################################
+#
+#                       Makefile for Monitor (macOS)
+#
+#   Rules:
+#
+#	all	-- builds program.
+#	install -- install program.
+#	clean	-- remove object and other work files.
+#
+#       If no arguments are givin, the program is built by default.
+#
+#       Objects and the program are built in $(OBJDIR), so that they
+#       do not mix with the Linux build in the same source tree.
+#
+#       X11 is taken from XQuartz (/opt/X11).
+#
+
+
+# ########################################################################
+# Installation Options:
+#
+#   You may modify any value as needed. Change only the ones you are
+#   absolutly sure that requires modification.
+#
+PREFIX = /usr
+
+
+# ########################################################################
+# Compiler Flags:
+#
+#   These are definations to enable or disable certain compile time
+#   options. Omitting a defination turns that option off.
+#
+#   The syntax for each defination is:
+#	-D<option>
+#
+#	USE_GETDENTS		Use getdents() instead of readdir().
+#
+#       USE_XSHM		Enable MIT X Shared Memory.
+#
+#       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
+#				(Xinerama) screen. Requires -lXinerama.
+#
+#   -Wno-deprecated-declarations: the macOS SDK marks sprintf() and
+#   vsprintf() deprecated, which warns at every call. Other deprecations
+#   are still reported by the Linux and FreeBSD builds.
+#
+CFLAGS  = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall -Wno-deprecated-declarations
+
+
+# ########################################################################
+# Dependant Libraries:
+#
+LIB = -lX11 -lXpm -lXext -lXinerama
+
+# Library Directories:
+#
+X11BASE = /opt/X11
+LIB_DIR = -L$(X11BASE)/lib
+
+# Header File Directories:
+#
+INC = -I$(X11BASE)/include
+
+
+# ########################################################################
+# Program Source and Header Files:
+#
+include Makefile.srclist
+
+CPP    = c++
+OBJDIR = build-darwin
+BIN    = $(OBJDIR)/monitor
+OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(OBJDIR)
+	$(CPP) -c $< -o $@ $(INC) $(CFLAGS)
+
+
+# ########################################################################
+# Build Rules:
+#
+$(BIN): $(OBJ)
+	$(CPP) $(OBJ) -o $(BIN) $(LIB_DIR) $(LIB)
+
+all: $(BIN)
+
+
+# ########################################################################
+# Install Rules:
+#
+#   This rule is defined externally.
+#
+include Makefile.install.UNIX
+
+
+# ########################################################################
+# Maintainance and Misc Rules:
+#
+clean:
+	rm -rf $(OBJDIR)
+
+
+# ########################################################################
