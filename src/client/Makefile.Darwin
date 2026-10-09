@@ -1,0 +1,124 @@
+# ########################################################################
+#
+#                    Makefile for XShipWars Client (macOS)
+#
+#   Rules:
+#
+#	all	-- builds program.
+#	install -- install program.
+#	clean	-- remove object and other work files.
+#
+#       If no arguments are givin, the program is built by default.
+#
+#       Objects and the program are built in $(OBJDIR), so that they
+#       do not mix with the Linux build in the same source tree.
+#
+#       X11 is taken from XQuartz (/opt/X11), SDL2 and SDL2_mixer from
+#       Homebrew (found with pkg-config).
+#
+
+
+# ########################################################################
+# Installation Options:
+#
+#   You may modify any value as needed. Change only the ones you are
+#   absolutly sure that requires modification.
+#
+PREFIX = /usr
+
+
+# ########################################################################
+# Compiler Flags:
+#
+#   These are definations to enable or disable certain compile time
+#   options. Omitting a defination turns that option off.
+#
+#   Each argument is of the format -D<option> where <option> is
+#   one of the following:
+#
+#	USE_GETDENTS		Use getdents() instead of readdir().
+#
+#       USE_XSHM		Enable MIT X Shared Memory.
+#
+#       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
+#				(Xinerama) screen. Requires -lXinerama.
+#
+#       HAVE_SDL_MIXER		Play sound effects with SDL2_mixer (sound server
+#				type 4). Remove it and the SDL_* lines below to
+#				build without sound.
+#
+#       JS_SUPPORT		Enable joystick support, read with SDL2's
+#				joystick API (jsw-sdl.cpp in place of the
+#				old libjsw). Needs the SDL_* lines below.
+#
+#   -Wno-deprecated-declarations: the macOS SDK marks sprintf() and
+#   vsprintf() deprecated, which warns at every call. Other deprecations
+#   are still reported by the Linux and FreeBSD builds.
+#
+#   GNU make 3.81 of macOS has no "VAR != cmd", so $(shell) is used.
+#
+SDL_CFLAGS := $(shell pkg-config --cflags SDL2_mixer)
+CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -DHAVE_SDL_MIXER -DJS_SUPPORT -O2 -g -Wall -Wno-deprecated-declarations $(SDL_CFLAGS)
+
+
+# ########################################################################
+# Dependant Libraries:
+#
+#   SDL_LIBS also adds -L/opt/homebrew/lib, which may hold Homebrew's
+#   own libX11; LIB_DIR comes first so that XQuartz's is used.
+#
+SDL_LIBS := $(shell pkg-config --libs SDL2_mixer)
+LIB = -lm -lX11 -lXpm -lXext -lXinerama $(SDL_LIBS)
+
+# Library Directories:
+#
+X11BASE = /opt/X11
+LIB_DIR = -L$(X11BASE)/lib
+
+# Header File Directories:
+#
+#   Before SDL_CFLAGS, which adds -I/opt/homebrew/include.
+#
+INC = -I$(X11BASE)/include
+
+
+# ########################################################################
+# Program Source and Header Files:
+#
+include Makefile.srclist
+
+CPP    = c++
+OBJDIR = build-darwin
+BIN    = $(OBJDIR)/xsw
+OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(OBJDIR)
+	$(CPP) -c $< -o $@ $(INC) $(CFLAGS)
+
+
+# ########################################################################
+# Build Rules:
+#
+$(BIN): $(OBJ)
+	$(CPP) $(OBJ) -o $(BIN) $(LIB_DIR) $(LIB)
+
+all: $(BIN)
+
+
+# ########################################################################
+# Install Rules:
+#
+#   This rule is defined externally.
+#
+include Makefile.install.UNIX
+
+
+# ########################################################################
+# Maintainance and Misc Rules:
+#
+clean:
+	rm -rf $(OBJDIR)
+
+
+# ########################################################################
