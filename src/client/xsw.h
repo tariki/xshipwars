@@ -236,14 +236,14 @@ to the fullest extent of the law."
  */
 #ifdef JS_SUPPORT
 
-# ifdef __linux__
-#  define DEF_JS_CALIBRATION_FILE	".joystick"
-#  define DEV_JOYSTICK1			"/dev/js0"
-#  define DEV_JOYSTICK2			"/dev/js1"
-#  define DEV_JOYSTICK3			"/dev/js2"
-#  define DEV_JOYSTICK4			"/dev/js3"
-# endif /* __linux__ */
-
+/*   Joysticks are read with SDL on every platform (jsw-sdl.cpp), and
+ *   the device names only give the joystick number.
+ */
+# define DEF_JS_CALIBRATION_FILE	".joystick"
+# define DEV_JOYSTICK1			"/dev/js0"
+# define DEV_JOYSTICK2			"/dev/js1"
+# define DEV_JOYSTICK3			"/dev/js2"
+# define DEV_JOYSTICK4			"/dev/js3"
 
 #endif /* JS_SUPPORT */
 
