@@ -69,7 +69,7 @@ echo "インストール先: $DEST"
 if [ "$dry" -eq 1 ]; then
   for s in "${SOURCES[@]}"; do
     printf '  %-22s -> %s/ (%s files)\n' "${s%%:*}/*" "${s#*:}" \
-      "$(find "$ROOT/${s%%:*}" \( -type f -o -type l \) | wc -l)"
+      "$(( $(find "$ROOT/${s%%:*}" \( -type f -o -type l \) | wc -l) ))"
   done
   for f in "${FILES[@]}"; do printf '  %-22s -> %s\n' "${f%%:*}" "${f#*:}"; done
   exit 0
@@ -86,13 +86,17 @@ for s in "${SOURCES[@]}"; do
   # -R はシンボリックリンクをリンクのままコピーする (theme/sounds に相対リンクがある)
   cp -R "$src"/. "$dst"/
 done
+# install -D は GNU だけのもの (FreeBSD の -D はインストール先のルートの指定) なので、
+# ディレクトリは mkdir -p で作る
 for f in "${FILES[@]}"; do
-  install -D -m 0644 "$ROOT/${f%%:*}" "$DEST/${f#*:}"
+  mkdir -p "$(dirname "$DEST/${f#*:}")"
+  install -m 0644 "$ROOT/${f%%:*}" "$DEST/${f#*:}"
 done
 
 # ディレクトリ 0755、ファイル 0644 (シンボリックリンクは対象外)
 find "$DEST" -type d -exec chmod 0755 {} +
 find "$DEST" -type f -exec chmod 0644 {} +
 
-echo "完了: $(find "$DEST" \( -type f -o -type l \) | wc -l) files"
+# (BSD の wc -l は数字の前に空白を付けるので、算術展開で数字だけにする)
+echo "完了: $(( $(find "$DEST" \( -type f -o -type l \) | wc -l) )) files"
 echo "client は ToplevelDir = $DEST で使う (既定の /usr/share/games/xshipwars なら設定不要)"

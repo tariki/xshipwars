@@ -435,3 +435,7 @@ FreeBSD の実機・ヘッダはこの環境に無いので、知られている
 - `-D__FreeBSD__` も付けると、gcc の stddef.h が FreeBSD 用の `sys/_types.h` を探して失敗するので、FreeBSD をまねるのはここまで。
   clang の警告や FreeBSD のヘッダの違いは、実機でないと分からない。
 - 確認の手順: `make clean` のあと `scripts/build.sh all CPP="g++ -U__linux__"` で 4 つとも警告 0 になること。
+- `scripts/install-data.sh` は個別のファイルを GNU の `install -D`（親ディレクトリも作る）で入れていたが、FreeBSD の `install` では
+  `-D` はインストール先のルートを指定するオプションで意味が違う。`mkdir -p` で親を作ってから `install -m 0644` にした。
+  BSD の `wc -l` は数字の前に空白を付けるので、件数の表示は算術展開で数字だけにした。直す前と後で、インストール結果
+  （中身・パーミッション・シンボリックリンク）が同一なことを確かめた。`declare -A` は bash 4 以降が要るが、FreeBSD の bash パッケージで足りる。
