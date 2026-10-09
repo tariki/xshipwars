@@ -834,6 +834,22 @@ extern cursor_t OSWLoadBasicCursor(cur_code_t code);
 extern void OSWSetWindowCursor(win_t w, cursor_t cursor);
 extern void OSWUnsetWindowCursor(win_t w);
 extern void OSWDestroyCursor(cursor_t *cursor);
+extern cursor_t OSWCreateCursorFromXpmFile(
+	char *xpmfile,
+	int *hot_x, int *hot_y,
+	u_int8_t r, u_int8_t g, u_int8_t b,
+	unsigned int *width, unsigned int *height
+);
+extern cursor_t OSWCreateCursorFromXpmData(
+	const char **xpmdata,
+	int *hot_x, int *hot_y,
+	u_int8_t r, u_int8_t g, u_int8_t b,
+	unsigned int *width, unsigned int *height
+);
+extern cursor_t OSWCreateCursorFromImage(
+	image_t *image,
+	unsigned int *width_rtn, unsigned int *height_rtn
+);
 
 /* Events. */
 extern int OSWEventsPending(void);
@@ -940,6 +956,13 @@ extern void OSWDestroySharedImage(
 
 /* Graphics conversion. */
 extern pixmap_t OSWCreatePixmapFromImage(image_t *image);
+extern pixmap_t OSWCreatePixmapMaskFromImage(image_t *image);
+
+/* XPM IO. */
+extern image_t *OSWLoadImageFromXpmFile(char *filename);
+extern image_t *OSWLoadImageFromXpmData(char **data);
+extern pixmap_t OSWLoadPixmapFromXpmFile(char *filename);
+extern pixmap_t OSWLoadPixmapFromXpmData(char **data);
 
 /* Image IO. */
 extern image_t *OSWGetImage(

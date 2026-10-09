@@ -27,8 +27,6 @@
 #include "../include/widget.h"
 #include "../include/tga.h"     /* For tga loading in wfile.c */
 
-#include <X11/xpm.h>
-
 #ifndef MAX
 #define MIN(a,b)        (((a) < (b)) ? (a) : (b))
 #define MAX(a,b)	(((a) > (b)) ? (a) : (b))
@@ -392,50 +390,8 @@ pixmap_t WidgetLoadPixmapFromTgaData(u_int8_t *data)
  */
 image_t *WidgetLoadImageFromXpmFile(char *filename)
 {
-        int status;
-        image_t *image;
-        image_t *imagemask;
-        XpmAttributes xpmattr;
-
-
-        /* Error checks. */
-        if(!IDC() ||
-           (osw_gui[0].root_win == 0) ||
-           (filename == NULL)
-        )
-            return(0);
-
-
-        /* Set XPM attributes. */
-        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
-        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
-        xpmattr.closeness = XpmDefaultColorCloseness;
-	xpmattr.depth = osw_gui[0].depth;
-
-
-	/* Load image from XPM file. */
-        status = XpmReadFileToImage(
-            osw_gui[0].display,
-            filename,
-            &image,
-            &imagemask,
-            &xpmattr
-        );
-        if(status != XpmSuccess)
-        {
-	    fprintf(stderr, "WidgetLoadImageFromXpmFile(): ");
-            fprintf(stderr, "%s: Failed load.\n", filename);
-
-            return(0);
-        }
-
-        /* Destroy the mask image. */
-	OSWDestroyImage(&imagemask);
-
-
-	return(image);
+	return(OSWLoadImageFromXpmFile(filename));
 }
-
 
 /*
  *      Loads an image from XPM data in memory.
@@ -443,52 +399,8 @@ image_t *WidgetLoadImageFromXpmFile(char *filename)
  */
 image_t *WidgetLoadImageFromXpmData(char **data)
 {
-        int status;
-        image_t *image;
-        image_t *imagemask;
-        XpmAttributes xpmattr;
-
-
-        /* Error checks. */
-        if(!IDC() ||
-           (osw_gui[0].root_win == 0) ||
-           (data == NULL)
-        )
-            return(0);
-
-
-        /* Set XPM attributes. */   
-        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
-        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
-        xpmattr.closeness = XpmDefaultColorCloseness;
-        xpmattr.depth = osw_gui[0].depth;
-
-	/* Load image from XPM data. */
-        status = XpmCreateImageFromData(
-            osw_gui[0].display,
-            data,
-            &image,
-            &imagemask,
-            &xpmattr
-        );
-        if(status != XpmSuccess)
-        {
-            fprintf(stderr, "WidgetLoadImageFromXpmData(): ");
-            fprintf(stderr, "%p: Failed load.\n",
-		(void *)data
-	    );
-
-            return(0);
-        }
-
-	/* Destroy the mask image. */
-        OSWDestroyImage(&imagemask);
-
-
-        return(image);
+	return(OSWLoadImageFromXpmData(data));
 }
-
-
 
 /*
  *      Loads a pixmap from an XPM file.
@@ -496,102 +408,16 @@ image_t *WidgetLoadImageFromXpmData(char **data)
  */
 pixmap_t WidgetLoadPixmapFromXpmFile(char *filename)
 {
-	int status;
-        pixmap_t pixmap = 0;
-        pixmap_t pixmapmask = 0;
-        XpmAttributes xpmattr;
-
-
-	/* Error checks. */
-	if(!IDC() ||
-	   (osw_gui[0].root_win == 0) ||
-	   (filename == NULL)
-	)
-	    return(0);
-
-
-        /* Set XPM attributes. */
-	memset(&xpmattr, 0x00, sizeof(XpmAttributes));
-	xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
-        xpmattr.closeness = XpmDefaultColorCloseness;
-	xpmattr.depth = osw_gui[0].depth;
-
-
-        /* Attempt to read the pixmap data from file. */
-	status = XpmReadFileToPixmap(
-	    osw_gui[0].display,
-	    osw_gui[0].root_win,
-	    filename,
-	    &pixmap,
-	    &pixmapmask,
-	    &xpmattr
-	);
-	if(status != XpmSuccess)
-        {
-            fprintf(stderr, "WidgetLoadPixmapFromXpmFile(): ");
-            fprintf(stderr, "%s: Failed load.\n", filename);
-
-            return(0);
-        }
-
-	/* Destroy the mask, we don't need it. */
-	OSWDestroyPixmap(&pixmapmask);
-
-
-	return(pixmap);
+	return(OSWLoadPixmapFromXpmFile(filename));
 }
-
 
 /*
  *      Loads a pixmap from XPM data in memory.
  *      The pixmap's depth will match that of the GUI's.
  */
-pixmap_t WidgetLoadPixmapFromXpmData(char **data)  
+pixmap_t WidgetLoadPixmapFromXpmData(char **data)
 {
-        int status;  
-        pixmap_t pixmap = 0;
-        pixmap_t pixmapmask = 0;
-        XpmAttributes xpmattr;
-
-
-	/* Error checks. */
-        if(!IDC() ||
-           (osw_gui[0].root_win == 0) ||
-           (data == NULL)
-        )
-            return(0);
-
-
-        /* Set XPM attributes. */
-        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
-        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
-        xpmattr.closeness = XpmDefaultColorCloseness;
-	xpmattr.depth = osw_gui[0].depth;
-
-        /* Attempt to read the pixmap data from file. */
-        status = XpmCreatePixmapFromData(
-            osw_gui[0].display,
-            osw_gui[0].root_win,
-            data,
-            &pixmap,
-            &pixmapmask,
-            &xpmattr
-        );
-        if(status != XpmSuccess)
-        {
-            fprintf(stderr, "WidgetLoadPixmapFromXpmData(): ");
-            fprintf(stderr, "%p: Failed load.\n",
-                (void *)data
-            );
-
-            return(0);
-        }
-
-        /* Destroy the mask, we don't need it. */
-        OSWDestroyPixmap(&pixmapmask);
-
-
-        return(pixmap);
+	return(OSWLoadPixmapFromXpmData(data));
 }
 
 

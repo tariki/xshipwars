@@ -86,6 +86,20 @@
 	void OSWSetWindowCursor(win_t w, cursor_t cursor)
 	void OSWUnsetWindowCursor(win_t w)
 	void OSWDestroyCursor(cursor_t *cursor)
+	cursor_t OSWCreateCursorFromXpmFile(
+		char *xpmfile, int *hot_x, int *hot_y,
+		u_int8_t r, u_int8_t g, u_int8_t b,
+		unsigned int *width, unsigned int *height
+	)
+	cursor_t OSWCreateCursorFromXpmData(
+		const char **xpmdata, int *hot_x, int *hot_y,
+		u_int8_t r, u_int8_t g, u_int8_t b,
+		unsigned int *width, unsigned int *height
+	)
+	cursor_t OSWCreateCursorFromImage(
+		image_t *image,
+		unsigned int *width_rtn, unsigned int *height_rtn
+	)
 
 
 	Events:
@@ -204,6 +218,15 @@
 	Graphics conversions:
 
 	pixmap_t OSWCreatePixmapFromImage(image_t *image)
+	pixmap_t OSWCreatePixmapMaskFromImage(image_t *image)
+
+
+	XPM IO:
+
+	image_t *OSWLoadImageFromXpmFile(char *filename)
+	image_t *OSWLoadImageFromXpmData(char **data)
+	pixmap_t OSWLoadPixmapFromXpmFile(char *filename)
+	pixmap_t OSWLoadPixmapFromXpmData(char **data)
 
 
 	Graphics IO:
@@ -296,6 +319,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 
 /* OS Makeup. */
@@ -430,6 +454,14 @@ namespace static_osw_x {
 
 /* Needed for OSWSetWindowWMProperties(). */
 #include "../include/MwmUtil.h"
+
+/* Needed for the XPM loading and cursor functions. */
+#include <X11/xpm.h>
+
+/* Color closeness for libXpm. */
+#ifndef XpmDefaultColorCloseness
+# define XpmDefaultColorCloseness	40000
+#endif
 
 #ifndef MAX
 #define MIN(a,b)        (((a) < (b)) ? (a) : (b))
@@ -3155,6 +3187,576 @@ void OSWDestroyCursor(cursor_t *cursor)
 	return;
 }
 
+/*
+ *	Creates a pointer cursor from a depth 1 pixmap and mask loaded
+ *	from XPM data (width and height are the XPM's size). The pixmap
+ *	and mask are reduced to the GUI's recommended cursor size if
+ *	needed, and are destroyed. The hot point is sanitized to the
+ *	XPM's size. The func name is used in error messages.
+ *
+ *	Returns 0 on error.
+ */
+static cursor_t OSWCreateCursorFromXpmPixmaps(
+	const char *func,
+	pixmap_t pixmap, pixmap_t mask,
+	unsigned int width, unsigned int height,
+	int *hot_x, int *hot_y,
+	u_int8_t r, u_int8_t g, u_int8_t b
+)
+{
+	int status;
+	unsigned int req_width, req_height;
+	pixmap_t tmp_pixmap;
+	pixel_t white_pix, black_pix;
+	cursor_t cursor;
+
+	GC gc;
+	XGCValues gcv;
+	XColor foreground_color, background_color;
+
+
+	/* Check recommended size from GUI. */
+	status = XQueryBestCursor(
+	    osw_gui[0].display,
+	    osw_gui[0].root_win,
+	    width, height,
+	    &req_width, &req_height
+	);
+	if(!status)
+	{
+           fprintf(stderr,
+ "%s: Cannot get recommended cursor size for %i %i\n",
+                func,
+                width, height
+            );
+	    req_width = width;
+	    req_height = height;
+	}
+
+	/* Need to reduce size of pixmap and mask? */
+	if((width > req_width) ||
+           (height > req_height)
+	)
+	{
+	    /* Create tempory pixmap and copy pixmap contents to it. */
+	    tmp_pixmap = XCreatePixmap(
+		osw_gui[0].display,
+		osw_gui[0].root_win,
+		req_width, req_height,
+		osw_gui[0].depth
+	    );
+	    if(tmp_pixmap != 0)
+	    {
+		XCopyArea(
+		    osw_gui[0].display,
+		    pixmap,		/* Src. */
+		    tmp_pixmap,		/* Tar. */
+		    osw_gui[0].gc,
+		    0, 0,
+		    req_width, req_height,
+		    0, 0
+		);
+		OSWGUISync(False);
+		OSWDestroyPixmap(&pixmap);
+		pixmap = tmp_pixmap;
+	    }
+
+
+	    /* Create tempory mask and copy over. */
+            white_pix = osw_gui[0].white_pix;
+            black_pix = osw_gui[0].black_pix;
+            gcv.function = GXcopy;
+            gcv.plane_mask = 1;		/* Monochrome. */
+            gcv.foreground = white_pix;
+            gcv.background = black_pix;
+            gcv.line_width = 1;
+            gc = XCreateGC(   
+                osw_gui[0].display,
+                mask,
+                GCFunction | GCPlaneMask | GCForeground | GCBackground |
+                    GCLineWidth,
+                &gcv
+            );
+
+            tmp_pixmap = XCreatePixmap(   
+                osw_gui[0].display, 
+                osw_gui[0].root_win,
+                req_width, req_height,
+                1
+            );
+            if(tmp_pixmap != 0)
+            {
+                XCopyArea(
+                    osw_gui[0].display,
+                    mask,		/* Src. */
+                    tmp_pixmap,		/* Tar. */
+                    gc,
+                    0, 0,
+                    req_width, req_height,
+                    0, 0
+                );
+                OSWGUISync(False);
+                OSWDestroyPixmap(&mask);
+                mask = tmp_pixmap;
+            } 
+
+            XFreeGC(osw_gui[0].display, gc);        /* Free temp GC. */
+	}
+
+        /* Set colors. */  
+        foreground_color.red = ((u_int16_t)r << 8);
+        foreground_color.green = ((u_int16_t)g << 8);
+        foreground_color.blue = ((u_int16_t)b << 8);
+  
+        background_color.red = 0x0000; 
+        background_color.green = 0x0000;   
+        background_color.blue = 0x0000;
+
+        /* Sanitize hot point. */
+        if(*hot_x >= (int)width)
+            *hot_x = (int)width - 1;
+        if(*hot_x < 0)
+            *hot_x = 0;     
+         
+        if(*hot_y >= (int)height)
+            *hot_y = (int)height - 1;
+        if(*hot_y < 0)
+            *hot_y = 0;
+
+
+        /* Create cursor. */
+        cursor = XCreatePixmapCursor(
+            osw_gui[0].display,
+            pixmap,
+            mask,
+            &foreground_color,
+            &background_color,
+            *hot_x, *hot_y
+        );
+        /* Free pixmap and mask. */
+        OSWDestroyPixmap(&pixmap);
+        OSWDestroyPixmap(&mask);
+
+	return(cursor);
+}
+
+
+/*
+ *	Creates a pointer cursor from an XPM file. The hot point is
+ *	sanitized to the XPM's size, and the XPM's size is returned in
+ *	width and height.
+ *
+ *	Returns 0 on error.
+ */
+cursor_t OSWCreateCursorFromXpmFile(
+	char *xpmfile,
+	int *hot_x, int *hot_y,
+	u_int8_t r, u_int8_t g, u_int8_t b,
+	unsigned int *width, unsigned int *height
+)
+{
+	int status;
+	pixmap_t pixmap, mask;
+	XpmAttributes xpmattr;
+	struct stat stat_buf;
+
+
+	if(!IDC() ||
+           (osw_gui[0].root_win == 0)
+	)
+	    return(0);
+
+
+	/* Make sure file exists. */
+	if(stat(xpmfile, &stat_buf))
+	{
+	    fprintf(stderr,
+		"%s: No such file.\n",
+		xpmfile
+	    );
+	    return(0);
+	}
+
+
+        /* Set up XPM attributes. */
+	memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+        xpmattr.closeness = XpmDefaultColorCloseness;
+        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+
+        /*   pixmap_t depth must be 1 for XCreatePixmapCursor(),
+         *   regardless of actual depth.
+         */
+        xpmattr.depth = 1;
+
+
+	status = XpmReadFileToPixmap(
+	    osw_gui[0].display,
+	    osw_gui[0].root_win,
+	    xpmfile,
+	    &pixmap,
+	    &mask,
+	    &xpmattr
+	);
+        if(status != XpmSuccess)
+        {
+            fprintf(stderr,
+		"%s: Unable to load Pixmap.\n",
+		xpmfile
+            );
+	    return(0);
+        }
+
+	*width = xpmattr.width;
+	*height = xpmattr.height;
+
+	return(OSWCreateCursorFromXpmPixmaps(
+	    "OSWCreateCursorFromXpmFile()",
+	    pixmap, mask,
+	    xpmattr.width, xpmattr.height,
+	    hot_x, hot_y,
+	    r, g, b
+	));
+}
+
+/*
+ *	Creates a pointer cursor from XPM data. The hot point is
+ *	sanitized to the XPM's size, and the XPM's size is returned in
+ *	width and height.
+ *
+ *	Returns 0 on error.
+ */
+cursor_t OSWCreateCursorFromXpmData(
+	const char **xpmdata,
+	int *hot_x, int *hot_y,
+	u_int8_t r, u_int8_t g, u_int8_t b,
+	unsigned int *width, unsigned int *height
+)
+{
+	int status;
+	pixmap_t pixmap, mask;
+	XpmAttributes xpmattr;
+
+
+        if(!IDC() ||
+           (osw_gui[0].root_win == 0) ||
+           (xpmdata == NULL)
+        )
+            return(0);  
+
+
+        /* Set up XPM attributes. */
+        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+        xpmattr.closeness = XpmDefaultColorCloseness;
+        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+                
+        /*   pixmap_t depth must be 1 for XCreatePixmapCursor(),
+         *   regardless of actual depth.
+         */
+        xpmattr.depth = 1;
+
+
+        /* libXpm's API is not const-correct but never writes to the data. */
+        status = XpmCreatePixmapFromData(
+            osw_gui[0].display,
+            osw_gui[0].root_win,
+            const_cast<char **>(xpmdata),
+            &pixmap,
+            &mask,
+            &xpmattr
+        );
+        if(status != XpmSuccess)
+        {
+            fprintf(stderr,
+                "%p: Unable to load embedded Pixmap.\n",
+                (void *)xpmdata
+            );
+            return(0);
+        }
+
+	*width = xpmattr.width;
+	*height = xpmattr.height;
+
+	return(OSWCreateCursorFromXpmPixmaps(
+	    "OSWCreateCursorFromXpmData()",
+	    pixmap, mask,
+	    xpmattr.width, xpmattr.height,
+	    hot_x, hot_y,
+	    r, g, b
+	));
+}
+
+/*
+ *	Creates a white on black pointer cursor from image, the hot
+ *	point is at its center. The cursor's size (the GUI's recommended
+ *	size, no larger than the image) is returned in width_rtn and
+ *	height_rtn.
+ *
+ *	Returns 0 on error.
+ */
+cursor_t OSWCreateCursorFromImage(
+	image_t *image,
+	unsigned int *width_rtn, unsigned int *height_rtn
+)
+{
+        GC gc;
+        XGCValues gcv;
+	pixel_t white_pix, black_pix;
+	int i, x, y, status, bytes_per_pixel, bytes_per_line;
+	u_int8_t *img_data;
+	u_int8_t *ptr8;
+	u_int16_t *ptr16;
+	u_int32_t *ptr32;
+
+	unsigned int width, height;	/* Of image. */
+        unsigned int req_width, req_height;	/* Of pixmap and mask. */
+	pixmap_t pixmap, mask;
+	cursor_t cursor;
+        XColor fg_xcolor, bg_xcolor;
+
+
+	if(!IDC() ||
+	   (image == NULL)
+	)
+	    return(0);
+
+	img_data = (u_int8_t *)image->data;
+	if(img_data == NULL)
+	    return(0);
+
+	width = image->width;
+	height = image->height;
+
+	if(((int)width <= 0) ||
+	   ((int)height <= 0)
+	)
+	    return(0);
+
+
+        /* Check recommended size from GUI. */
+        status = XQueryBestCursor(  
+            osw_gui[0].display,
+            osw_gui[0].root_win,
+            width, height,
+            &req_width, &req_height
+        );
+        if(!status)
+        {  
+           fprintf(stderr,
+ "OSWCreateCursorFromImage(): Cannot get recommended cursor size for %i %i\n",
+                width, height
+            );
+            req_width = width; 
+            req_height = height;   
+        }
+
+	/* Sanitize/limit sizes, pixmap size must be <= image size */
+        if(req_width > width)
+            req_width = width;
+	if(req_height > height)
+	    req_height = height;
+
+
+	/* Create a 1 bit depth pixmap and mask. */
+	pixmap = XCreatePixmap(
+            osw_gui[0].display,
+            osw_gui[0].root_win,
+            req_width, req_height,
+            1			/* Depth of 1. */
+        );
+
+	/* Create a 1 bit depth pixmap and mask. */
+	mask = XCreatePixmap(
+            osw_gui[0].display,
+            osw_gui[0].root_win,
+            req_width, req_height,
+            1			/* Depth of 1. */
+        );
+
+        /* Create 1 bit depth graphics context. */
+	white_pix = osw_gui[0].white_pix;
+	black_pix = osw_gui[0].black_pix;
+	gcv.function = GXcopy;
+        gcv.plane_mask = 1;		/* Monochrome. */
+        gcv.foreground = white_pix;
+        gcv.background = black_pix;
+        gcv.line_width = 1;
+        gc = XCreateGC(   
+            osw_gui[0].display,
+            pixmap,
+            GCFunction | GCPlaneMask | GCForeground | GCBackground |
+                GCLineWidth,
+            &gcv
+        );
+
+
+	/* Copy image data to pixmap and mask. */
+	switch(osw_gui[0].depth)
+	{
+	  /* 8 bits. */
+	  case 8:
+	    ptr8 = (u_int8_t *)img_data;
+            bytes_per_pixel = BYTES_PER_PIXEL8;
+            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
+            for(y = 0; y < (int)req_height; y++)
+            {
+                for(x = 0; x < (int)req_width; x++)
+                {
+                    ptr8 = (u_int8_t *)(&img_data[
+                        (y * bytes_per_line) +
+                        (x * bytes_per_pixel)
+                    ]);
+
+                    i = (
+                        (((*ptr8) & 0xe0)) +
+                        (((*ptr8) & 0x1c) << 3) +
+                        (((*ptr8) & 0x03) << 6)
+                    );
+                    if(i < ((0xFF * 3) / 2))
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
+
+                    if(*ptr8)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
+                }
+            }
+	    break;
+
+	  /* 15 bits. */
+	  case 15:
+            bytes_per_pixel = BYTES_PER_PIXEL16;
+            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
+            for(y = 0; y < (int)req_height; y++)
+            {
+                for(x = 0; x < (int)req_width; x++)
+                {
+                    ptr16 = (u_int16_t *)(&img_data[
+                        (y * bytes_per_line) +
+                        (x * bytes_per_pixel)
+                    ]);
+
+                    i = (
+                        (((*ptr16) & 0x7C00) >> 7) +
+                        (((*ptr16) & 0x03E0) >> 2) +
+                        (((*ptr16) & 0x001F) << 3)
+                    );
+                    if(i < ((0xFF * 3) / 2))
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
+
+                    if(*ptr16)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
+                }
+            }
+            break;
+
+	  /* 16 bits. */
+	  case 16:
+	    bytes_per_pixel = BYTES_PER_PIXEL16;
+	    bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
+	    for(y = 0; y < (int)req_height; y++)
+	    {
+		for(x = 0; x < (int)req_width; x++)
+		{
+		    ptr16 = (u_int16_t *)(&img_data[
+			(y * bytes_per_line) +
+			(x * bytes_per_pixel)
+		    ]);
+
+		    i = (
+			(((*ptr16) & 0xf800) >> 8) +
+                        (((*ptr16) & 0x07E0) >> 3) +
+                        (((*ptr16) & 0x001F) << 3)
+		    );
+		    if(i < ((0xFF * 3) / 2))
+			XSetForeground(osw_gui[0].display, gc, black_pix);
+                    else
+			XSetForeground(osw_gui[0].display, gc, white_pix);
+                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
+
+                    if(*ptr16)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
+		}
+	    }
+	    break;
+
+	  /* 24 or 32 bits. */
+	  case 24:
+	  case 32:
+            bytes_per_pixel = BYTES_PER_PIXEL32;
+            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
+            for(y = 0; y < (int)req_height; y++)
+            {
+                for(x = 0; x < (int)req_width; x++)
+                {
+                    ptr32 = (u_int32_t *)(&img_data[
+                        (y * bytes_per_line) +
+                        (x * bytes_per_pixel)
+                    ]);
+
+                    i = (
+                        (((*ptr32) & 0x00ff0000) >> 16) +
+                        (((*ptr32) & 0x0000ff00) >> 8) +
+                        (((*ptr32) & 0x000000ff))
+                    );
+                    if(i < ((0xFF * 3) / 2))
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
+
+                    if(*ptr32)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
+                }
+            }
+	    break;
+	}
+
+
+	fg_xcolor.red = 0xFFFF;
+	fg_xcolor.green = 0xFFFF;
+	fg_xcolor.blue = 0xFFFF;
+
+	bg_xcolor.red = 0x0000;
+	bg_xcolor.green = 0x0000;
+	bg_xcolor.blue = 0x0000;
+
+        cursor = XCreatePixmapCursor(
+            osw_gui[0].display,
+            pixmap,
+            mask,
+            &fg_xcolor,
+            &bg_xcolor,
+            ((int)req_width / 2),
+	    ((int)req_height / 2)
+        );
+
+	/* Destroy tempory resources. */
+        OSWDestroyPixmap(&pixmap);
+        OSWDestroyPixmap(&mask);
+        XFreeGC(osw_gui[0].display, gc);
+
+	*width_rtn = req_width;
+	*height_rtn = req_height;
+
+	return(cursor);
+}
+
 
 
 /*
@@ -5499,6 +6101,368 @@ pixmap_t OSWCreatePixmapFromImage(image_t *image)
 
         /* Copy the image to the pixmap. */
 	OSWPutImageToDrawable(image, pixmap);
+
+
+        return(pixmap);
+}
+
+
+/*
+ *	Creates a one bit depth pixmap mask from image.
+ *	Any pixel in the image that is not 0 will be set to white,
+ *	and any pixel that is 0 will be set to black on the pixmap
+ *	mask. Can return 0 on error.
+ */
+pixmap_t OSWCreatePixmapMaskFromImage(image_t *image)
+{
+	int x, y, bytes_per_line;
+	pixmap_t pixmap;
+	u_int8_t *img_data;
+	u_int8_t *ptr8;
+	u_int16_t *ptr16;
+	u_int32_t *ptr32;
+	pixel_t white_pix, black_pix;
+	GC gc;
+	XGCValues gcv;
+
+
+	if(!IDC() ||
+           (image == NULL)
+	)
+	    return(0);
+
+	if((image->data == NULL) ||
+	   (image->width == 0) ||
+           (image->height == 0)
+	)
+	    return(0);
+
+	img_data = (u_int8_t *)image->data;
+	white_pix = osw_gui[0].white_pix;
+	black_pix = osw_gui[0].black_pix;
+
+
+	/* Create mask pixmap. */
+	pixmap = XCreatePixmap(
+	    osw_gui[0].display,
+	    osw_gui[0].root_win,
+	    image->width, image->height,
+	    1				/* Depth of 1. */
+	);
+	if(pixmap == 0)
+	    return(0);
+
+
+	/* Fetch current GC values. */
+	XGetGCValues(osw_gui[0].display, osw_gui[0].gc, GCFunction, &gcv);
+
+	/* Create tempory GC. */
+	gcv.function = GXcopy;
+	gcv.plane_mask = 1;		/* Monocrome. */
+	gcv.foreground = white_pix;
+	gcv.background = black_pix;
+	gcv.line_width = 1;
+	gc = XCreateGC(
+	    osw_gui[0].display,
+	    pixmap,
+	    GCFunction | GCPlaneMask | GCForeground | GCBackground |
+	    GCLineWidth,
+	    &gcv
+	);
+
+	/* Copy image data to pixmap mask. */
+	switch(image->depth)
+	{
+	  /* 8 bits. */
+	  case 8:
+	    bytes_per_line = image->width * BYTES_PER_PIXEL8;
+	    for(y = 0; y < image->height; y++)
+	    {
+		for(x = 0; x < image->width; x++)
+		{
+		    ptr8 = (u_int8_t *)(&img_data[
+			(y * bytes_per_line) +
+                        (x * BYTES_PER_PIXEL8)
+		    ]);
+		    if(*ptr8)
+		        XSetForeground(osw_gui[0].display, gc, white_pix);
+		    else
+			XSetForeground(osw_gui[0].display, gc, black_pix);
+
+		    XDrawPoint(
+			osw_gui[0].display,
+			pixmap,
+			gc,
+			x, y
+		    );
+		}
+	    }
+	    break;
+
+	  /* 15 or 16 bits. */
+	  case 15:
+	  case 16:
+            bytes_per_line = image->width * BYTES_PER_PIXEL16;
+            for(y = 0; y < image->height; y++)
+            {
+                for(x = 0; x < image->width; x++)
+                {
+                    ptr16 = (u_int16_t *)(&img_data[
+                        (y * bytes_per_line) +
+                        (x * BYTES_PER_PIXEL16)
+                    ]);
+                    if(*ptr16)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+
+                    XDrawPoint(
+                        osw_gui[0].display,
+                        pixmap,
+                        gc,
+                        x, y
+                    );
+                }
+            }
+	    break;
+
+          /* 24 or 32 bits. */
+          case 24:
+          case 32:
+            bytes_per_line = image->width * BYTES_PER_PIXEL32;
+            for(y = 0; y < image->height; y++)
+            {
+                for(x = 0; x < image->width; x++)
+                { 
+                    ptr32 = (u_int32_t *)(&img_data[
+                        (y * bytes_per_line) +
+                        (x * BYTES_PER_PIXEL32)
+                    ]);
+                    if(*ptr32)
+                        XSetForeground(osw_gui[0].display, gc, white_pix);
+                    else
+                        XSetForeground(osw_gui[0].display, gc, black_pix);
+
+                    XDrawPoint(
+                        osw_gui[0].display,
+                        pixmap,
+                        gc,
+                        x, y
+                    );
+                }
+            }
+            break;
+	}
+
+	/* Free out temp GC. */
+	XFreeGC(osw_gui[0].display, gc);
+
+
+	return(pixmap);
+}
+/*
+ *	Loads an image from an XPM file.
+ *	The image's depth will match that of the GUI's.
+ */
+image_t *OSWLoadImageFromXpmFile(char *filename)
+{
+        int status;
+        image_t *image;
+        image_t *imagemask;
+        XpmAttributes xpmattr;
+
+
+        /* Error checks. */
+        if(!IDC() ||
+           (osw_gui[0].root_win == 0) ||
+           (filename == NULL)
+        )
+            return(0);
+
+
+        /* Set XPM attributes. */
+        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+        xpmattr.closeness = XpmDefaultColorCloseness;
+	xpmattr.depth = osw_gui[0].depth;
+
+
+	/* Load image from XPM file. */
+        status = XpmReadFileToImage(
+            osw_gui[0].display,
+            filename,
+            &image,
+            &imagemask,
+            &xpmattr
+        );
+        if(status != XpmSuccess)
+        {
+	    fprintf(stderr, "OSWLoadImageFromXpmFile(): ");
+            fprintf(stderr, "%s: Failed load.\n", filename);
+
+            return(0);
+        }
+
+        /* Destroy the mask image. */
+	OSWDestroyImage(&imagemask);
+
+
+	return(image);
+}
+
+
+/*
+ *      Loads an image from XPM data in memory.
+ *      The image's depth will match that of the GUI's.
+ */
+image_t *OSWLoadImageFromXpmData(char **data)
+{
+        int status;
+        image_t *image;
+        image_t *imagemask;
+        XpmAttributes xpmattr;
+
+
+        /* Error checks. */
+        if(!IDC() ||
+           (osw_gui[0].root_win == 0) ||
+           (data == NULL)
+        )
+            return(0);
+
+
+        /* Set XPM attributes. */   
+        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+        xpmattr.closeness = XpmDefaultColorCloseness;
+        xpmattr.depth = osw_gui[0].depth;
+
+	/* Load image from XPM data. */
+        status = XpmCreateImageFromData(
+            osw_gui[0].display,
+            data,
+            &image,
+            &imagemask,
+            &xpmattr
+        );
+        if(status != XpmSuccess)
+        {
+            fprintf(stderr, "OSWLoadImageFromXpmData(): ");
+            fprintf(stderr, "%p: Failed load.\n",
+		(void *)data
+	    );
+
+            return(0);
+        }
+
+	/* Destroy the mask image. */
+        OSWDestroyImage(&imagemask);
+
+
+        return(image);
+}
+
+
+
+/*
+ *      Loads a pixmap from an XPM file.
+ *      The pixmap's depth will match that of the GUI's.
+ */
+pixmap_t OSWLoadPixmapFromXpmFile(char *filename)
+{
+	int status;
+        pixmap_t pixmap = 0;
+        pixmap_t pixmapmask = 0;
+        XpmAttributes xpmattr;
+
+
+	/* Error checks. */
+	if(!IDC() ||
+	   (osw_gui[0].root_win == 0) ||
+	   (filename == NULL)
+	)
+	    return(0);
+
+
+        /* Set XPM attributes. */
+	memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+	xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+        xpmattr.closeness = XpmDefaultColorCloseness;
+	xpmattr.depth = osw_gui[0].depth;
+
+
+        /* Attempt to read the pixmap data from file. */
+	status = XpmReadFileToPixmap(
+	    osw_gui[0].display,
+	    osw_gui[0].root_win,
+	    filename,
+	    &pixmap,
+	    &pixmapmask,
+	    &xpmattr
+	);
+	if(status != XpmSuccess)
+        {
+            fprintf(stderr, "OSWLoadPixmapFromXpmFile(): ");
+            fprintf(stderr, "%s: Failed load.\n", filename);
+
+            return(0);
+        }
+
+	/* Destroy the mask, we don't need it. */
+	OSWDestroyPixmap(&pixmapmask);
+
+
+	return(pixmap);
+}
+
+
+/*
+ *      Loads a pixmap from XPM data in memory.
+ *      The pixmap's depth will match that of the GUI's.
+ */
+pixmap_t OSWLoadPixmapFromXpmData(char **data)  
+{
+        int status;  
+        pixmap_t pixmap = 0;
+        pixmap_t pixmapmask = 0;
+        XpmAttributes xpmattr;
+
+
+	/* Error checks. */
+        if(!IDC() ||
+           (osw_gui[0].root_win == 0) ||
+           (data == NULL)
+        )
+            return(0);
+
+
+        /* Set XPM attributes. */
+        memset(&xpmattr, 0x00, sizeof(XpmAttributes));
+        xpmattr.valuemask = XpmSize | XpmCloseness | XpmDepth;
+        xpmattr.closeness = XpmDefaultColorCloseness;
+	xpmattr.depth = osw_gui[0].depth;
+
+        /* Attempt to read the pixmap data from file. */
+        status = XpmCreatePixmapFromData(
+            osw_gui[0].display,
+            osw_gui[0].root_win,
+            data,
+            &pixmap,
+            &pixmapmask,
+            &xpmattr
+        );
+        if(status != XpmSuccess)
+        {
+            fprintf(stderr, "OSWLoadPixmapFromXpmData(): ");
+            fprintf(stderr, "%p: Failed load.\n",
+                (void *)data
+            );
+
+            return(0);
+        }
+
+        /* Destroy the mask, we don't need it. */
+        OSWDestroyPixmap(&pixmapmask);
 
 
         return(pixmap);

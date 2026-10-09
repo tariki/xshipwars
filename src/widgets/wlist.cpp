@@ -1602,26 +1602,10 @@ WCursor *ListWinCreateCursorFromEntry(
 	int entry_num
 )
 {
-#ifndef X_H
-	return(NULL);
-#else
-        GC gc;
-        XGCValues gcv;
-	pixel_t white_pix, black_pix;
-	int i, x, y, status, bytes_per_pixel, bytes_per_line;
-	u_int8_t *img_data;
-	u_int8_t *ptr8;
-	u_int16_t *ptr16;
-	u_int32_t *ptr32;
-
 	list_window_entry_struct *entry_ptr;
-	image_t *image;
-	unsigned int width, height;	/* Of image. */
-        unsigned int req_width, req_height;	/* Of pixmap and mask. */
-	pixmap_t pixmap, mask;
+	unsigned int width, height;	/* Of cursor. */
+	cursor_t cursor;
 	WCursor *wcursor;
-        XColor fg_xcolor, bg_xcolor;
-
 
 
 	if(lw == NULL)
@@ -1632,269 +1616,35 @@ WCursor *ListWinCreateCursorFromEntry(
 	else
 	    return(NULL);
 
-	image = entry_ptr->image;
-	if(image == NULL)
+	cursor = OSWCreateCursorFromImage(entry_ptr->image, &width, &height);
+	if(cursor == 0)
 	    return(NULL);
-
-	img_data = (u_int8_t *)image->data;
-	if(img_data == NULL)
-	    return(NULL);
-
-	width = image->width;
-	height = image->height;
-
-	if(((int)width <= 0) ||
-	   ((int)height <= 0)
-	)
-	    return(NULL);
-
-
-        /* Check recommended size from GUI. */
-        status = XQueryBestCursor(  
-            osw_gui[0].display,
-            osw_gui[0].root_win,
-            width, height,
-            &req_width, &req_height
-        );
-        if(!status)
-        {  
-           fprintf(stderr,
- "ListWinCreateCursorFromEntry(): Cannot get recommended cursor size for %i %i\n",
-                width, height
-            );
-            req_width = width; 
-            req_height = height;   
-        }
-
-	/* Sanitize/limit sizes, pixmap size must be <= image size */
-        if(req_width > width)
-            req_width = width;
-	if(req_height > height)
-	    req_height = height;
-
-
-	/* Create a 1 bit depth pixmap and mask. */
-	pixmap = XCreatePixmap(
-            osw_gui[0].display,
-            osw_gui[0].root_win,
-            req_width, req_height,
-            1			/* Depth of 1. */
-        );
-
-	/* Create a 1 bit depth pixmap and mask. */
-	mask = XCreatePixmap(
-            osw_gui[0].display,
-            osw_gui[0].root_win,
-            req_width, req_height,
-            1			/* Depth of 1. */
-        );
-
-        /* Create 1 bit depth graphics context. */
-	white_pix = osw_gui[0].white_pix;
-	black_pix = osw_gui[0].black_pix;
-	gcv.function = GXcopy;
-        gcv.plane_mask = 1;		/* Monochrome. */
-        gcv.foreground = white_pix;
-        gcv.background = black_pix;
-        gcv.line_width = 1;
-        gc = XCreateGC(   
-            osw_gui[0].display,
-            pixmap,
-            GCFunction | GCPlaneMask | GCForeground | GCBackground |
-                GCLineWidth,
-            &gcv
-        );
-
-
-	/* Copy image data to pixmap and mask. */
-	switch(osw_gui[0].depth)
-	{
-	  /* 8 bits. */
-	  case 8:
-	    ptr8 = (u_int8_t *)img_data;
-            bytes_per_pixel = BYTES_PER_PIXEL8;
-            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
-            for(y = 0; y < (int)req_height; y++)
-            {
-                for(x = 0; x < (int)req_width; x++)
-                {
-                    ptr8 = (u_int8_t *)(&img_data[
-                        (y * bytes_per_line) +
-                        (x * bytes_per_pixel)
-                    ]);
-
-                    i = (
-                        (((*ptr8) & 0xe0)) +
-                        (((*ptr8) & 0x1c) << 3) +
-                        (((*ptr8) & 0x03) << 6)
-                    );
-                    if(i < ((0xFF * 3) / 2))
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
-
-                    if(*ptr8)
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
-                }
-            }
-	    break;
-
-	  /* 15 bits. */
-	  case 15:
-            bytes_per_pixel = BYTES_PER_PIXEL16;
-            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
-            for(y = 0; y < (int)req_height; y++)
-            {
-                for(x = 0; x < (int)req_width; x++)
-                {
-                    ptr16 = (u_int16_t *)(&img_data[
-                        (y * bytes_per_line) +
-                        (x * bytes_per_pixel)
-                    ]);
-
-                    i = (
-                        (((*ptr16) & 0x7C00) >> 7) +
-                        (((*ptr16) & 0x03E0) >> 2) +
-                        (((*ptr16) & 0x001F) << 3)
-                    );
-                    if(i < ((0xFF * 3) / 2))
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
-
-                    if(*ptr16)
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
-                }
-            }
-            break;
-
-	  /* 16 bits. */
-	  case 16:
-	    bytes_per_pixel = BYTES_PER_PIXEL16;
-	    bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
-	    for(y = 0; y < (int)req_height; y++)
-	    {
-		for(x = 0; x < (int)req_width; x++)
-		{
-		    ptr16 = (u_int16_t *)(&img_data[
-			(y * bytes_per_line) +
-			(x * bytes_per_pixel)
-		    ]);
-
-		    i = (
-			(((*ptr16) & 0xf800) >> 8) +
-                        (((*ptr16) & 0x07E0) >> 3) +
-                        (((*ptr16) & 0x001F) << 3)
-		    );
-		    if(i < ((0xFF * 3) / 2))
-			XSetForeground(osw_gui[0].display, gc, black_pix);
-                    else
-			XSetForeground(osw_gui[0].display, gc, white_pix);
-                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
-
-                    if(*ptr16)
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
-		}
-	    }
-	    break;
-
-	  /* 24 or 32 bits. */
-	  case 24:
-	  case 32:
-            bytes_per_pixel = BYTES_PER_PIXEL32;
-            bytes_per_line = (int)width * bytes_per_pixel;	/* On image. */
-            for(y = 0; y < (int)req_height; y++)
-            {
-                for(x = 0; x < (int)req_width; x++)
-                {
-                    ptr32 = (u_int32_t *)(&img_data[
-                        (y * bytes_per_line) +
-                        (x * bytes_per_pixel)
-                    ]);
-
-                    i = (
-                        (((*ptr32) & 0x00ff0000) >> 16) +
-                        (((*ptr32) & 0x0000ff00) >> 8) +
-                        (((*ptr32) & 0x000000ff))
-                    );
-                    if(i < ((0xFF * 3) / 2))
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    XDrawPoint(osw_gui[0].display, pixmap, gc, x, y);
-
-                    if(*ptr32)
-                        XSetForeground(osw_gui[0].display, gc, white_pix);
-                    else
-                        XSetForeground(osw_gui[0].display, gc, black_pix);
-                    XDrawPoint(osw_gui[0].display, mask, gc, x, y);
-                }
-            }
-	    break;
-	}
-
 
 	/* Allocate a new WCursor structure. */
 	wcursor = (WCursor *)malloc(sizeof(WCursor));
 	if(wcursor == NULL)
 	{
-	    OSWDestroyPixmap(&pixmap);
-            OSWDestroyPixmap(&mask);
-            XFreeGC(osw_gui[0].display, gc);
+	    OSWDestroyCursor(&cursor);
 
 	    return(NULL);
 	}
 
+	wcursor->cursor = cursor;
+
 	wcursor->depth = 1;	/* X requires depth be 1. */
 
-        wcursor->x = ((int)req_width / 2);
-        wcursor->y = ((int)req_height / 2);
-        wcursor->width = req_width;
-        wcursor->height = req_height;
-
-	fg_xcolor.red = 0xFFFF;
-	fg_xcolor.green = 0xFFFF;
-	fg_xcolor.blue = 0xFFFF;
-
-	bg_xcolor.red = 0x0000;
-	bg_xcolor.green = 0x0000;
-	bg_xcolor.blue = 0x0000;
-
-        wcursor->cursor = XCreatePixmapCursor(
-            osw_gui[0].display,
-            pixmap,
-            mask,
-            &fg_xcolor,
-            &bg_xcolor,
-            wcursor->x,
-	    wcursor->y
-        );  
+        wcursor->x = ((int)width / 2);
+        wcursor->y = ((int)height / 2);
+        wcursor->width = width;
+        wcursor->height = height;
 
 	wcursor->color.a = 0x00;
-        wcursor->color.r = (u_int8_t)(fg_xcolor.red >> 8);
-        wcursor->color.g = (u_int8_t)(fg_xcolor.green >> 8);
-        wcursor->color.b = (u_int8_t)(fg_xcolor.blue >> 8);
-
-
-	/* Destroy tempory resources. */
-        OSWDestroyPixmap(&pixmap);
-        OSWDestroyPixmap(&mask);
-        XFreeGC(osw_gui[0].display, gc);
+        wcursor->color.r = 0xFF;
+        wcursor->color.g = 0xFF;
+        wcursor->color.b = 0xFF;
 
 
 	return(wcursor);
-#endif	/* X_H */
 }
 
 

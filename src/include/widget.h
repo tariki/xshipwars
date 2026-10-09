@@ -42,14 +42,6 @@
  *    Definations for global widget values:
  */
 
-/*
- *	Color closeness for libXpm:
- */
-#ifndef XpmDefaultColorCloseness
-    #define XpmDefaultColorCloseness    40000
-#endif
-
-
 /* Default window attributes mask. */
 #define DEF_WIN_ATTR_MASK \
 	CWBackPixmap   | CWBackPixel     | CWBorderPixmap | \
