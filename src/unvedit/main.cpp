@@ -1121,7 +1121,6 @@ int UEInit(int argc, char *argv[])
 void UEManage()
 {
 	int i, n, no_uews;
-	int events_handled = 0;
 	time_t t;
 	event_t event;
 	uew_struct **uew_ptr;
@@ -1140,8 +1139,6 @@ void UEManage()
 	/* Manage GUI events. */
         while(OSWEventsPending() > 0)
         {   
-            /* Reset events counter. */
-            events_handled = 0;
                  
             /* Get event. */
             OSWWaitNextEvent(&event);
@@ -1155,26 +1152,26 @@ void UEManage()
 
 
 	    /* Manage all universe edit windows. */
-	    events_handled += UEWManageAll(&event);
-            events_handled += UHWManageAll(&event);
-            events_handled += WepWManageAll(&event);
-            events_handled += EcoWManageAll(&event);
-            events_handled += PrintWinManage(&event);
-            events_handled += OptWGenManage(&event);
-	    events_handled += AboutWinManage(&event);
+	    UEWManageAll(&event);
+            UHWManageAll(&event);
+            WepWManageAll(&event);
+            EcoWManageAll(&event);
+            PrintWinManage(&event);
+            OptWGenManage(&event);
+	    AboutWinManage(&event);
 
-	    events_handled += ComfWinManage(&comfwin, &event);
+	    ComfWinManage(&comfwin, &event);
 
 
 
 
 
             /* External widgets. */
-            events_handled += DialogWinManage(
+            DialogWinManage(
                 &dialog,
                 &event
             );
-            events_handled += FBrowserManage(
+            FBrowserManage(
                 &file_browser,
                 &event
             );

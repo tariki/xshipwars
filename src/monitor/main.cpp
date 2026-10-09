@@ -455,7 +455,6 @@ int MonitorInit(int argc, char *argv[])
 void MonitorManage()
 {
 	int i, none;
-	int events_handled = 0;
 	time_t t;
 	event_t event;
 
@@ -477,8 +476,6 @@ void MonitorManage()
 	/* Manage GUI events. */
         while(OSWEventsPending() > 0)
         {   
-            /* Reset events counter. */
-            events_handled = 0;
                  
             /* Get event. */
             OSWWaitNextEvent(&event);
@@ -492,10 +489,10 @@ void MonitorManage()
 
 
 	    /* Manage all universe edit windows. */
-	    events_handled += MonManageAll(&event);
+	    MonManageAll(&event);
 
 	    /* Dialog widget. */
-	    events_handled += DialogWinManage(
+	    DialogWinManage(
                 &dialog, &event
             );
 	}

@@ -66,7 +66,6 @@ int ComfWinDoQuery(
 	const char *mesg
 )
 {
-	int events_handled;
 	event_t event;
 
 
@@ -82,8 +81,6 @@ int ComfWinDoQuery(
 	{
 	    usleep(8000);
 
-            events_handled = 0;
-
 	    if(OSWEventsPending() <= 0)
 		continue;
         
@@ -96,7 +93,7 @@ int ComfWinDoQuery(
             WidgetManage(&event);
 
 	    /* Manage comfermation window. */
-	    events_handled += ComfWinManage(cw, &event);
+	    ComfWinManage(cw, &event);
 
 
 	    /*   Let standard management handle if it's one of the
@@ -110,7 +107,7 @@ int ComfWinDoQuery(
 	    )
 	    {
 		if(cw->std_gui_manage_func != NULL)
-		    events_handled += cw->std_gui_manage_func(&event);
+		    cw->std_gui_manage_func(&event);
 	    }
 	    else
 	    {

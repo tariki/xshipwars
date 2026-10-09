@@ -46,7 +46,6 @@ void BlitBufTile8(
 {
         int src_x_start, src_y_start;
 
-        int tar_x_col;
         int src_x_col, src_y_row;
 
         unsigned int src_x_col_inc, src_y_row_inc;
@@ -132,8 +131,6 @@ void BlitBufTile8(
         src_x_col_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
         src_y_row_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
 
-        /* Set target starting positions. */
-        tar_x_col = 0;
 
 
         /* Get starting buffer pointers. */
@@ -156,7 +153,6 @@ void BlitBufTile8(
 
 
             /* Update pixel positions. */
-            tar_x_col++;
             src_x_col = WARPTOZERO(
                 (int)(src_x_col + (int)src_x_col_inc), 
                 (int)src_width
@@ -199,7 +195,6 @@ void BlitBufTile16(
 {
 	int src_x_start, src_y_start;
 
-	int tar_x_col;
 	int src_x_col, src_y_row;
 
 	unsigned int src_x_col_inc, src_y_row_inc;
@@ -284,8 +279,6 @@ void BlitBufTile16(
 	src_x_col_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
 	src_y_row_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
 
-	/* Set target starting positions. */
-        tar_x_col = 0;
 
 
 	/* Get starting buffer pointers. */
@@ -308,7 +301,6 @@ void BlitBufTile16(
 
 
             /* Update pixel positions. */
-            tar_x_col++;
 	    src_x_col = WARPTOZERO(
 		(int)(src_x_col + (int)src_x_col_inc),
 		(int)src_width
@@ -351,7 +343,6 @@ void BlitBufTile32(
 {
         int src_x_start, src_y_start;
 
-        int tar_x_col;
         int src_x_col, src_y_row;
 
         unsigned int src_x_col_inc, src_y_row_inc;
@@ -437,8 +428,6 @@ void BlitBufTile32(
         src_x_col_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
         src_y_row_inc = MAX((unsigned int)(256 / magnification / zoom), 1);
 
-        /* Set target starting positions. */
-        tar_x_col = 0;
 
 
         /* Get starting buffer pointers. */
@@ -461,7 +450,6 @@ void BlitBufTile32(
 
 
             /* Update pixel positions. */
-            tar_x_col++;
             src_x_col = WARPTOZERO(
                 (int)(src_x_col + (int)src_x_col_inc), 
                 (int)src_width

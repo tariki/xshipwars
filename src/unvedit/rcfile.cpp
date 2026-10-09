@@ -363,7 +363,7 @@ int RCLoadFromFile(char *filename)
  *	Saves configuration to filename.  Returns 0 on success
  *	and -1 on error.
  */
-#define WRITE	bytes_written += fwrite(buf,\
+#define WRITE	fwrite(buf,\
                                         sizeof(char),\
                                         strlen(buf),\
                                         fp\
@@ -377,7 +377,6 @@ int RCSaveToFile(char *filename)
 	struct stat stat_buf;
         char cwd[PATH_MAX];
 
-	int bytes_written = 0;
 
 
 
