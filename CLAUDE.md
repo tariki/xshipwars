@@ -1,17 +1,25 @@
-# XShipWars 現代 Linux / FreeBSD 移植
+# XShipWars 現代 Linux / FreeBSD / macOS 移植
 
 ## ゴール
 - 最新の Linux (Debian trixie / gcc 14, 64bit) と FreeBSD (64bit) で client / server / monitor / unvedit をビルド・起動できる状態にする
   （FreeBSD はこの Dev Container では検証できない。「サポート対象プラットフォーム」を参照）
+- macOS（Apple Silicon）でも client / server / monitor / unvedit をビルド・起動できるようにする。
+  GUI は X11 ではなく SDL2 で描く（「macOS 対応」を参照）
 - ゲームの挙動・ネットワークプロトコル・データファイル形式は変えない。最小限の修正で動かす
 
 ## 環境
-- 作業は Dev Container (`.devcontainer/`) 内で行う。`$DEVCONTAINER` が未設定ならホスト上にいるので、ビルドや実行はしない
-- コンテナは Apple Silicon ホスト上の **arm64 Linux**。arm64 では `char` が unsigned がデフォルトなので、
+- Linux 向けの作業は Dev Container (`.devcontainer/`) 内で行う。`$DEVCONTAINER` が未設定ならホスト（macOS）上にいる
+- ホスト（macOS）では macOS 向けのビルドと実行だけを行う。Linux 向けのビルド・`smoke.sh` などのスクリプトはコンテナで実行する
+  - ホストのツール: Xcode（clang++）、Homebrew（`/opt/homebrew`）、XQuartz（`/opt/X11`）
+  - Homebrew でパッケージを追加したいときは、直接インストールせずにユーザーに依頼する
+  - ホストとコンテナは同じ作業ツリーを共有している。オブジェクトファイルや実行ファイルが混ざらないように、
+    もう一方でビルドする前に `make clean` する（ビルド先の分離は「macOS 対応」の段階 1 で整える）
+- コンテナは Apple Silicon ホスト上の **arm64 Linux**。arm64 Linux では `char` が unsigned がデフォルトなので、
   `char` を signed 前提で扱うコード（負値比較・-1 との比較・符号拡張）に注意する
-- ファイアウォールで外部通信は制限されている。apt でパッケージを追加したいときは直接インストールせず、
+  （macOS の arm64 では `char` は signed。Linux と macOS で結果が変わるコードは、どちらでも同じになるように直す）
+- コンテナはファイアウォールで外部通信が制限されている。apt でパッケージを追加したいときは直接インストールせず、
   `.devcontainer/Dockerfile` に追記してユーザーにリビルドを依頼する
-- ビルド: `scripts/build.sh <server|client|monitor|unvedit|all>` (ログは `build-logs/`)
+- ビルド: `scripts/build.sh <server|client|monitor|unvedit|all>` (ログは `build-logs/`。コンテナ専用。macOS 用は段階 1 で用意する)
 - ヘッドレス実行: `scripts/headless.sh start|shot|key|stop`（Xvfb :99）
 - スモークテスト: `scripts/smoke.sh`（server/monitor/client/unvedit を起動して主要動作を自動判定。変更後の確認に使う）
 - データのインストール: `scripts/install-data.sh [-n] [インストール先]`（data/ と theme/ を client が読む配置にまとめる）
@@ -24,13 +32,15 @@
 - データファイル: `data/`（etc, images）、`theme/`（images, sounds）
 
 ## サポート対象プラットフォーム
-- 対象は **Linux** と **FreeBSD** のみ
+- 対象は **Linux**・**FreeBSD**・**macOS** のみ
   - Linux: 主な対象。Dev Container（Debian trixie, arm64）でビルド・動作を確認している
   - FreeBSD: 対象とするが、この Dev Container では検証できない。`src/*/Makefile.FreeBSD` は Linux と同じ設定に
     そろえてある（コンパイラは `${CXX}`、X11 は `${LOCALBASE}`、PREFIX は Linux と同じ /usr）。Linux 側を直したら
     FreeBSD 側にも反映し、GNU make で `-f Makefile.FreeBSD` を使って Linux 上でビルドが通ることを確かめる
     （これだけでは `__linux__` が定義されたままなので、Linux 以外の分岐は `make clean` のあと
     `scripts/build.sh all CPP="g++ -U__linux__"` でもビルドして確かめ、終わったら clean して通常どおりビルドし直す）
+  - macOS: Apple Silicon のホストでビルド・動作を確認する。Intel Mac は未検証。
+    4 つのプログラムすべてを対象にする（client の「server を起動する」機能も含めて、Mac 1 台で遊べるようにするため）
 - **AIX・HP-UX・Solaris・Windows は対象外とし、ビルド環境とソースコードから削除する**
   - 理由: このプロジェクトで試せる環境が無く、2001 年以降ビルドされていないと考えられるため。
     試せないコードは修正のたびに保守の負担になる。（OS 自体の状況は理由にしない。AIX 7.3 と
@@ -56,8 +66,29 @@
   FluidSynth と SoundFont（Debian では `libfluidsynth3`・`timgm6mb-soundfont`）で鳴らす。
   YIFF / ESD のコードは削除済み。ジョイスティックは
   libjsw の代わりに SDL2 で読む（client の `JS_SUPPORT`、`jsw-sdl.cpp`。実機では未確認）
-- `-fpermissive`・`-w`・警告の一括抑止でごまかさない
+- `-fpermissive`・`-w`・警告の一括抑止でごまかさない（clang で新たに出る警告も同じ）
 - 修正は小さな単位でコミットし、メッセージに「現代の環境で何が壊れていたか」を書く
+
+## macOS 対応
+- GUI は OSW 層（`src/global/osw-x.cpp`）の SDL2 版（`osw-sdl.cpp`）を新しく作って描く。Cocoa や XQuartz は使わない
+  - SDL2 版はどの OS でもビルドできるように作り、コンテナの Linux（Xvfb）でも動作を確認する。
+    macOS では SDL2 版だけを使う
+  - Linux / FreeBSD の既定は X11 版のままにする。X11 版の動作は変えない
+  - ゲーム本体と widgets は XEvent のフィールド・イベント種別・`XK_*`・`Button1` などを直接使っているので、
+    SDL2 版では X と同じ形の型と定数を自前のヘッダで用意し、SDL のイベントをそれに変換する（呼び出し側は変えない）
+  - 設定ファイルの `BeginKeyMap` は X のキーコードの番号をそのまま書く形式なので、SDL のスキャンコードは
+    evdev の番号に変換して渡す（設定ファイルの形式と同梱の値は変えない）
+  - X のコアフォント（`7x14`・`6x10`）の代わりに、misc-fixed のビットマップフォントを組み込んで描く（文字の幅と配置を変えないため）
+- ソースの分岐は `__APPLE__` で足す。Linux（と FreeBSD）側の処理は変えない
+- 進める順番:
+  1. ホストで XQuartz の Xlib を使って 4 つをビルドし、clang や libc の違い・`__APPLE__` の分岐を片付ける
+     （server はこの段階で完成させる）。macOS 用の Makefile とビルド用スクリプト、ホストとコンテナのビルド先の分離もここで整える
+  2. widgets などが Xlib を直接呼んでいる箇所（主に `widgets/wutils.cpp`・`wlist.cpp`）を OSW 層の関数に移す。
+     コンテナで `smoke.sh` を流して、Linux の動作が変わらないことを確かめる
+  3. `osw-sdl.cpp` を作る。コンテナの Linux で client → monitor → unvedit の順に動かしてから、macOS でビルドする
+  4. 配布の形（`.app` にするか、データの置き場所）、`install-data.sh` の対応、ドキュメント、macOS 用のスモークテスト
+- まだ決めていないこと: 配布の形とデータの置き場所（macOS では `/usr/share` に書き込めない）、
+  server のプラグインの拡張子（`.so` / `.dylib`）、SoundFont の置き場所
 
 ## 記録
 - 移植中に判明した非自明な事項（プロトコル上の型のサイズ、ファイル形式の前提、無効化した機能など）は
