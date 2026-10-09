@@ -7,6 +7,12 @@ All notable changes to this project are recorded in this file. The format follow
 Version numbers are those of this port. The game's own version (shown by the programs, and written into
 configuration and universe files) stays at the original XShipWars 1.34.0.
 
+## 0.1.1
+
+- Fixed the client failing to build on FreeBSD (the joystick defaults were defined only on Linux)
+- Fixed unused-variable warnings in the server and in the file browser when building on platforms other than Linux
+- Added a build with `__linux__` undefined to the checks, so that the code paths FreeBSD uses are also compiled on Linux
+
 ## 0.1.0
 
 - Ported XShipWars 1.34.0 so that the client, server, monitor and unvedit all build and run on modern Linux
