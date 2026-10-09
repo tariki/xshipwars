@@ -494,3 +494,34 @@ macOS 27（Apple Silicon）、Apple clang 21、XQuartz（`/opt/X11`）で確認�
   止まっていた。確認を awk の連想配列で書き直した（メッセージと判定は同じ）。重なりがあるとき、以前と同じエラーで止まることを確かめた。
 - client の変更（cmdlog.cpp・main.cpp）と install-data.sh は、コンテナで client のクリーンビルド（警告 0）、`g++ -U__linux__` でのビルド（警告 0）、
   スモークテスト（全項目 PASS）で確かめた。install-data.sh は、直す前と後でインストール結果（中身・パーミッション・シンボリックリンク）が同一。
+
+## macOS: 段階 2（widgets の Xlib の直接呼び出しを OSW 層へ） (2026-10-09)
+
+SDL2 版の OSW 層（段階 3）で widgets を変えずに済むように、OSW 層の外で Xlib を直接呼んでいた箇所を OSW 層に移した。
+X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` に移し、widgets の関数は OSW の関数を呼ぶだけにした（API は同じ）。
+
+- 調べた範囲: client・widgets・global・monitor・unvedit（osw-x.cpp を除く）。Xlib を直接呼んでいたのは widgets の
+  `wutils.cpp`・`wlist.cpp`・`wfile.cpp` と、client の MIT-SHM まわり（main.cpp・vsdraw.cpp・bridgemanage.cpp・vsevent.cpp）だけだった。
+  client の MIT-SHM まわりと Visual の確認は、元から `#if defined(X_H) && defined(USE_XSHM)` や `#ifdef X_H` で囲まれ、
+  そうでないときは OSW の関数（`OSWPutSharedImageToDrawable()` など）を使う作りなので、変えていない。
+  global/imlibosw.cpp も Xlib を使うが、どのビルドにも含まれていない。
+- OSW 層に足した関数:
+  - `OSWCreateCursorFromXpmFile()`・`OSWCreateCursorFromXpmData()`: XPM を深さ 1 の pixmap とマスクに読み、推奨サイズに縮め、
+    ホットスポットを XPM の大きさに収めてカーソルを作る（`WidgetCreateCursorFromFile()`・`FromData()` の中身。共通部分は static の関数にまとめた）。
+  - `OSWCreateCursorFromImage()`: 一覧の項目の画像から白黒のカーソルを作る（`ListWinCreateCursorFromEntry()` の中身）。
+  - `OSWCreatePixmapMaskFromImage()`: 画像の 0 以外の画素を白にした深さ 1 のマスク（`WidgetPixmapMaskFromImage()` の中身）。
+  - `OSWLoadImageFromXpmFile()`・`...Data()`・`OSWLoadPixmapFromXpmFile()`・`...Data()`（wfile.cpp の XPM の関数の中身）。
+  - `XpmDefaultColorCloseness`（libXpm の値ではなく、widget.h で定義していた）も osw-x.cpp に移した。
+- 既存の OSW の関数に置き換えたもの（中身がまったく同じ）: 画像のタイル貼りと影付き・透過の転送の `XPutImage` →
+  `OSWPutImageToDrawablePos()`、pixmap のタイル貼りの `XCopyArea` → `OSWCopyDrawablesCoord()`、`WidgetGetPixel()` の
+  `XParseColor`・`XAllocColor` → `OSWLoadPixelCLSP()`。
+- `WidgetGetPixel()`・`WidgetPixmapMaskFromImage()`・`WidgetCreateCursorFromFile()`・XPM から画像や pixmap を読む 4 つの関数は、
+  どこからも呼ばれていない（widgetdemo を除く）。API を残すために移した。
+- 見つけた既存の不具合（直していない）: `OSWLoadPixelCLSP()` は `XParseColor()` の戻り値を `BadColor`・`BadValue` と比べているが、
+  実際は失敗すると 0 を返すので、失敗しても初期化していない色で `OSWLoadPixelRGB()` を呼ぶ。呼び出し元（wglobal.cpp）は
+  決まった色の名前（`CLSP_*`）しか渡さないので、この経路は通らない。
+- 確認: Linux（コンテナ）と macOS で 4 つのクリーンビルド（警告 0）、`g++ -U__linux__` でのビルド（警告 0）、スモークテスト（全項目 PASS）。
+  スモークテストでは通らないドラッグ用のカーソルについて、移す前の関数（git の HEAD から取り出したもの）と移した後の関数で
+  カーソルを作り、Xvfb のルートウィンドウに設定して XFixes（`XFixesGetCursorImage()`）で読み出した画像・大きさ・ホットスポットと
+  `WCursor` の値が一致することを確かめた（項目の画像からのカーソル、XPM からのカーソル 3 種類。ホットスポットの補正を含む）。
+  Xvfb の推奨カーソルサイズは十分大きいので、カーソルを縮める処理は通っていない。
