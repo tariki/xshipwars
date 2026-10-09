@@ -480,4 +480,17 @@ macOS 27（Apple Silicon）、Apple clang 21、XQuartz（`/opt/X11`）で確認�
   - unvedit: generic_in.unv を開き、SIGTERM の緊急保存（`UEDoEmergencySaveAll()`）で書き出したファイルが元と 1 バイトも違わなかった。
 - 共有コードの変更（blittile.cpp など）は、コンテナで 4 つのクリーンビルド（警告 0）、`g++ -U__linux__` でのビルド（警告 0）、
   スモークテスト（全項目 PASS）で確かめた。
-- 未了: client（Homebrew の SDL2・SDL2_mixer が要る）。
+- client（2026-10-09 追記）: `src/client/Makefile.Darwin` を作った。SDL2・SDL2_mixer は Homebrew（`brew install sdl2 sdl2_mixer`）。
+  - Homebrew の `sdl2` は今は **sdl2-compat**（SDL3 の上で SDL2 の API を提供する）で、SDL3 も入る。FluidSynth は SDL2_mixer の依存として入る。
+  - pkg-config の SDL2_mixer のフラグは `-I/opt/homebrew/include` と `-L/opt/homebrew/lib` を含み、そこには Homebrew の libX11 の
+    ヘッダとライブラリもある。XQuartz のものを使うように、`-I/opt/X11/include` と `-L/opt/X11/lib` を先に置く。
+  - clang の警告は server などと同じ種類: cmdlog.cpp の `off_t` の `%ld`（3 か所）と、main.cpp の読まない `total_events_handled`（2 か所）。
+  - 動作確認: XQuartz の Xvfb で server に Guest でログインし、ブリッジの画面が描かれた（FPS 48）。効果音は SDL の disk 出力
+    （`SDL_AUDIODRIVER=disk`。sdl2-compat でも効く）で、音のある 10ms 区間が出力された。XQuartz の Xvfb にも 7x14・6x10 のフォントがある。
+    キー操作は確かめていない（macOS には xdotool が無い）。
+  - 背景音楽: macOS の SDL2_mixer が既定で探す SoundFont は `/usr/share/sounds/sf2/FluidR3_GM.sf2` だけで、macOS ではそこに置けない
+    （SIP で /usr は書き込めない）。`SDL_SOUNDFONTS` で指定する必要がある。どこに置いてどう指定するかは、段階 4（配布の形とデータの置き場所）で決める。
+- `scripts/install-data.sh` は、ファイル名の重なりの確認に bash 4 の連想配列（`declare -A`）を使っていて、macOS の `/bin/bash`（3.2）で
+  止まっていた。確認を awk の連想配列で書き直した（メッセージと判定は同じ）。重なりがあるとき、以前と同じエラーで止まることを確かめた。
+- client の変更（cmdlog.cpp・main.cpp）と install-data.sh は、コンテナで client のクリーンビルド（警告 0）、`g++ -U__linux__` でのビルド（警告 0）、
+  スモークテスト（全項目 PASS）で確かめた。install-data.sh は、直す前と後でインストール結果（中身・パーミッション・シンボリックリンク）が同一。
