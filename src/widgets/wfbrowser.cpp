@@ -1557,13 +1557,16 @@ int FBrowserDevicesPUListCB(void *ptr)
  */
 int FBrowserMountPBCB(void *ptr)
 {
-        int i, status;
+        int i;
 	char *strptr;
+#ifdef __linux__
+	int status;
 
 	char need_continue;
 
 	const char *filesystemtype = NULL;
 	unsigned long rwflag = 0;
+#endif	/* __linux__ */
 
         fb_device_struct *dev_ptr;
         fbrowser_struct *fb;
@@ -1752,7 +1755,10 @@ int FBrowserMountPBCB(void *ptr)
  */
 int FBrowserUnmountPBCB(void *ptr)   
 {
-        int i, status;
+        int i;
+#ifdef __linux__
+        int status;
+#endif	/* __linux__ */
         char *strptr;
         fb_device_struct *dev_ptr;
         fbrowser_struct *fb;

@@ -341,7 +341,9 @@ plugin_id_t PluginLoad(
 )
 {
 	int i, status;
+#if defined(__linux__)
 	char *strptr;
+#endif
 	plugin_id_t n;
 	plugin_record_struct *plugin_ptr;
 
