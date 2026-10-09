@@ -7,6 +7,10 @@ All notable changes to this project are recorded in this file. The format follow
 Version numbers are those of this port. The game's own version (shown by the programs, and written into
 configuration and universe files) stays at the original XShipWars 1.34.0.
 
+## 0.1.2
+
+- Fixed `scripts/install-data.sh` failing on FreeBSD (it relied on GNU `install -D`, which means something else in FreeBSD's `install`)
+
 ## 0.1.1
 
 - Fixed the client failing to build on FreeBSD (the joystick defaults were defined only on Linux)
