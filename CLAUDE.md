@@ -99,11 +99,20 @@
   3. `osw-sdl.cpp` を作る。骨組み（3 つの GUI プログラムがリンクまで通る）→ 中心部分（ウィンドウの木・合成・描画・フォント・イベント）→
      コンテナの Linux で monitor → client → unvedit の順に動かす → macOS でビルドする。
      monitor を先にするのは、部品が少なくウィンドウの木の検証に向いているため
-  4. 配布の形（`.app` にするか、データの置き場所）、`install-data.sh` の対応、ドキュメント、macOS 用のスモークテスト
+  4. 配布とドキュメント（下の「段階 4 の方針」）
 - 段階 3 の確認: SDL2 版の Linux ビルドで `smoke.sh` と同じ項目を流す（SDL のトップレベルも X のウィンドウなので xdotool が使える）。
   X11 版と SDL2 版の同じ場面のスクリーンショットを比べ、差が出た箇所は目で確かめる
-- まだ決めていないこと: 配布の形とデータの置き場所（macOS では `/usr/share` に書き込めない）、SoundFont の置き場所
-  （server のプラグインは、FreeBSD と同じく macOS でも読み込まない）
+- 段階 4 の方針:
+  - 配布は Linux と同じく、ソースからビルドして `make install` で入れる形にする。`.app` は後回し（必要になったら別の段階で）
+  - macOS の既定の PREFIX は `/usr/local`。client・monitor・unvedit は `$(PREFIX)/bin`、データは `$(PREFIX)/share/games/xshipwars`、
+    server は `$(PREFIX)/swserv`（macOS では `/usr/share` も `/home` も使えない）。Homebrew の `/opt/homebrew` は使わない
+  - ソースに直接書かれた既定の場所（`DEF_XSW_TOPLEVEL_DIR`・`DEF_SW_SERVER_DIR` など）は `#ifndef` で囲み、`Makefile.Darwin` から
+    `-D` で渡す。Linux の既定の値は変えない
+  - `install-data.sh` は、入れ先に合わせて設定ファイルのひな形の `ToplevelDir` を書き換えて入れる（初回起動時のコピーだけで動くように）
+  - 背景音楽の SoundFont は、データの `sounds/soundfont.sf2` があれば使う（環境変数 `SDL_SOUNDFONTS` が優先）。SoundFont は同梱しない
+  - macOS 用のスモークテストは SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけにする。キー操作と画面は手で確かめる
+  - README の macOS の節をネイティブ版の説明に書き換える（XQuartz での方法は開発者向けに残す）。版は 0.2.0
+  - server のプラグインは、FreeBSD と同じく macOS でも読み込まない
 
 ## 記録
 - 移植中に判明した非自明な事項（プロトコル上の型のサイズ、ファイル形式の前提、無効化した機能など）は
