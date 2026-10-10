@@ -6,6 +6,22 @@
 版番号はこの移植版のものです。ゲーム本体の版（プログラムが表示する版、設定ファイル・宇宙ファイルに書かれる版）は
 元の XShipWars 1.34.0 のままです。
 
+## 0.2.0
+
+- macOS（Apple Silicon）に対応。server・client・monitor・unvedit が Mac でそのまま動く
+  - client・monitor・unvedit は SDL2 で表示する（XQuartz は不要）。X11 の部品（ウィンドウの階層、イベント、描画、フォント、キー）を
+    SDL2 で再現する GUI の層を新しく作った。画面とキー割り当ては X11 版と同じ（Retina では整数倍で拡大して表示）
+  - ビルドは `Makefile.Darwin`（`scripts/build.sh` も macOS で使える）。インストール先は `/usr/local`
+    （プログラムは `/usr/local/bin`、データは `/usr/local/share/games/xshipwars`、server は `/usr/local/swserv`）
+  - macOS 用のスモークテスト `scripts/smoke-macos.sh` を追加
+  - Linux でも `GUI=sdl` で SDL2 版をビルドでき、`GUI=sdl scripts/smoke.sh` で確かめられる（試験用）
+- 背景音楽: データの `sounds/soundfont.sf2` に SoundFont を置くと、それを使うようにした（macOS では SoundFont を探す既定の場所が無いため）
+- インストール: `scripts/install-data.sh` が、設定ファイルのひな形の `ToplevelDir` をインストール先に書き換えるようにした。
+  server の `make install` も `ServerToplevelDir` をインストール先に書き換える。`PREFIX` を変えてインストールしたときに、設定を手で直す必要がなくなった
+- `scripts/install-data.sh` が bash 3.2（macOS の `/bin/bash`）でも動くようにした
+- clang で見つかった問題を修正（`off_t` の表示の書式、使われない変数）。macOS の `df` の単位の違い（512 バイト単位）に対応
+- `scripts/build.sh` で `clean all` を指定したときに、何もビルドされないことがある問題を修正
+
 ## 0.1.2
 
 - FreeBSD で `scripts/install-data.sh` が失敗する問題を修正（GNU の `install -D` を使っていたが、FreeBSD の `install` では `-D` の意味が違う）
