@@ -570,3 +570,6 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
 - macOS で client・monitor・unvedit の SDL2 版を、この Mac の server につないで動かした（Retina での 2 倍表示、キー操作、
   メニュー、文字入力、閉じるボタン、最小化）。起動時に出る `error messaging the mach port for IMKCFRunLoopWakeUpReliable` は、
   macOS の入力メソッドの警告で、SDL のアプリで文字入力を有効にするとよく出る。害は無い。
+- `Makefile.Darwin`（client・monitor・unvedit）の既定を SDL2 版にした（2026-10-10）。生成物は `build-darwin/`。
+  XQuartz の X11 版は `GUI=x11` で作れ、生成物は `build-darwin-x11/`。`scripts/build.sh` のログは、`GUI=` を付けたとき
+  `build-logs/darwin/<c>-<GUI>.log`（Linux では `build-logs/<c>-sdl.log`）。

@@ -4,6 +4,8 @@
 # ログは build-logs/<component>.log に保存される。
 # macOS（ホスト）では Makefile.Darwin を使い、ログは build-logs/darwin/<component>.log、
 # 生成物は src/<component>/build-darwin/ にできる（コンテナの Linux 版と混ざらない）。
+# GUI は macOS では SDL2 版が既定（GUI=x11 で XQuartz の X11 版、build-darwin-x11/）、
+# Linux では X11 版が既定（GUI=sdl で SDL2 版、build-linux-sdl/）。
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,7 +34,7 @@ for c in "${targets[@]}"; do
   dir="$ROOT/src/$c"
   [ -d "$dir" ] || { echo "unknown component: $c" >&2; exit 2; }
   log="$logdir/$c.log"
-  for a in "$@"; do [ "$a" = "GUI=sdl" ] && log="$logdir/$c-sdl.log"; done
+  for a in "$@"; do case "$a" in GUI=*) log="$logdir/$c-${a#GUI=}.log";; esac; done
   echo "=== building $c (log: ${log#$ROOT/})"
   # "clean all" は clean を先に別の make で実行する（同じ make の中だと、clean で消したファイルを
   # make がまだあるものとして扱い、何もビルドしないことがある）

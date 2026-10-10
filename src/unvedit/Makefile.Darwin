@@ -13,7 +13,9 @@
 #       Objects and the program are built in $(OBJDIR), so that they
 #       do not mix with the Linux build in the same source tree.
 #
-#       X11 is taken from XQuartz (/opt/X11).
+#       The GUI is drawn with SDL2 (osw-sdl.cpp) from Homebrew (found
+#       with pkg-config). GUI=x11 builds with X from XQuartz (/opt/X11)
+#       instead.
 #
 
 
@@ -37,31 +39,32 @@ PREFIX = /usr
 #
 #	USE_GETDENTS		Use getdents() instead of readdir().
 #
-#       USE_XSHM		Enable MIT X Shared Memory.
+#       USE_XSHM		Enable MIT X Shared Memory (GUI=x11 only).
 #
 #       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
-#				(Xinerama) screen. Requires -lXinerama.
+#				(Xinerama) screen. Requires -lXinerama
+#				(GUI=x11 only).
 #
 #   -Wno-deprecated-declarations: the macOS SDK marks sprintf() and
 #   vsprintf() deprecated, which warns at every call. Other deprecations
 #   are still reported by the Linux and FreeBSD builds.
 #
-CFLAGS  = -DUSE_XSHM -DHAVE_XINERAMA -O2 -g -Wall -Wno-deprecated-declarations
+CFLAGS  = -O2 -g -Wall -Wno-deprecated-declarations
 
 
 # ########################################################################
 # Dependant Libraries:
 #
-LIB = -lm -lX11 -lXpm -lXext -lXinerama
+LIB = -lm $(shell pkg-config --libs sdl2)
 
 # Library Directories:
 #
 X11BASE = /opt/X11
-LIB_DIR = -L$(X11BASE)/lib
+LIB_DIR =
 
 # Header File Directories:
 #
-INC = -I$(X11BASE)/include
+INC =
 
 
 # ########################################################################
@@ -71,18 +74,21 @@ include Makefile.srclist
 
 CPP    = c++
 
-#   GUI=sdl builds with the SDL2 implementation of the OSW layer
-#   (osw-sdl.cpp) instead of X (osw-x.cpp), in its own $(OBJDIR).
-GUI = x11
-ifeq ($(GUI),sdl)
-OBJDIR = build-darwin-sdl
-SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
-CFLAGS := $(filter-out -DUSE_XSHM -DHAVE_XINERAMA,$(CFLAGS)) -DOSW_SDL $(shell pkg-config --cflags sdl2)
-LIB := -lm $(shell pkg-config --libs sdl2)
-INC =
-LIB_DIR =
+#   GUI=x11 builds with X (osw-x.cpp, XQuartz) instead of SDL2
+#   (osw-sdl.cpp), in its own $(OBJDIR).
+GUI = sdl
+ifeq ($(GUI),x11)
+OBJDIR = build-darwin-x11
+CFLAGS := -DUSE_XSHM -DHAVE_XINERAMA $(CFLAGS)
+LIB := -lm -lX11 -lXpm -lXext -lXinerama
+LIB_DIR = -L$(X11BASE)/lib
+#   Before SDL_CFLAGS, which adds -I/opt/homebrew/include (where
+#   Homebrew's own X11 headers may be).
+INC = -I$(X11BASE)/include
 else
 OBJDIR = build-darwin
+SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
+CFLAGS += $(shell pkg-config --cflags sdl2) -DOSW_SDL
 endif
 BIN    = $(OBJDIR)/unvedit
 OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))

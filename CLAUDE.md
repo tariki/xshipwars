@@ -75,7 +75,8 @@
   - SDL2 版はどの OS でもビルドできるように作り、コンテナの Linux（Xvfb、SDL の x11 ドライバ）でも動作を確認する。
     macOS では SDL2 版だけを使う
   - Linux / FreeBSD の既定は X11 版のままにする。X11 版の動作は変えない。Linux の SDL2 版は当面テスト用で、README には書かない
-  - 切り替え: ビルド時に `GUI=sdl` で `-DOSW_SDL` を定義し、`osw-x.cpp` の代わりに `osw-sdl.cpp` を使う。`osw-x.h` は
+  - 切り替え: `GUI=sdl` のとき `-DOSW_SDL` を定義し、`osw-x.cpp` の代わりに `osw-sdl.cpp` を使う。macOS（`Makefile.Darwin`）は
+    SDL2 版が既定で、生成物は `build-darwin/`（`GUI=x11` で XQuartz の X11 版、`build-darwin-x11/`）。Linux は X11 版が既定。`osw-x.h` は
     `OSW_SDL` のとき `osw-sdl.h` を読む（`osw-x.h` を読むファイルの include は変えない）。Linux の SDL2 版の生成物は
     `build-linux-sdl/` に作り、X11 版と混ぜない
   - ゲーム本体と widgets は XEvent のフィールド（`xany.window`・`xkey.keycode`・`xbutton.*`・`xmotion.*`・`xvisibility.state`）・

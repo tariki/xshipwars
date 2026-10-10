@@ -13,8 +13,9 @@
 #       Objects and the program are built in $(OBJDIR), so that they
 #       do not mix with the Linux build in the same source tree.
 #
-#       X11 is taken from XQuartz (/opt/X11), SDL2 and SDL2_mixer from
-#       Homebrew (found with pkg-config).
+#       The GUI is drawn with SDL2 (osw-sdl.cpp). SDL2 and SDL2_mixer
+#       come from Homebrew (found with pkg-config). GUI=x11 builds with
+#       X from XQuartz (/opt/X11) instead.
 #
 
 
@@ -38,10 +39,11 @@ PREFIX = /usr
 #
 #	USE_GETDENTS		Use getdents() instead of readdir().
 #
-#       USE_XSHM		Enable MIT X Shared Memory.
+#       USE_XSHM		Enable MIT X Shared Memory (GUI=x11 only).
 #
 #       HAVE_XINERAMA		Place windows on one monitor of a multi-monitor
-#				(Xinerama) screen. Requires -lXinerama.
+#				(Xinerama) screen. Requires -lXinerama
+#				(GUI=x11 only).
 #
 #       HAVE_SDL_MIXER		Play sound effects with SDL2_mixer (sound server
 #				type 4). Remove it and the SDL_* lines below to
@@ -58,28 +60,26 @@ PREFIX = /usr
 #   GNU make 3.81 of macOS has no "VAR != cmd", so $(shell) is used.
 #
 SDL_CFLAGS := $(shell pkg-config --cflags SDL2_mixer)
-CFLAGS = -DUSE_XSHM -DHAVE_XINERAMA -DHAVE_SDL_MIXER -DJS_SUPPORT -O2 -g -Wall -Wno-deprecated-declarations $(SDL_CFLAGS)
+CFLAGS = -DHAVE_SDL_MIXER -DJS_SUPPORT -O2 -g -Wall -Wno-deprecated-declarations $(SDL_CFLAGS)
 
 
 # ########################################################################
 # Dependant Libraries:
 #
-#   SDL_LIBS also adds -L/opt/homebrew/lib, which may hold Homebrew's
-#   own libX11; LIB_DIR comes first so that XQuartz's is used.
+#   With GUI=x11, LIB_DIR (XQuartz) comes before SDL_LIBS, whose
+#   -L/opt/homebrew/lib may hold Homebrew's own libX11.
 #
 SDL_LIBS := $(shell pkg-config --libs SDL2_mixer)
-LIB = -lm -lX11 -lXpm -lXext -lXinerama $(SDL_LIBS)
+LIB = -lm $(SDL_LIBS)
 
 # Library Directories:
 #
 X11BASE = /opt/X11
-LIB_DIR = -L$(X11BASE)/lib
+LIB_DIR =
 
 # Header File Directories:
 #
-#   Before SDL_CFLAGS, which adds -I/opt/homebrew/include.
-#
-INC = -I$(X11BASE)/include
+INC =
 
 
 # ########################################################################
@@ -89,18 +89,21 @@ include Makefile.srclist
 
 CPP    = c++
 
-#   GUI=sdl builds with the SDL2 implementation of the OSW layer
-#   (osw-sdl.cpp) instead of X (osw-x.cpp), in its own $(OBJDIR).
-GUI = x11
-ifeq ($(GUI),sdl)
-OBJDIR = build-darwin-sdl
-SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
-CFLAGS := $(filter-out -DUSE_XSHM -DHAVE_XINERAMA,$(CFLAGS)) -DOSW_SDL
-LIB := -lm $(SDL_LIBS)
-INC =
-LIB_DIR =
+#   GUI=x11 builds with X (osw-x.cpp, XQuartz) instead of SDL2
+#   (osw-sdl.cpp), in its own $(OBJDIR).
+GUI = sdl
+ifeq ($(GUI),x11)
+OBJDIR = build-darwin-x11
+CFLAGS := -DUSE_XSHM -DHAVE_XINERAMA $(CFLAGS)
+LIB := -lm -lX11 -lXpm -lXext -lXinerama $(SDL_LIBS)
+LIB_DIR = -L$(X11BASE)/lib
+#   Before SDL_CFLAGS, which adds -I/opt/homebrew/include (where
+#   Homebrew's own X11 headers may be).
+INC = -I$(X11BASE)/include
 else
 OBJDIR = build-darwin
+SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
+CFLAGS += -DOSW_SDL
 endif
 BIN    = $(OBJDIR)/xsw
 OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
