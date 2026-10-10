@@ -21,7 +21,8 @@
   `.devcontainer/Dockerfile` に追記してユーザーにリビルドを依頼する
 - ビルド: `scripts/build.sh <server|client|monitor|unvedit|all>` (ログは `build-logs/`。コンテナ専用。macOS 用は段階 1 で用意する)
 - ヘッドレス実行: `scripts/headless.sh start|shot|key|stop`（Xvfb :99）
-- スモークテスト: `scripts/smoke.sh`（server/monitor/client/unvedit を起動して主要動作を自動判定。変更後の確認に使う）
+- スモークテスト: `scripts/smoke.sh`（server/monitor/client/unvedit を起動して主要動作を自動判定。変更後の確認に使う）。
+  `GUI=sdl scripts/smoke.sh` で SDL2 版。macOS（ホスト）では `scripts/smoke-macos.sh`（SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけ）
 - データのインストール: `scripts/install-data.sh [-n] [インストール先]`（data/ と theme/ を client が読む配置にまとめる）
 - ホストの XQuartz に表示: `scripts/xquartz.sh [client] [monitor] [unvedit]`（事前準備はスクリプト冒頭のコメント参照）
 
@@ -110,7 +111,7 @@
     `-D` で渡す。Linux の既定の値は変えない
   - `install-data.sh` は、入れ先に合わせて設定ファイルのひな形の `ToplevelDir` を書き換えて入れる（初回起動時のコピーだけで動くように）
   - 背景音楽の SoundFont は、データの `sounds/soundfont.sf2` があれば使う（環境変数 `SDL_SOUNDFONTS` が優先）。SoundFont は同梱しない
-  - macOS 用のスモークテストは SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけにする。キー操作と画面は手で確かめる
+  - macOS 用のスモークテストは SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけにする（`scripts/smoke-macos.sh`）。キー操作と画面は手で確かめる
   - README の macOS の節をネイティブ版の説明に書き換える（XQuartz での方法は開発者向けに残す）。版は 0.2.0
   - server のプラグインは、FreeBSD と同じく macOS でも読み込まない
 
