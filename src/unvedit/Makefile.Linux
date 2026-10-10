@@ -105,6 +105,29 @@ OBJ = $(SRC:.cpp=.o)
 
 
 # ########################################################################
+# SDL2 GUI (make GUI=sdl):
+#
+#   Builds with the SDL2 implementation of the OSW layer (osw-sdl.cpp)
+#   instead of X (osw-x.cpp). For testing the SDL2 GUI that is used on
+#   macOS; the X build is the default. Objects and the program go to
+#   $(SDL_OBJDIR) so that they do not mix with the X build.
+#
+GUI = x11
+ifeq ($(GUI),sdl)
+SDL_OBJDIR = build-linux-sdl
+SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
+CFLAGS := $(filter-out -DUSE_XSHM -DHAVE_XINERAMA,$(CFLAGS)) -DOSW_SDL $(shell pkg-config --cflags sdl2)
+LIB := -lm $(shell pkg-config --libs sdl2)
+BIN := $(SDL_OBJDIR)/$(BIN)
+OBJ := $(addprefix $(SDL_OBJDIR)/,$(SRC:.cpp=.o))
+
+$(SDL_OBJDIR)/%.o: %.cpp
+	@mkdir -p $(SDL_OBJDIR)
+	$(CPP) -c $< -o $@ $(INC) $(CFLAGS)
+endif
+
+
+# ########################################################################
 # Build Rules:
 #
 $(BIN): $(OBJ)
@@ -126,6 +149,7 @@ include Makefile.install.UNIX
 #
 clean:
 	rm -f a.out core *.o
+	rm -rf build-linux-sdl
 
 
 # ########################################################################

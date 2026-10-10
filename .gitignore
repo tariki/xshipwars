@@ -9,3 +9,5 @@ compile_commands.json
 /src/monitor/monitor
 /src/unvedit/unvedit
 build-darwin/
+build-darwin-sdl/
+build-linux-sdl/

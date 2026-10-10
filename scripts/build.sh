@@ -32,11 +32,14 @@ for c in "${targets[@]}"; do
   dir="$ROOT/src/$c"
   [ -d "$dir" ] || { echo "unknown component: $c" >&2; exit 2; }
   log="$logdir/$c.log"
+  for a in "$@"; do [ "$a" = "GUI=sdl" ] && log="$logdir/$c-sdl.log"; done
   echo "=== building $c (log: ${log#$ROOT/})"
   # "clean all" は clean を先に別の make で実行する（同じ make の中だと、clean で消したファイルを
   # make がまだあるものとして扱い、何もビルドしないことがある）
+  # （GUI=sdl などの変数の指定は clean にも渡す）
   if [ "${1:-}" = "clean" ] && [ $# -gt 1 ]; then
-    make -C "$dir" -f "$makefile" clean 2>&1 | tee "$log"
+    vars=(); for a in "${@:2}"; do case "$a" in *=*) vars+=("$a");; esac; done
+    make -C "$dir" -f "$makefile" ${vars[@]+"${vars[@]}"} clean 2>&1 | tee "$log"
     make -C "$dir" -f "$makefile" -j"$jobs" "${@:2}" 2>&1 | tee -a "$log"
   else
     make -C "$dir" -f "$makefile" -j"$jobs" "$@" 2>&1 | tee "$log"

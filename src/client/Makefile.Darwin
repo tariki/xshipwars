@@ -88,7 +88,20 @@ INC = -I$(X11BASE)/include
 include Makefile.srclist
 
 CPP    = c++
+
+#   GUI=sdl builds with the SDL2 implementation of the OSW layer
+#   (osw-sdl.cpp) instead of X (osw-x.cpp), in its own $(OBJDIR).
+GUI = x11
+ifeq ($(GUI),sdl)
+OBJDIR = build-darwin-sdl
+SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
+CFLAGS := $(filter-out -DUSE_XSHM -DHAVE_XINERAMA,$(CFLAGS)) -DOSW_SDL
+LIB := -lm $(SDL_LIBS)
+INC =
+LIB_DIR =
+else
 OBJDIR = build-darwin
+endif
 BIN    = $(OBJDIR)/xsw
 OBJ    = $(addprefix $(OBJDIR)/,$(SRC:.cpp=.o))
 
