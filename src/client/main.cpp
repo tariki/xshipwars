@@ -1569,8 +1569,7 @@ void XSWDoResetTimmers()
  */
 int XSWInit(int argc, char *argv[])
 {
-	int i, n, x, y, z;
-	bool_t b;
+	int i, n;
 	const char *strptr;
 	char stringa[MAX_URL_LEN + 512];
 	char cwd[PATH_MAX];
@@ -2516,6 +2515,9 @@ configuration file.\n"
 	/* ********************************************************* */
 #ifdef X_H
 #ifdef USE_XSHM
+	int x, y, z;
+	bool_t b;
+
         /* Check for MIT SHM extension availablility. */
 	if(XQueryExtension(osw_gui[0].display, "MIT-SHM", &x, &x, &x))
 	{

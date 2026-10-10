@@ -584,7 +584,6 @@ int BridgeManage(event_t *event)
 	keycode_t keycode;
 	int object_num;
         xsw_object_struct *obj_ptr;
-	win_t w;
 
 	char stringa[512];
 
@@ -607,14 +606,12 @@ int BridgeManage(event_t *event)
 #endif	/* defined(X_H) && defined(USE_XSHM) */
 
 
-	/* Get referances. */
-	w = event->xany.window; 
-
-
 #if defined(X_H) && defined(USE_XSHM)
 	/* Check for viewscreen shared image put completion. */
 	if(event->type == (int)osw_gui[0].shm_completion_event_code)
 	{
+	    win_t w = event->xany.window;
+
 	    /* Viewscreen window? */
 	    if(w == bridge_win.viewscreen)
 	    {
