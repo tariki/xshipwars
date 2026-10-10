@@ -7,6 +7,10 @@ from 1999 to 2001 (this repository starts from version 1.34.0). This repository 
 Linux (Debian trixie / gcc 14 / 64bit) and on macOS.
 The game's behavior, network protocol and data file formats are unchanged.
 
+The original source was obtained from the xshipwars source package 1.34.1-3 in the Debian snapshot archive
+(https://snapshot.debian.org/package/xshipwars/1.34.1-3/). Debian's patches were not applied (the programs show
+version 1.34.0).
+
 | Program | What it is |
 |---|---|
 | `swserv` | The server. Manages the universe and accepts client connections (port 1701 by default, 1702 for monitoring) |
