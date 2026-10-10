@@ -25,7 +25,9 @@
 
 	Sound is played with SDL2_mixer (SNDSERV_TYPE_SDL, needs
 	HAVE_SDL_MIXER). Background music (MIDI) needs SDL2_mixer's
-	MIDI support and a SoundFont or Timidity patches installed. The YIFF and EsounD sound servers this file used
+	MIDI support and a SoundFont or Timidity patches installed
+	(soundfont.sf2 in the sounds directory is used if there is one).
+	The YIFF and EsounD sound servers this file used
 	to talk to no longer exist, so their code has been removed.
 	sound.server_type still accepts SNDSERV_TYPE_YIFF/ESOUND/MIKMOD
 	from old configuration files, but they produce no sound.
@@ -44,6 +46,11 @@
 /* Mixer output format and number of sounds that can play at once. */
 #define SOUND_SDL_FREQUENCY	44100
 #define SOUND_SDL_CHANNELS	16
+
+/*   SoundFont for background music (MIDI) in the sounds directory,
+ *   used if there is one and SDL_SOUNDFONTS is not set.
+ */
+#define SOUND_SDL_SOUNDFONT	"soundfont.sf2"
 
 namespace static_sound_sdl {
 	/* Marks sound.con_data as initialized for the SDL backend. */
@@ -186,6 +193,21 @@ int SoundInit()
 	    }
 	    Mix_AllocateChannels(SOUND_SDL_CHANNELS);
 	    sound.con_data = (void *)&static_sound_sdl::initialized;
+
+	    /*   SDL2_mixer only looks for a SoundFont in a few system
+	     *   places (none on macOS) or in SDL_SOUNDFONTS. Use the one
+	     *   in the sounds directory if there is one, unless
+	     *   SDL_SOUNDFONTS is set (a SoundFont set here would take
+	     *   precedence over it).
+	     */
+	    if(getenv("SDL_SOUNDFONTS") == NULL)
+	    {
+		const char *sf = PrefixPaths(dname.sounds, SOUND_SDL_SOUNDFONT);
+		struct stat stat_buf;
+
+		if((sf != NULL) && !stat(sf, &stat_buf))
+		    Mix_SetSoundFonts(sf);
+	    }
 	    break;
 #endif	/* HAVE_SDL_MIXER */
 
