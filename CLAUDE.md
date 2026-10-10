@@ -72,24 +72,37 @@
 
 ## macOS 対応
 - GUI は OSW 層（`src/global/osw-x.cpp`）の SDL2 版（`osw-sdl.cpp`）を新しく作って描く。Cocoa や XQuartz は使わない
-  - SDL2 版はどの OS でもビルドできるように作り、コンテナの Linux（Xvfb）でも動作を確認する。
+  - SDL2 版はどの OS でもビルドできるように作り、コンテナの Linux（Xvfb、SDL の x11 ドライバ）でも動作を確認する。
     macOS では SDL2 版だけを使う
-  - Linux / FreeBSD の既定は X11 版のままにする。X11 版の動作は変えない
-  - ゲーム本体と widgets は XEvent のフィールド・イベント種別・`XK_*`・`Button1` などを直接使っているので、
-    SDL2 版では X と同じ形の型と定数を自前のヘッダで用意し、SDL のイベントをそれに変換する（呼び出し側は変えない）
+  - Linux / FreeBSD の既定は X11 版のままにする。X11 版の動作は変えない。Linux の SDL2 版は当面テスト用で、README には書かない
+  - 切り替え: ビルド時に `GUI=sdl` で `-DOSW_SDL` を定義し、`osw-x.cpp` の代わりに `osw-sdl.cpp` を使う。`osw-x.h` は
+    `OSW_SDL` のとき `osw-sdl.h` を読む（`osw-x.h` を読むファイルの include は変えない）。Linux の SDL2 版の生成物は
+    `build-linux-sdl/` に作り、X11 版と混ぜない
+  - ゲーム本体と widgets は XEvent のフィールド（`xany.window`・`xkey.keycode`・`xbutton.*`・`xmotion.*`・`xvisibility.state`）・
+    イベント種別・`Button1`・`True`/`False`/`None` などを直接使っているので、`osw-sdl.h` で X と同じ名前の型と定数を用意し、
+    SDL のイベントをそれに変換する（呼び出し側は変えない）。`X_H` は定義しない（X 専用の処理は `X_H` で囲まれていて自動的に外れる）
+  - X の子ウィンドウ（ボタンなどの部品もすべて子ウィンドウ）は OSW 層の中で再現する。トップレベルだけを SDL のウィンドウにし、
+    各ウィンドウの 32bpp の面を重なり順に合成して表示する。イベントは X の規則（内側のウィンドウから親への伝播、
+    ボタンを押している間の暗黙のグラブ、Map などでの Expose）に沿って配送する
   - 設定ファイルの `BeginKeyMap` は X のキーコードの番号をそのまま書く形式なので、SDL のスキャンコードは
-    evdev の番号に変換して渡す（設定ファイルの形式と同梱の値は変えない）
-  - X のコアフォント（`7x14`・`6x10`）の代わりに、misc-fixed のビットマップフォントを組み込んで描く（文字の幅と配置を変えないため）
+    evdev の番号に変換して渡し、`osw_keycode.*` にも同じ番号を入れる（設定ファイルの形式と同梱の値は変えない）。
+    文字入力は SDL の TEXTINPUT の文字を使う（JIS などの配列でも正しい文字にするため）
+  - X のコアフォント（`7x14`・`6x10`・`6x12`）の代わりに、misc-fixed のビットマップフォント（Public domain）を組み込んで描く
+    （文字の幅と配置を変えないため）。配列は xfonts-base の PCF から作るスクリプトで生成する
+  - macOS の Retina では、等倍で描いて最近傍補間で整数倍に拡大して表示する
 - ソースの分岐は `__APPLE__` で足す。Linux（と FreeBSD）側の処理は変えない
 - 進める順番:
-  1. ホストで XQuartz の Xlib を使って 4 つをビルドし、clang や libc の違い・`__APPLE__` の分岐を片付ける
-     （server はこの段階で完成させる）。macOS 用の Makefile とビルド用スクリプト、ホストとコンテナのビルド先の分離もここで整える
-  2. widgets などが Xlib を直接呼んでいる箇所（主に `widgets/wutils.cpp`・`wlist.cpp`）を OSW 層の関数に移す。
-     コンテナで `smoke.sh` を流して、Linux の動作が変わらないことを確かめる
-  3. `osw-sdl.cpp` を作る。コンテナの Linux で client → monitor → unvedit の順に動かしてから、macOS でビルドする
+  1. （済）ホストで XQuartz の Xlib を使って 4 つをビルドし、clang や libc の違い・`__APPLE__` の分岐を片付ける。
+     macOS 用の Makefile とビルド用スクリプト、ホストとコンテナのビルド先の分離もここで整えた
+  2. （済）widgets などが Xlib を直接呼んでいる箇所を OSW 層の関数に移す
+  3. `osw-sdl.cpp` を作る。骨組み（3 つの GUI プログラムがリンクまで通る）→ 中心部分（ウィンドウの木・合成・描画・フォント・イベント）→
+     コンテナの Linux で monitor → client → unvedit の順に動かす → macOS でビルドする。
+     monitor を先にするのは、部品が少なくウィンドウの木の検証に向いているため
   4. 配布の形（`.app` にするか、データの置き場所）、`install-data.sh` の対応、ドキュメント、macOS 用のスモークテスト
-- まだ決めていないこと: 配布の形とデータの置き場所（macOS では `/usr/share` に書き込めない）、
-  server のプラグインの拡張子（`.so` / `.dylib`）、SoundFont の置き場所
+- 段階 3 の確認: SDL2 版の Linux ビルドで `smoke.sh` と同じ項目を流す（SDL のトップレベルも X のウィンドウなので xdotool が使える）。
+  X11 版と SDL2 版の同じ場面のスクリーンショットを比べ、差が出た箇所は目で確かめる
+- まだ決めていないこと: 配布の形とデータの置き場所（macOS では `/usr/share` に書き込めない）、SoundFont の置き場所
+  （server のプラグインは、FreeBSD と同じく macOS でも読み込まない）
 
 ## 記録
 - 移植中に判明した非自明な事項（プロトコル上の型のサイズ、ファイル形式の前提、無効化した機能など）は
