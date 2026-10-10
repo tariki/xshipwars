@@ -148,13 +148,14 @@ to the fullest extent of the law."
 /*
  *   Default program directories:
  */
+#include "../include/xsw-paths.h"
 #define DEF_LOCAL_SHIPWARS_DIR	".shipwars"
-#define DEF_XSW_TOPLEVEL_DIR	"/usr/share/games/xshipwars"
-#define DEF_XSW_IMAGES_DIR	"/usr/share/games/xshipwars/images"
-#define DEF_XSW_SOUNDS_DIR	"/usr/share/games/xshipwars/sounds"
-#define DEF_XSW_ETC_DIR		"/usr/share/games/xshipwars/etc"
+#define DEF_XSW_TOPLEVEL_DIR	XSW_DATA_DIR
+#define DEF_XSW_IMAGES_DIR	XSW_DATA_DIR "/images"
+#define DEF_XSW_SOUNDS_DIR	XSW_DATA_DIR "/sounds"
+#define DEF_XSW_ETC_DIR		XSW_DATA_DIR "/etc"
 #define DEF_ETC_DIR		"/etc"
-#define DEF_SW_SERVER_DIR	"/home/swserv"
+#define DEF_SW_SERVER_DIR	SWSERV_DIR
 
 
 /*

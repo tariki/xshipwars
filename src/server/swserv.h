@@ -107,14 +107,15 @@ to the fullest extent of the law."
  *	These directories may be modified in SWSERV_RC_FILE
  *	(see farther below).
  */
-# define SWSERV_TOPLEVEL_DIR	"/home/swserv"
-# define SWSERV_BIN_DIR		"/home/swserv/bin"
-# define SWSERV_DB_DIR		"/home/swserv/db"
-# define SWSERV_ETC_DIR		"/home/swserv/etc"
-# define SWSERV_LOGS_DIR	"/home/swserv/logs"
-# define SWSERV_PLUGINS_DIR	"/home/swserv/plugins"
-# define SWSERV_PUBLIC_HTML_DIR	"/home/swserv/public_html"
-# define SWSERV_TMP_DIR		"/home/swserv/tmp"
+#include "../include/xsw-paths.h"
+# define SWSERV_TOPLEVEL_DIR	SWSERV_DIR
+# define SWSERV_BIN_DIR		SWSERV_DIR "/bin"
+# define SWSERV_DB_DIR		SWSERV_DIR "/db"
+# define SWSERV_ETC_DIR		SWSERV_DIR "/etc"
+# define SWSERV_LOGS_DIR	SWSERV_DIR "/logs"
+# define SWSERV_PLUGINS_DIR	SWSERV_DIR "/plugins"
+# define SWSERV_PUBLIC_HTML_DIR	SWSERV_DIR "/public_html"
+# define SWSERV_TMP_DIR		SWSERV_DIR "/tmp"
 # define ETC_DIR		"/etc"
 
 

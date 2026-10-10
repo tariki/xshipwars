@@ -10,9 +10,10 @@
 /*
  *	Default paths:
  */
-#define DEF_XSW_TOPLEVEL_DIR	"/usr/share/games/xshipwars"
-#define DEF_XSW_IMAGES_DIR	"/usr/share/games/xshipwars/images"
-#define DEF_XSW_SERVER_DIR	"/home/swserv"
+#include "../include/xsw-paths.h"
+#define DEF_XSW_TOPLEVEL_DIR	XSW_DATA_DIR
+#define DEF_XSW_IMAGES_DIR	XSW_DATA_DIR "/images"
+#define DEF_XSW_SERVER_DIR	SWSERV_DIR
 
 /*
  *	Universe file name extension:

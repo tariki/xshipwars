@@ -22,12 +22,13 @@
 /*
  *	Default path containing the images:
  */
-#define DEF_IMAGES_DIR		"/usr/share/games/xshipwars/images/monitor"
+#include "../include/xsw-paths.h"
+#define DEF_IMAGES_DIR		XSW_DATA_DIR "/images/monitor"
 
 /*
  *	Default toplevel path of the server:
  */
-#define DEF_SERVER_DIR		"/home/swserv"
+#define DEF_SERVER_DIR		SWSERV_DIR
 
 
 /*
