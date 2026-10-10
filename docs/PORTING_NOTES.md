@@ -573,3 +573,25 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
 - `Makefile.Darwin`（client・monitor・unvedit）の既定を SDL2 版にした（2026-10-10）。生成物は `build-darwin/`。
   XQuartz の X11 版は `GUI=x11` で作れ、生成物は `build-darwin-x11/`。`scripts/build.sh` のログは、`GUI=` を付けたとき
   `build-logs/darwin/<c>-<GUI>.log`（Linux では `build-logs/<c>-sdl.log`）。
+
+## macOS: 段階 4（インストールと SoundFont） (2026-10-10)
+
+- ソースに直接書かれていたインストール先（client・unvedit・monitor の `/usr/share/games/xshipwars`、全プログラムの `/home/swserv`）を、
+  `src/include/xsw-paths.h` の `XSW_DATA_DIR`・`SWSERV_DIR`（`#ifndef` で既定値を定義）から組み立てるようにした。
+  Linux・FreeBSD の値は変わらない（実行ファイルの文字列で確認）。`Makefile.Darwin` は PREFIX（既定 `/usr/local`）から `-D` で渡すので、
+  ビルドとインストールで同じ PREFIX を指定する必要がある（Makefile にはフラグの変化による再コンパイルの仕組みが無い）。
+- macOS の配置: client・monitor・unvedit は `$(PREFIX)/bin`（`Makefile.install.UNIX` の `GAMES_DIR`・`GAMES_BIN` を `?=` にして
+  `Makefile.Darwin` から指定）、データは `$(PREFIX)/share/games/xshipwars`、server は `$(PREFIX)/swserv`。
+- server の `make install` は、`default.conf` の `ServerToplevelDir` をインストール先に書き換えて入れる（Linux で PREFIX を変えたときも、
+  手で直す必要がなくなった）。上書きの確認（`cp -i`）は今までどおり。
+- `scripts/install-data.sh`: 既定の入れ先は macOS では `/usr/local/share/games/xshipwars`。入れた `etc/xshipwarsrc`（client が初回起動時に
+  `~/.shipwars/` にコピーするひな形）の `ToplevelDir` をインストール先に書き換える。`sed -i` は GNU と BSD で書き方が違うので、
+  一時ファイルを経由する。
+- SoundFont: SDL2_mixer はプログラムで `Mix_SetSoundFonts()` した値を `SDL_SOUNDFONTS` より優先する（`SDL_FORCE_SOUNDFONTS` を
+  除く）。そこで `SDL_SOUNDFONTS` が無いときだけ、データの `sounds/soundfont.sf2` があればそれを指定する。macOS で
+  dummy の映像ドライバと disk の音声出力で確かめた: ファイルがあれば、ログインの後に背景音楽が鳴り続ける。無ければ
+  「No SoundFonts have been requested」で鳴らない（今までと同じ）。`SDL_SOUNDFONTS` だけでも鳴る。
+  同梱の設定ファイルのひな形は `Music = off` なので、音楽を聞くにはオプションで有効にする。
+- macOS の SDL の dummy 映像ドライバでは窓を作れる（offscreen ドライバは OpenGL が要るので作れない）。macOS 用のスモークテストに使う。
+- 確認: Linux（コンテナ）で 4 つのクリーンビルド・`g++ -U__linux__`・SDL2 版のビルド（警告 0）、スモークテスト（X11 版・SDL2 版とも全項目 PASS）、
+  `make install PREFIX=<一時ディレクトリ>`。macOS で 4 つのビルド（警告 0）と、一時ディレクトリへの `make install`・`install-data.sh`。
