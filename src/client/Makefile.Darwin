@@ -25,7 +25,14 @@
 #   You may modify any value as needed. Change only the ones you are
 #   absolutly sure that requires modification.
 #
-PREFIX = /usr
+#   macOS cannot use /usr/share or /home, so programs go to
+#   $(PREFIX)/bin, data to $(PREFIX)/share/games/xshipwars and the
+#   server to $(PREFIX)/swserv. These directories are compiled into
+#   the programs, so give the same PREFIX when building and
+#   installing.
+#
+PREFIX = /usr/local
+GAMES_DIR = $(PREFIX)/bin
 
 
 # ########################################################################
@@ -86,6 +93,10 @@ INC =
 # Program Source and Header Files:
 #
 include Makefile.srclist
+
+#   Installation directories compiled in (see include/xsw-paths.h).
+CFLAGS += -DXSW_DATA_DIR=\"$(PREFIX)/share/games/xshipwars\" \
+	-DSWSERV_DIR=\"$(PREFIX)/swserv\"
 
 CPP    = c++
 
