@@ -1305,9 +1305,13 @@ static void Translate(SDL_Event *se)
 
 	      case SDL_WINDOWEVENT_RESTORED:
 	      case SDL_WINDOWEVENT_SHOWN:
+		/*   Deiconified: the window manager maps the window again,
+		 *   even if the program unmapped it while it was iconified.
+		 */
 		if(t->iconified)
 		{
 		    t->iconified = false;
+		    t->mapped = true;
 		    SendStructure(top, MapNotify);
 		    ExposeTree(top);
 		}
@@ -3338,8 +3342,11 @@ static void MapCommon(win_t w, bool raise)
 		o->mapped = false;
 		return;
 	    }
-	    o->iconified = false;
 	    SDL_ShowWindow(o->sdl_win);
+	    /* Mapping an iconified window deiconifies it, as in X. */
+	    if(o->iconified)
+		SDL_RestoreWindow(o->sdl_win);
+	    o->iconified = false;
 	    if(raise)
 		SDL_RaiseWindow(o->sdl_win);
 	    o->dirty = true;
@@ -3379,6 +3386,14 @@ void OSWUnmapWindow(win_t w)
 	if(!IDC() || (o == NULL) || !o->mapped || (w == root_win))
 	    return;
 	o->mapped = false;
+
+	/*   An iconified toplevel is already unmapped by the window
+	 *   manager, so as in X this changes nothing more (it stays an
+	 *   icon that can be restored).
+	 */
+	if((o->parent == root_win) && o->iconified)
+	    return;
+
 	if((o->parent == root_win) && (o->sdl_win != NULL))
 	    SDL_HideWindow(o->sdl_win);
 	MarkDirty(o->parent);

@@ -560,3 +560,13 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
   起動直後・ボタンの強調表示（Enter/Leave）・右クリックのメニュー・メニューの項目の強調表示・選択の後は、画面全体で画素の差が 0。
   Messages ウィンドウ（新しいトップレベル）を開いた画面は、スクロールバーの矢印（`OSWDrawSolidArc()`）の縁の 33 画素だけが違う。
   X サーバーの円弧（mi の塗りつぶし）は、画素の中心が楕円の内側かという幾何学的な判定とは端の画素が少し違う。今は直していない。
+- 最小化（2026-10-10 追記）: X ではウィンドウマネージャーが最小化した窓を Unmap し、client は UnmapNotify を受けると
+  自分でもブリッジを `OSWUnmapWindow()` する。X ではすでに Unmap された窓なので何も起きず、アイコンから戻せる。
+  SDL2 版はここで `SDL_HideWindow()` していたので、macOS の Dock から戻せなかった。最小化中のトップレベルへの Unmap は
+  プログラムの側の状態を変えるだけにし、元に戻したとき（ウィンドウマネージャーが Map し直すのと同じ）は Map された状態に戻して
+  MapNotify と Expose を送るようにした。最小化中の窓を Map したときは `SDL_RestoreWindow()` で戻す。macOS で確認した
+  （Xvfb にはウィンドウマネージャーが無いので、コンテナでは試せない）。
+- macOS の SDL2（Homebrew の sdl2-compat）では、`SDL_WINDOW_POPUP_MENU` を付けた窓は親が無いと作れない。付けずに作り直す。
+- macOS で client・monitor・unvedit の SDL2 版を、この Mac の server につないで動かした（Retina での 2 倍表示、キー操作、
+  メニュー、文字入力、閉じるボタン、最小化）。起動時に出る `error messaging the mach port for IMKCFRunLoopWakeUpReliable` は、
+  macOS の入力メソッドの警告で、SDL のアプリで文字入力を有効にするとよく出る。害は無い。
