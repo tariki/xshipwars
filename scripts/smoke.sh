@@ -2,6 +2,10 @@
 # XShipWars のヘッドレス・スモークテスト
 #
 #   scripts/smoke.sh [出力ディレクトリ]      (既定: run-logs/smoke)
+#   GUI=sdl scripts/smoke.sh [出力ディレクトリ]  (既定: run-logs/smoke-sdl)
+#
+# GUI=sdl のときは client/monitor/unvedit に SDL2 版（scripts/build.sh <c> GUI=sdl で build-linux-sdl/ に
+# できるもの）を使い、SDL の x11 ドライバで Xvfb に表示する。確認する項目は同じ。
 #
 # 実行環境を毎回作り直し、Xvfb 上で次を確認する。
 #   - server が起動して待ち受ける
@@ -17,7 +21,15 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="${1:-$ROOT/run-logs/smoke}"
+GUI="${GUI:-x11}"
+case "$GUI" in
+  x11) BINDIR=""; OUT="${1:-$ROOT/run-logs/smoke}" ;;
+  sdl) BINDIR="build-linux-sdl/"; OUT="${1:-$ROOT/run-logs/smoke-sdl}"; export SDL_VIDEODRIVER=x11 ;;
+  *) echo "ERROR: GUI は x11 か sdl" >&2; exit 2 ;;
+esac
+XSW_BIN="src/client/${BINDIR}xsw"
+MON_BIN="src/monitor/${BINDIR}monitor"
+UE_BIN="src/unvedit/${BINDIR}unvedit"
 DISP=:99
 export DISPLAY=$DISP
 
@@ -25,8 +37,8 @@ if [ -z "${DEVCONTAINER:-}" ]; then
   echo "ERROR: Dev Container の外で実行されています。" >&2
   exit 2
 fi
-for b in src/server/swserv src/client/xsw src/monitor/monitor src/unvedit/unvedit; do
-  [ -x "$ROOT/$b" ] || { echo "ERROR: $b がありません。scripts/build.sh all を実行してください。" >&2; exit 2; }
+for b in src/server/swserv "$XSW_BIN" "$MON_BIN" "$UE_BIN"; do
+  [ -x "$ROOT/$b" ] || { echo "ERROR: $b がありません。scripts/build.sh all (GUI=sdl なら scripts/build.sh <c> GUI=sdl) を実行してください。" >&2; exit 2; }
 done
 
 fails=0
@@ -119,7 +131,7 @@ fi
 
 # ------------------------------------------------------------------
 # monitor (AUX ポートにログイン。-u はアドレスより前に書く)
-"$ROOT/src/monitor/monitor" -u Defiant yiffbaby 127.0.0.1 1702 \
+"$ROOT/$MON_BIN" -u Defiant yiffbaby 127.0.0.1 1702 \
   -i "$XSW/images/monitor" > "$OUT/monitor.log" 2>&1 &
 MON_PID=$!; PIDS+=("$MON_PID")
 # AUX の TITLE を受け取るとウィンドウ名がユニバース名になる
@@ -137,7 +149,7 @@ fi
 # client (URL を引数に渡して Guest で接続)
 # 音声デバイスは無いので、SDL の disk 出力でミキサーの出力をファイルに書かせる
 HOME="$HOMEDIR" SDL_AUDIODRIVER=disk SDL_DISKAUDIOFILE="$OUT/client-sound.raw" \
-  "$ROOT/src/client/xsw" "swserv://Guest:guest@localhost:1701" \
+  "$ROOT/$XSW_BIN" "swserv://Guest:guest@localhost:1701" \
   > "$OUT/client.log" 2>&1 &
 XSW_PID=$!; PIDS+=("$XSW_PID")
 bridge=""
@@ -282,7 +294,7 @@ fi
 cp "$SRV/db/generic_in.unv" "$OUT/unvedit-orig.unv"
 cp "$OUT/unvedit-orig.unv" "$OUT/unvedit-test.unv"
 touch -d '2000-01-01' "$OUT/unvedit-test.unv"
-HOME="$HOMEDIR" "$ROOT/src/unvedit/unvedit" "$OUT/unvedit-test.unv" > "$OUT/unvedit.log" 2>&1 &
+HOME="$HOMEDIR" "$ROOT/$UE_BIN" "$OUT/unvedit-test.unv" > "$OUT/unvedit.log" 2>&1 &
 UE_PID=$!; PIDS+=("$UE_PID")
 pause 5
 "$ROOT/scripts/headless.sh" shot "$OUT/unvedit-1.png" >/dev/null
