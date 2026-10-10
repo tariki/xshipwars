@@ -525,3 +525,38 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
   カーソルを作り、Xvfb のルートウィンドウに設定して XFixes（`XFixesGetCursorImage()`）で読み出した画像・大きさ・ホットスポットと
   `WCursor` の値が一致することを確かめた（項目の画像からのカーソル、XPM からのカーソル 3 種類。ホットスポットの補正を含む）。
   Xvfb の推奨カーソルサイズは十分大きいので、カーソルを縮める処理は通っていない。
+
+## macOS: 段階 3（SDL2 版の OSW 層） (2026-10-10)
+
+- 骨組み: `osw-x.h` から GUI によらない部分を `osw-api.h` に分け、`osw-sdl.h` は X と同じ名前・値の型と定数を定義する
+  （`X_H` は定義しない）。これだけで client・monitor・unvedit の全ソースがそのままコンパイルできた（ゲーム本体と widgets の変更は不要）。
+  X 専用の処理（MIT-SHM・Visual の確認）は元から `X_H` で囲まれている。囲みの外で宣言していた変数（client の 5 個）だけ中に移した。
+  ビルド: `make GUI=sdl`（`scripts/build.sh <c> GUI=sdl`）。生成物は `build-linux-sdl/`・`build-darwin-sdl/`。
+- ゲーム本体と widgets が使う X のものは、思ったより少なかった:
+  イベントのメンバーは `xany.window`・`xkey.keycode`・`xbutton.button/x/y`・`xmotion.x/y`・`xvisibility.state` だけ、
+  修飾キーはイベントの `state` ではなく `osw_gui[0].shift_key_state` などから読む、キーは `XK_*` ではなく `osw_keycode.*` と比べる、
+  描画は前景色 1 つ（XOR などは無し）、フォントは `7x14`・`6x10`・`6x12` だけ。`win_attr_t` は `x`・`y`・`width`・`height` しか読まない。
+- ウィンドウの木: ボタンなどの部品もすべて X の子ウィンドウ。SDL のウィンドウはトップレベルだけにし、子ウィンドウは OSW 層の中で持つ。
+  各ウィンドウと pixmap に 32bpp（0x00RRGGBB）の面を持たせ、トップレベルごとに重なり順に合成して表示する（`OSWEventsPending()` と
+  `OSWGUISync()` のとき、変化のあったものだけ）。内容は保たれるので（X の backing store 相当）、Expose は見えるようになったときと大きくなったときだけ出す。
+  トップレベルの SDL のウィンドウは最初に Map したときに作る（作成の直後に設定される枠の種類を反映するため）。
+- イベントの配送は X の規則に合わせた: ポインタとキーのイベントはポインタの下のいちばん内側のウィンドウから、その種類を選んでいる
+  ウィンドウまで親をたどる。ButtonPress を受けたウィンドウはボタンを離すまで暗黙のグラブを持つ。Map で MapNotify・VisibilityNotify・
+  Expose。閉じるボタンは `WM_DELETE_WINDOW` の ClientMessage。キーの自動リピートは X と同じく Release と Press の組にし、
+  `OSWKBAutoRepeatOff()` のときは捨てる。ホイールはボタン 4・5。
+- キー: X11 版は、キーコード → キーシンボル（`XLookupKeysym`・`XkbKeycodeToKeysym`）→ その名前、で文字とキーの名前を決めている
+  （`OSWGetASCIIFromKeyCode()` は引数の shift ではなく `osw_gui[0].shift_key_state` を見る、`grave` は '\0' など、癖もある）。
+  SDL2 版も同じ結果になるように、Xvfb（evdev、us 配列）のキーマップ（キーコード 9〜135 の 2 段分のキーシンボル名）を
+  `XGetKeyboardMapping()` で取り出して表として組み込み、同じ手順で引く。`osw_keycode.*` も `XKeysymToKeycode()` と同じ規則
+  （段 0 で探し、無ければ段 1）で埋める。SDL のスキャンコードは evdev のキーコードに変換する。入力された文字は、SDL の TEXTINPUT が
+  キーの押下の直後に来ていればそれを使う（JIS などの配列のため）。
+- フォント: `scripts/gen-osw-fonts.py` が xfonts-base の PCF（`7x14-ISO8859-1.pcf.gz` など。`fonts.alias` の `7x14` などの実体）を読み、
+  `src/include/osw-sdl-fonts.h` を作る。misc-fixed のライセンスは "Public domain font. Share and enjoy."。
+  知らないフォント名は警告を出して 7x14 にする（X11 版は失敗する）。`font_t` の `char_width`・`char_height` は X11 版と同じく 0。
+- 色: CLSP（`rgbi:0.80/0.10/0.80` など）を X は Xcms の強度表で変換していて、線形でもチャンネル間で同じでもない
+  （0.4 は赤 177・緑 170・青 165）。Xvfb で `XParseColor()` を 0.00001 刻みでかけて、チャンネルごとに各 8 ビット値になる
+  最小の強度（しきい値 255 個）を測り、表として組み込んだ。
+- 確認（monitor、コンテナの Xvfb、SDL の x11 ドライバ）: X11 版と SDL2 版で同じ操作をしてスクリーンショットを比べた。
+  起動直後・ボタンの強調表示（Enter/Leave）・右クリックのメニュー・メニューの項目の強調表示・選択の後は、画面全体で画素の差が 0。
+  Messages ウィンドウ（新しいトップレベル）を開いた画面は、スクロールバーの矢印（`OSWDrawSolidArc()`）の縁の 33 画素だけが違う。
+  X サーバーの円弧（mi の塗りつぶし）は、画素の中心が楕円の内側かという幾何学的な判定とは端の画素が少し違う。今は直していない。
