@@ -3264,6 +3264,14 @@ static bool CreateSDLWindow(win_t w)
 	o->sdl_win = SDL_CreateWindow(
 	    o->title.c_str(), o->x, o->y, o->width, o->height, flags
 	);
+	/*   Popup menu windows need a parent window on some platforms
+	 *   (macOS with SDL3's sdl2-compat), so try again without.
+	 */
+	if((o->sdl_win == NULL) && (flags & SDL_WINDOW_POPUP_MENU))
+	    o->sdl_win = SDL_CreateWindow(
+		o->title.c_str(), o->x, o->y, o->width, o->height,
+		flags & ~SDL_WINDOW_POPUP_MENU
+	    );
 	if(o->sdl_win == NULL)
 	{
 	    fprintf(stderr, "Cannot create window: %s\n", SDL_GetError());
