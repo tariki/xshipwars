@@ -27,7 +27,8 @@ COPYFLAGS = -v -f
 MKDIR      = mkdir
 MKDIRFLAGS = -p
 
-GAMES_DIR          = $(PREFIX)/games
+# The directory of the program can be set by the calling Makefile.
+GAMES_DIR          ?= $(PREFIX)/games
 XSW_DIR            = $(PREFIX)/share/games/xshipwars
 MONITOR_IMAGES_DIR = $(XSW_DIR)/images/monitor
 

@@ -26,7 +26,8 @@ MKDIR      = mkdir
 MKDIRFLAGS = -p
 
 
-GAMES_DIR   = $(PREFIX)/games
+# The directory of the program can be set by the calling Makefile.
+GAMES_DIR   ?= $(PREFIX)/games
 XSW_DIR     = $(PREFIX)/share/games/xshipwars
 XSW_ETC_DIR = $(XSW_DIR)/etc
 

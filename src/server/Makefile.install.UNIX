@@ -54,7 +54,11 @@ install:
 	$(COPY) $(COPYFLAGS) default.opm $(SWSERV_DB_DIR)
 
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_ETC_DIR)
-	$(COPY) $(COPYFLAGS) default.conf $(SWSERV_ETC_DIR)
+	# ServerToplevelDir in the configuration is set to where it is installed.
+	sed "s#^ServerToplevelDir = .*#ServerToplevelDir = $(SWSERV_BASE_DIR)#" \
+	    default.conf > default.conf.install
+	$(COPY) $(COPYFLAGS) default.conf.install $(SWSERV_ETC_DIR)/default.conf
+	rm -f default.conf.install
 
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_LOGS_DIR)
 	$(MKDIR) $(MKDIRFLAGS) $(SWSERV_HTML_DIR)

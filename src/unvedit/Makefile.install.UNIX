@@ -26,7 +26,8 @@ COPYFLAGS = -v -f
 MKDIR      = mkdir
 MKDIRFLAGS = -p
 
-GAMES_BIN          = $(PREFIX)/games
+# The directory of the program can be set by the calling Makefile.
+GAMES_BIN          ?= $(PREFIX)/games
 XSW_DATA_DIR       = $(PREFIX)/share/games/xshipwars
 UNVEDIT_IMAGES_DIR = $(XSW_DATA_DIR)/images/unvedit
 
