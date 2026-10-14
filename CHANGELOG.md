@@ -7,6 +7,12 @@ All notable changes to this project are recorded in this file. The format follow
 Version numbers are those of this port. The game's own version (shown by the programs, and written into
 configuration and universe files) stays at the original XShipWars 1.34.0.
 
+## 0.2.1
+
+- On macOS, the programs can now be quit with Command+Q and the Quit item of the application menu
+  (this works the same as clicking the close button of each window; unvedit asks whether to save any unsaved changes)
+- The README now says where the original source was obtained (xshipwars 1.34.1-3 in the Debian snapshot archive)
+
 ## 0.2.0
 
 - Added macOS (Apple Silicon) support. The server, client, monitor and unvedit run on the Mac itself
