@@ -24,7 +24,8 @@
 	  a window that got a ButtonPress gets the pointer events until
 	  all buttons are released; mapping a window sends MapNotify,
 	  Expose and VisibilityNotify; closing a toplevel sends a
-	  WM_DELETE_WINDOW ClientMessage.
+	  WM_DELETE_WINDOW ClientMessage, and quitting (Command+Q on
+	  macOS) sends one to every shown or iconified toplevel.
 
 	- Keycodes are X's (evdev) keycodes, so that the keymaps in the
 	  configuration files work unchanged. The keysyms of each
@@ -1148,6 +1149,23 @@ static void ButtonEvent(int type, win_t top, int x, int y, unsigned int button)
 	}
 }
 
+/* Queues the WM_DELETE_WINDOW ClientMessage that the window manager
+ * sends when toplevel w is closed.
+ */
+static void QueueDeleteWindow(win_t w)
+{
+	event_t ev;
+
+	memset(&ev, 0x00, sizeof(event_t));
+	ev.type = ClientMessage;
+	ev.xclient.window = w;
+	ev.xclient.display = osw_gui[0].display;
+	ev.xclient.message_type = osw_atom.wm_protocols;
+	ev.xclient.format = 32;
+	ev.xclient.data.l[0] = (long)osw_atom.wm_delete_window;
+	Queue(&ev);
+}
+
 /* Translates an SDL event into X events. */
 static void Translate(SDL_Event *se)
 {
@@ -1157,6 +1175,28 @@ static void Translate(SDL_Event *se)
 
 	switch(se->type)
 	{
+	  case SDL_QUIT:
+	    /*   Quit from the application menu or Command+Q (macOS):
+	     *   close every toplevel that is shown or iconified, as if
+	     *   its close button were clicked, so that each program quits
+	     *   in its own way (unvedit asks to save changes first).
+	     */
+	    {
+		obj *r = W(root_win);
+		size_t i;
+
+		for(i = 0; (r != NULL) && (i < r->children.size()); i++)
+		{
+		    obj *o = W(r->children[i]);
+
+		    if((o != NULL) && (o->sdl_win != NULL) &&
+		       (o->mapped || o->iconified)
+		    )
+			QueueDeleteWindow(r->children[i]);
+		}
+	    }
+	    break;
+
 	  case SDL_KEYDOWN:
 	  case SDL_KEYUP:
 	    {
@@ -1250,14 +1290,7 @@ static void Translate(SDL_Event *se)
 	    switch(se->window.event)
 	    {
 	      case SDL_WINDOWEVENT_CLOSE:
-		memset(&ev, 0x00, sizeof(event_t));
-		ev.type = ClientMessage;
-		ev.xclient.window = top;
-		ev.xclient.display = osw_gui[0].display;
-		ev.xclient.message_type = osw_atom.wm_protocols;
-		ev.xclient.format = 32;
-		ev.xclient.data.l[0] = (long)osw_atom.wm_delete_window;
-		Queue(&ev);
+		QueueDeleteWindow(top);
 		break;
 
 	      case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -1519,6 +1552,12 @@ int OSWGUIConnect(int argc, char *argv[])
 	 *   and joystick code sets this too).
 	 */
 	SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+#ifdef SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE
+	/*   SDL_QUIT only for an explicit quit (Command+Q). Closing the
+	 *   last window already sends WM_DELETE_WINDOW.
+	 */
+	SDL_SetHint(SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE, "0");
+#endif
 	/* Scale the windows up by whole pixels (Retina displays). */
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
