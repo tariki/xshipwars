@@ -1,14 +1,18 @@
-# XShipWars 現代 Linux / FreeBSD / macOS 移植
+# XShipWars 現代 Linux / FreeBSD / macOS / Windows 移植
 
 ## ゴール
 - 最新の Linux (Debian trixie / gcc 14, 64bit) と FreeBSD (64bit) で client / server / monitor / unvedit をビルド・起動できる状態にする
   （FreeBSD はこの Dev Container では検証できない。「サポート対象プラットフォーム」を参照）
 - macOS（Apple Silicon）でも client / server / monitor / unvedit をビルド・起動できるようにする。
   GUI は X11 ではなく SDL2 で描く（「macOS 対応」を参照）
+- Windows（x86_64）でも、WSL なしで動く `.exe` として client / server / monitor / unvedit をビルド・起動できるようにする。
+  GUI は macOS と同じ SDL2 版を使う（「Windows 対応」を参照）
 - ゲームの挙動・ネットワークプロトコル・データファイル形式は変えない。最小限の修正で動かす
 
 ## 環境
-- Linux 向けの作業は Dev Container (`.devcontainer/`) 内で行う。`$DEVCONTAINER` が未設定ならホスト（macOS）上にいる
+- Linux 向けの作業は Dev Container (`.devcontainer/`) 内で行う。`$DEVCONTAINER` が未設定ならホスト（macOS または Windows）上にいる
+- ホスト（Windows）では Windows 向けのビルドと実行だけを行う。ツールは MSYS2（`C:\msys64`）の UCRT64 環境
+  （gcc・make・pkgconf・SDL2・SDL2_mixer・fluidsynth）。作業ツリーの条件は「Windows 対応」を参照
 - ホスト（macOS）では macOS 向けのビルドと実行だけを行う。Linux 向けのビルド・`smoke.sh` などのスクリプトはコンテナで実行する
   - ホストのツール: Xcode（clang++）、Homebrew（`/opt/homebrew`）、XQuartz（`/opt/X11`）
   - Homebrew でパッケージを追加したいときは、直接インストールせずにユーザーに依頼する
@@ -33,7 +37,7 @@
 - データファイル: `data/`（etc, images）、`theme/`（images, sounds）
 
 ## サポート対象プラットフォーム
-- 対象は **Linux**・**FreeBSD**・**macOS** のみ
+- 対象は **Linux**・**FreeBSD**・**macOS**・**Windows** のみ
   - Linux: 主な対象。Dev Container（Debian trixie, arm64）でビルド・動作を確認している
   - FreeBSD: 対象とするが、この Dev Container では検証できない。`src/*/Makefile.FreeBSD` は Linux と同じ設定に
     そろえてある（コンパイラは `${CXX}`、X11 は `${LOCALBASE}`、PREFIX は Linux と同じ /usr）。Linux 側を直したら
@@ -42,20 +46,17 @@
     `scripts/build.sh all CPP="g++ -U__linux__"` でもビルドして確かめ、終わったら clean して通常どおりビルドし直す）
   - macOS: Apple Silicon のホストでビルド・動作を確認する。Intel Mac は未検証。
     4 つのプログラムすべてを対象にする（client の「server を起動する」機能も含めて、Mac 1 台で遊べるようにするため）
-- **AIX・HP-UX・Solaris・Windows は対象外とし、ビルド環境とソースコードから削除する**
+  - Windows: x86_64 の Windows 11 でビルド・動作を確認する。4 つのプログラムすべてを対象にする（Windows 1 台で遊べるようにするため）。
+    以前は対象外にしていたが、試せる環境ができたので対象に戻した。削除した古いコードは復活させず、SDL2 版を土台に作り直す
+    （`b4c3f73`・`c2310d6` は参考にするだけ）
+- **AIX・HP-UX・Solaris は対象外とし、ビルド環境とソースコードから削除する**
   - 理由: このプロジェクトで試せる環境が無く、2001 年以降ビルドされていないと考えられるため。
     試せないコードは修正のたびに保守の負担になる。（OS 自体の状況は理由にしない。AIX 7.3 と
     Solaris 11.4 / illumos は今もメンテナンスが続いている。HP-UX は 2025 年末でサポート終了）
   - AIX・HP-UX・Solaris の対象: `src/*/Makefile.AIX`・`Makefile.HPUX.10.20`・`Makefile.Solaris`、
     各 `platforms.ini` の該当する節、ソースの `_AIX`・`_AIX_`・`__HPUX__`・`__SOLARIS__` などの分岐
-  - Windows は正式にサポートされていたわけではなく、移植しかけた痕跡が残っているだけ:
-    元の README / INSTALL に記述は無く（CREDITS に移植協力者の名前があるのみ）、Windows 向けのビルド用ファイルも
-    Windows の GUI 実装も無い（GUI は X11 版の `osw-x.cpp` だけ）。対象は、どのビルドにも含まれていない
-    `src/global/diskw.cpp`・`dfw.cpp`・`mfw.cpp`（`printerw.cpp` は印刷用で Windows 用ではないので残す）と、
-    共有のパス処理や server/client の `main.cpp` などにある `__MSW__`・`__WIN32__`・`_WIN32` の分岐（約 40 か所）
   - 削除するときは、分岐の対象外 OS 側だけを消し、Linux（と FreeBSD）側の処理は変えない。
     `defined(__linux__) || defined(__SOLARIS__)` のような組み合わせは、対象外 OS の部分だけを外す
-  - Windows で遊びたい場合は、WSL2 で Linux 版を動かすことを案内する（未検証）
 
 ## 移植方針
 - 優先順: server → client → monitor → unvedit（widgetdemo は後回し）
@@ -114,6 +115,39 @@
   - macOS 用のスモークテストは SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけにする（`scripts/smoke-macos.sh`）。キー操作と画面は手で確かめる
   - README の macOS の節をネイティブ版の説明に書き換える（XQuartz での方法は開発者向けに残す）。版は 0.2.0
   - server のプラグインは、FreeBSD と同じく macOS でも読み込まない
+
+## Windows 対応
+- MinGW-w64（MSYS2 の UCRT64）でビルドし、GUI は SDL2 版（`osw-sdl.cpp`）だけを使う。X11 版、Cygwin、MSVC は使わない
+- 足りない POSIX 機能は `src/compat/win32/` の互換層で補い、呼び出し側はできるだけ変えない
+  - `compat.h` を `-include` で全ソースの先頭に読ませる。`<sys/socket.h>` などは同じ場所の空のヘッダーに解決させる
+  - 実装は `compat.cpp` にまとめ、各プログラムにリンクする
+  - 互換層で吸収できないところだけ、ソースを `_WIN32` で分岐する。Linux・FreeBSD・macOS 側の処理は変えない
+- ビルド: `src/*/Makefile.Windows`（`Makefile.Darwin` が元）。生成物は `build-windows/`
+- 作業ツリーの条件: 187 個のシンボリックリンクがあるので、開発者モードを有効にして `core.symlinks=true`、
+  `core.autocrlf=false` で clone する。README にも書く
+- 個別の方針:
+  - ソケット: `int` のまま扱う。`WSAStartup` は互換層が `main` の前に呼ぶ。`close()` はファイルとソケットの両方に使われているので、
+    互換層で判別する。`recv` などのエラーは `WSAGetLastError()` から `errno` に変換する
+  - パスワード: 既存のデータファイルをそのまま使えるように、`crypt()` は DES crypt 互換の実装を互換層に持つ。
+    結果が Linux と一致することを確かめる
+  - プロセス: `fork` は使わず、`prochandle.cpp` を `CreateProcess` で実装する。server は daemon 化しない（常に前面で動く）
+  - シグナル: Windows に無いシグナルは定義だけして、届かないものとして扱う（server の `SIGHUP` などは使えない）。
+    C ランタイムの `signal()` は未知の番号で異常終了するので、互換層のラッパーを通す
+  - monitor からの server 停止: `SIGTERM` の代わりに名前付きイベントで通知し、server のメインループで `SIGTERM` の処理を呼ぶ
+    （`TerminateProcess` では宇宙データが保存されないため）
+  - ファイル: `_fmode` を `_O_BINARY` にして、UNIX と同じく LF のまま読み書きする。シンボリックリンクは無いものとして扱う
+  - パス: 区切りは `/` のまま使う。`ISPATHABSOLUTE` はドライブ名を受け付ける。`getcwd` の結果の `\` は `/` に変換する。
+    `HOME` と `LOGNAME` が無ければ `USERPROFILE` と `USERNAME` から設定する
+  - `regcomp` など: MSYS2 の UCRT64 にライブラリが無いので、`std::regex` の POSIX 拡張文法で実装する
+  - `df`・`free`: 外部コマンドが無いので、メモリは Win32 API で取得し、ディスクの一覧は返さない
+  - server のプラグインは、FreeBSD や macOS と同じく読み込まない
+  - Windows の `long` は 32bit（LLP64）。`time_t` は 64bit で `long` と別の型になるので、`time_t` を `%ld` で扱う箇所は確かめる
+- 進める順番:
+  1. 互換層と `Makefile.Windows` を作り、client と unvedit を動かす。この段階の server は WSL か Linux で動かす
+  2. monitor と server を動かす。Windows 1 台で遊べることを確かめる
+  3. 配布とドキュメント。インストール先と DLL の扱いは、ここで決める
+- 確認: 既存のデータファイルで Linux 版とつなぎ、Linux の server に Windows の client、Windows の server に Linux の client の
+  どちらでも遊べることを確かめる。変更後は Linux のビルドと `smoke.sh` が変わらず通ることを Dev Container で確かめる
 
 ## 記録
 - 移植中に判明した非自明な事項（プロトコル上の型のサイズ、ファイル形式の前提、無効化した機能など）は
