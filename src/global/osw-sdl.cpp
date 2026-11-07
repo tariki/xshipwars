@@ -3284,6 +3284,37 @@ win_t OSWGetMainWindow(void)
 	return(main_win);
 }
 
+/*
+ *	On Windows the position of a window is that of its client area, and
+ *	nothing moves the frame into view as an X window manager does, so a
+ *	window at 0,0 would have its title bar above the screen, where it
+ *	cannot be dragged. The window's own position is updated by the
+ *	SDL_WINDOWEVENT_MOVED that this causes.
+ */
+static void KeepFrameOnScreen(obj *o)
+{
+#ifdef _WIN32
+	SDL_Rect r;
+	int display, top, left, x, y, new_x, new_y;
+
+	if(SDL_GetWindowFlags(o->sdl_win) & SDL_WINDOW_BORDERLESS)
+	    return;
+
+	display = SDL_GetWindowDisplayIndex(o->sdl_win);
+	if((display < 0) ||
+	   SDL_GetDisplayUsableBounds(display, &r) ||
+	   SDL_GetWindowBordersSize(o->sdl_win, &top, &left, NULL, NULL)
+	)
+	    return;
+
+	SDL_GetWindowPosition(o->sdl_win, &x, &y);
+	new_x = MAX(x, r.x + left);
+	new_y = MAX(y, r.y + top);
+	if((new_x != x) || (new_y != y))
+	    SDL_SetWindowPosition(o->sdl_win, new_x, new_y);
+#endif
+}
+
 /* Creates the SDL window of toplevel w, hidden. */
 static bool CreateSDLWindow(win_t w)
 {
@@ -3320,6 +3351,7 @@ static bool CreateSDLWindow(win_t w)
 	    fprintf(stderr, "Cannot create window: %s\n", SDL_GetError());
 	    return(false);
 	}
+	KeepFrameOnScreen(o);
 	o->renderer = SDL_CreateRenderer(o->sdl_win, -1, 0);
 	if(o->renderer == NULL)
 	    o->renderer = SDL_CreateRenderer(o->sdl_win, -1, SDL_RENDERER_SOFTWARE);
@@ -3540,6 +3572,8 @@ static void ConfigureCommon(win_t w, int x, int y, int width, int height)
 		SDL_SetWindowPosition(o->sdl_win, x, y);
 	    if(resized)
 		SDL_SetWindowSize(o->sdl_win, width, height);
+	    if(moved)
+		KeepFrameOnScreen(o);
 	}
 	MarkDirty(w);
 	SendConfigure(w);
