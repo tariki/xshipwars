@@ -11,3 +11,4 @@ compile_commands.json
 build-darwin/
 build-darwin-x11/
 build-linux-sdl/
+build-windows/

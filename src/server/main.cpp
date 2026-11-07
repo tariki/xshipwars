@@ -952,6 +952,7 @@ int SWServInit(int argc, char *argv[])
 		break;
 	    }
 	}
+#ifndef _WIN32		/* No fork(), the server stays in the foreground. */
 	if(status)
 	{
 	    switch(fork())
@@ -969,6 +970,7 @@ int SWServInit(int argc, char *argv[])
 		break;
 	    }
 	}
+#endif	/* not _WIN32 */
 
 
         /* Initialize time zone. */
@@ -1500,6 +1502,9 @@ int SWServInit(int argc, char *argv[])
 
         /* ******************************************************** */
 	/* Set signals to watch for. */
+#ifdef _WIN32
+	Win32WatchTerm();	/* For kill(pid, SIGTERM) from the monitor. */
+#endif
         signal(SIGHUP, SWServHandleSignal);
         signal(SIGINT, SWServHandleSignal);
         signal(SIGQUIT, SWServHandleSignal);
@@ -1713,6 +1718,9 @@ void SWServManage()
             /* Sleep. */
             usleep(CYCLE_LAPSE_US);
 
+#ifdef _WIN32
+	    Win32PollTerm();
+#endif
 
             /* Update millisecond timming. */
 	    new_millitime = MilliTime();

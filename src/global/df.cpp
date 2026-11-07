@@ -46,6 +46,10 @@ df_stat_struct **DiskFreeGetListing(int *total)
 	else
 	    *total = 0;
 
+#ifdef _WIN32
+	/* There is no df program, so no devices are listed. */
+	return(df_stat);
+#endif
 
 	/* Create a unique tempory file for the program's output. */
 	strcpy(tmp_file, P_tmpdir "/sw_dfXXXXXX");

@@ -26,8 +26,10 @@
 #endif
 
 
+#ifndef _WIN32
 static void child_catcher(int s);
 static void *add_signal(int signum, void (*handler)(int));
+#endif
 
 /* Explode commands. */
 char **ExecExplodeCommand(const char *cmd, int *strc);
@@ -59,6 +61,7 @@ pid_t ExecBAOE(const char *cmd, const char *stdout_path, const char *stderr_path
 
 
 
+#ifndef _WIN32
 /*
  *	Signal handler for SIGCHLD.
  */
@@ -89,6 +92,7 @@ static void *add_signal(int signum, void (*handler)(int))
 	else
 	    return((void *)old_act.sa_handler);
 }
+#endif	/* not _WIN32 */
 
 /*
  *	Explodes the command string cmd and returns an array of
@@ -236,6 +240,19 @@ void Execute(const char *cmd)
 	if(cmd == NULL)
 	    return;
 
+#ifdef _WIN32
+	/* Through the shell, like system(). */
+	{
+	    char *shell_cmd = (char *)malloc(strlen(cmd) + 8);
+
+	    if(shell_cmd != NULL)
+	    {
+		sprintf(shell_cmd, "cmd /c %s", cmd);
+		Win32Spawn(shell_cmd, NULL, NULL, 0);
+		free(shell_cmd);
+	    }
+	}
+#else
         /* Set signal to catch finished child proccesses. */
 	add_signal(SIGCHLD, child_catcher);
 
@@ -256,10 +273,11 @@ void Execute(const char *cmd)
                 exit(0);
 	    break;
 
-	  /* We are the parent: do nothing. */        
+	  /* We are the parent: do nothing. */
           default:
             break;
         }
+#endif	/* _WIN32 */
 
         return;
 }
@@ -330,6 +348,9 @@ static pid_t ExecNexus(
         }
         new_cd[PATH_MAX - 1] = '\0';
 
+#ifdef _WIN32
+	p = Win32Spawn(cmd, stdout_fp, stderr_fp, 0);
+#else
         /* Set signal to catch finished child proccesses. */
         add_signal(SIGCHLD, child_catcher);
 
@@ -362,6 +383,7 @@ static pid_t ExecNexus(
           default:
             break;
         }
+#endif	/* _WIN32 */
 
         /* Free exploded argument strings and array. */
         StringFreeArray(argv, argc);
@@ -419,7 +441,10 @@ static pid_t ExecBNexus(
         const char *stdout_mode, const char *stderr_mode
 )
 {
-	int status, argc;
+#ifndef _WIN32
+	int status;
+#endif
+	int argc;
 	char **argv;
 	FILE *stdout_fp, *stderr_fp;
 	pid_t p;
@@ -451,6 +476,9 @@ static pid_t ExecBNexus(
             return(0);
 	argv[argc] = NULL;
 
+#ifdef _WIN32
+	p = Win32Spawn(cmd, stdout_fp, stderr_fp, 1);
+#else
 	/* Fork off a process. */
 	p = fork();
         switch(p)
@@ -481,6 +509,7 @@ static pid_t ExecBNexus(
 	    wait(&status);
             break;
         }
+#endif	/* _WIN32 */
 
         /* Free exploded argument strings and array. */
         StringFreeArray(argv, argc);

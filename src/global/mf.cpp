@@ -54,6 +54,24 @@ int MemoryFree(mf_stat_struct *buf)
 	else
 	    memset(buf, 0, sizeof(mf_stat_struct));
 
+#ifdef _WIN32
+	/* There is no free program. */
+	{
+	    MEMORYSTATUSEX ms;
+
+	    ms.dwLength = sizeof(ms);
+	    if(!GlobalMemoryStatusEx(&ms))
+		return(-1);
+
+	    buf->total = ms.ullTotalPhys;
+	    buf->free = ms.ullAvailPhys;
+	    buf->used = ms.ullTotalPhys - ms.ullAvailPhys;
+	    buf->swap_total = ms.ullTotalPageFile;
+	    buf->swap_free = ms.ullAvailPageFile;
+	    buf->swap_used = ms.ullTotalPageFile - ms.ullAvailPageFile;
+	    return(0);
+	}
+#endif
 
 	/* Create a unique tempory file for the program's output. */
 	strcpy(tmp_file, P_tmpdir "/sw_mfXXXXXX");

@@ -94,6 +94,14 @@ int ISPATHABSOLUTE(const char *path)
 #endif
 	    path++;
 
+#ifdef _WIN32
+	/* A drive letter, as in C:/dir. */
+	if(isalpha((unsigned char)path[0]) && (path[1] == ':') &&
+	   ((path[2] == '/') || (path[2] == '\\'))
+	)
+	    return(1);
+#endif
+
 	return((*path) == DIR_DELIMINATOR);
 }
 
