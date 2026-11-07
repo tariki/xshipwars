@@ -604,10 +604,12 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
 - `MilliTime()` の宣言が `long` と `time_t` で混ざっていた。LP64 では同じ型なので問題にならなかったが、Windows では衝突するので `time_t` にそろえた。
 - `strset()` は Windows の C ライブラリに別の形で存在するので、`strsetn()` に改名した。
 - `off_t` は既定で 32bit なので、`_FILE_OFFSET_BITS=64` にしている（`mf.cpp` のメモリ量があふれるため）。
+- Windows の `PATH_MAX` は 260 で、`PATH_MAX + NAME_MAX` が 515 になる。設定ファイルの値（最大 1023 文字）が切り詰められ、gcc の `-Wstringop-truncation` が出ていた。`compat.h` で Linux と同じ 4096 にして、切り詰め自体をなくした。パス用のバッファがスタックに多いので、スタックも Windows の既定の 1MB から Linux と同じ 8MB にしている（`Makefile.inc`）。
 - `close()` はファイルとソケットの両方に使われている。互換層は `getsockopt(SO_TYPE)` が成功するかで判別する。ファイルの番号とソケットのハンドルの値が偶然一致すると誤判定するが、ソケットのハンドルはファイルの番号より十分大きい。
 - `<crypt.h>` という名前のヘッダーが zlib の minizip にあり、`__has_include(<crypt.h>)` で誤って読まれる。互換層の同名の空ファイルで隠している。
 - `crypt()` は互換層の DES 実装を使う。2000 件の乱数のキーとソルトで、MSYS の perl の `crypt` と全件一致した。
 - C ランタイムの `signal()` は未知のシグナル番号で異常終了するので、互換層のラッパーで無視する。
 - 待ち受け中のソケットが `netstat` と `Get-NetTCPConnection` に出ない環境があった（原因は未調査）。`smoke-windows.sh` は実際に接続して調べる。
 - `pkg-config --cflags sdl2` は `-Dmain=SDL_main` を、`--libs` は `-lSDL2main -mwindows` を返す。コンソールのプログラムのままにするため `Makefile.Windows` で外している。
+- gcc 16 で新たに出た警告は、抑止せずに直した。`PrintWinGetPaperSizePixels()` は `pw` が NULL だと出力を書かずに戻る作りだったので、出力を必ず設定するようにした。代入だけで読まれていなかった変数（`sect_cur`・`m_deleted`）は消した。
 - 作業ツリーを `core.symlinks=false`・`core.autocrlf=true` から切り替えるとき、`git checkout-index -f -a` は変更なしとみなしたファイルを書き出さない。`.git/index` を消して `git reset` してから実行する。PowerShell 5.1 の `New-Item -ItemType SymbolicLink` は開発者モードでも管理者権限を要求する（`mklink` と git は動く）。

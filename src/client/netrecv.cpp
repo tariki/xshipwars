@@ -3276,12 +3276,7 @@ int NetHandleSetWeaponValues(char *arg)
 
 	    if(strcmp(wep_ptr->name, strptr))
 	    {
-	        strncpy(
-		    wep_ptr->name,
-		    strptr,
-		    XSW_OBJ_NAME_MAX
-                );
-	        wep_ptr->name[XSW_OBJ_NAME_MAX - 1] = '\0';
+	        strlcpy(wep_ptr->name, strptr, XSW_OBJ_NAME_MAX);
 
 		changed_name = 1;
 	    }

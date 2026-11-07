@@ -23,7 +23,9 @@ CFLAGS += -O2 -g -Wall -include compat.h \
 	-DSWSERV_DIR=\"$(PREFIX)/swserv\"
 
 INC = -I$(COMPAT)
-LIB += -lws2_32 -lwinmm
+#   The default stack is 1 MB. The programs have many path buffers on the
+#   stack, so give them the 8 MB that they have on Linux.
+LIB += -lws2_32 -lwinmm -Wl,--stack,8388608
 
 CPP    = g++
 OBJDIR = build-windows

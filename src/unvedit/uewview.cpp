@@ -368,7 +368,6 @@ void UEWViewDraw(int n)
 {
         int x, y, i, sw, sh, swv, shv;
 	int pos, inc;
-	long sect_cur;
 	long sect_x_min, sect_x_max, sect_y_min, sect_y_max;
 	long d_sect_x, d_sect_y;
         uew_struct *uew_ptr;
@@ -504,14 +503,12 @@ void UEWViewDraw(int n)
 	x = static_cast<int>((((uew_ptr->sect_width / 2) - uew_ptr->cx) * uew_ptr->zoom)
             + ((int)img->width / 2) - (swv * sw));
 
-	sect_cur = uew_ptr->sect_x - swv + 1;
-
         color.a = 0x00;
         color.r = 0x80;
         color.g = 0x19;
         color.b = 0x78;
 
-	for(pos = x, inc = sw; pos < (int)img->width; pos += inc, sect_cur++)
+	for(pos = x, inc = sw; pos < (int)img->width; pos += inc)
 	{
 	    if(pos < 0)
 		continue;
@@ -549,9 +546,7 @@ void UEWViewDraw(int n)
         color.g = 0x19;
         color.b = 0x78;
 
-        sect_cur = uew_ptr->sect_y + shv;
-
-        for(pos = y, inc = sh; pos < (int)img->height; pos += inc, sect_cur--)
+        for(pos = y, inc = sh; pos < (int)img->height; pos += inc)
         {
             if(pos < 0)
                 continue;

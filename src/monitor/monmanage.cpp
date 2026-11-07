@@ -1018,7 +1018,7 @@ int MonManage(monitor_struct *m, event_t *event)
 
 int MonManageAll(event_t *event)
 {
-        int i, m_deleted;
+        int i;
         int events_handled = 0;
 
 
@@ -1027,7 +1027,7 @@ int MonManageAll(event_t *event)
 
 
         /* Manage each monitor window. */
-        for(i = 0, m_deleted = 0; i < total_monitors; i++)
+        for(i = 0; i < total_monitors; i++)
         {
             if(monitor[i] == NULL) 
                 continue;
@@ -1045,7 +1045,6 @@ int MonManageAll(event_t *event)
             if(delete_monitor == monitor[i])
             {
                 MonDelete(i);
-                m_deleted++;
                 delete_monitor = NULL;
 
 		continue;
@@ -1053,13 +1052,6 @@ int MonManageAll(event_t *event)
 
         }
 
-
-
-        /* Update window menus as needed. */
-/*
-        if(m_deleted > 0)
-	    ???
- */
 
 
         return(events_handled);

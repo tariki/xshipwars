@@ -2029,7 +2029,6 @@ void SChtDraw(starchart_win_struct *cht, int amount)
 
             int x, y, i, sw, sh, swv, shv;
             int pos, inc;
-            long sect_cur;
             long sect_x_min, sect_x_max, sect_y_min, sect_y_max;
             long d_sect_x, d_sect_y;
 	    int total;
@@ -2161,13 +2160,11 @@ void SChtDraw(starchart_win_struct *cht, int amount)
             x = static_cast<int>((((sect_width / 2) - cur_x) * zoom)
                 + ((int)wattr.width / 2) - (swv * sw));
 
-            sect_cur = cur_sect_x - swv + 1;
-
             OSWSetFgPix(xsw_color.chart_sector_grid);
 
             for(pos = x, inc = sw;
                 pos < (int)wattr.width;
-                pos += inc, sect_cur++
+                pos += inc
 	    )
 	    {
                 if(pos < 0)
@@ -2198,13 +2195,11 @@ void SChtDraw(starchart_win_struct *cht, int amount)
                 ((((sect_height / 2) - cur_y) * zoom)
                 + ((int)wattr.height / 2))) - (shv * sh));
 
-            sect_cur = cur_sect_y + shv;
-
             OSWSetFgPix(xsw_color.chart_sector_grid);
 
             for(pos = y, inc = sh;
                 pos < (int)wattr.height;
-                pos += inc, sect_cur--
+                pos += inc
 	    )
 	    {
 		if(pos < 0)

@@ -111,10 +111,15 @@ void PrintWinGetPaperSizePixels(
 	unsigned int *paper_height
 )
 {
-	if((pw == NULL) ||
-	   (paper_width == NULL) ||
+	if((paper_width == NULL) ||
            (paper_height == NULL)
 	)
+	    return;
+
+	*paper_width = 0;
+	*paper_height = 0;
+
+	if(pw == NULL)
 	    return;
 
 

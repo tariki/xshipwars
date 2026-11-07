@@ -28,8 +28,7 @@ int CmdHandleInput(const char *input)
         stringa[CLIENT_CMD_MAX - 1] = '\0';
 	StringStripSpaces(stringa);        
 
-        strncpy(stringb, stringa, CLIENT_CMD_MAX);
-        stringb[CLIENT_CMD_MAX - 1] = '\0';
+        strlcpy(stringb, stringa, CLIENT_CMD_MAX);
         strncpy(stringa, stringb, CLIENT_CMD_MAX);
         stringa[CLIENT_CMD_MAX - 1] = '\0';
  

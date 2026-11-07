@@ -26,6 +26,7 @@
 /* All the headers that the macros below would otherwise break. */
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +65,14 @@ typedef uint64_t	u_int64_t;
 #ifndef NAME_MAX
 # define NAME_MAX	255
 #endif
+
+/*
+ *	260 here. The same size as on Linux, so that values from the
+ *	configuration files (up to CFG_VALUE_MAX) fit in the path buffers
+ *	instead of being cut. Makefile.inc gives the stack room for them.
+ */
+#undef PATH_MAX
+#define PATH_MAX	4096
 
 /* The default is the root of the current drive. */
 #undef P_tmpdir
