@@ -595,3 +595,19 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
 - macOS の SDL の dummy 映像ドライバでは窓を作れる（offscreen ドライバは OpenGL が要るので作れない）。macOS 用のスモークテストに使う。
 - 確認: Linux（コンテナ）で 4 つのクリーンビルド・`g++ -U__linux__`・SDL2 版のビルド（警告 0）、スモークテスト（X11 版・SDL2 版とも全項目 PASS）、
   `make install PREFIX=<一時ディレクトリ>`。macOS で 4 つのビルド（警告 0）と、一時ディレクトリへの `make install`・`install-data.sh`。
+
+## Windows ネイティブ版 (2026-11-07)
+- MinGW-w64（MSYS2 UCRT64、gcc 16）で 4 つをビルドし、`scripts/smoke-windows.sh` が全項目通った。Linux のビルドと `smoke.sh` は、この時点ではまだ確かめていない。
+- `pid_t` は MinGW の 64bit では `long long`。`%i` で出力している箇所があるので、`compat.h` で `int` に置き換えている（Windows の PID は 32bit に収まる）。
+- `time_t` は 64bit で、`long`（32bit）とは別の型。`%ld` で出力していた箇所は `%lld` と `(long long)` にそろえた。10 進の文字列は変わらないのでプロトコルも変わらない。
+  monitor は `long` で読むので、Windows の monitor では 2038 年以降の値は受け取れない。送っているのは残り秒数と稼働時間なので、当面は影響しない。
+- `MilliTime()` の宣言が `long` と `time_t` で混ざっていた。LP64 では同じ型なので問題にならなかったが、Windows では衝突するので `time_t` にそろえた。
+- `strset()` は Windows の C ライブラリに別の形で存在するので、`strsetn()` に改名した。
+- `off_t` は既定で 32bit なので、`_FILE_OFFSET_BITS=64` にしている（`mf.cpp` のメモリ量があふれるため）。
+- `close()` はファイルとソケットの両方に使われている。互換層は `getsockopt(SO_TYPE)` が成功するかで判別する。ファイルの番号とソケットのハンドルの値が偶然一致すると誤判定するが、ソケットのハンドルはファイルの番号より十分大きい。
+- `<crypt.h>` という名前のヘッダーが zlib の minizip にあり、`__has_include(<crypt.h>)` で誤って読まれる。互換層の同名の空ファイルで隠している。
+- `crypt()` は互換層の DES 実装を使う。2000 件の乱数のキーとソルトで、MSYS の perl の `crypt` と全件一致した。
+- C ランタイムの `signal()` は未知のシグナル番号で異常終了するので、互換層のラッパーで無視する。
+- 待ち受け中のソケットが `netstat` と `Get-NetTCPConnection` に出ない環境があった（原因は未調査）。`smoke-windows.sh` は実際に接続して調べる。
+- `pkg-config --cflags sdl2` は `-Dmain=SDL_main` を、`--libs` は `-lSDL2main -mwindows` を返す。コンソールのプログラムのままにするため `Makefile.Windows` で外している。
+- 作業ツリーを `core.symlinks=false`・`core.autocrlf=true` から切り替えるとき、`git checkout-index -f -a` は変更なしとみなしたファイルを書き出さない。`.git/index` を消して `git reset` してから実行する。PowerShell 5.1 の `New-Item -ItemType SymbolicLink` は開発者モードでも管理者権限を要求する（`mklink` と git は動く）。
