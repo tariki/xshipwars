@@ -41,7 +41,7 @@
 #include "ue.h"
 #include "uew.h"
 
-extern "C" long MilliTime(void);
+extern "C" time_t MilliTime(void);
 
 
 /*

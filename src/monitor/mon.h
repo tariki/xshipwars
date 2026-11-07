@@ -381,7 +381,7 @@ extern void MonitorManage();
 extern void MonitorShutdown();
 
 /* In timming.c */
-extern long MilliTime(void);
+extern "C" time_t MilliTime(void);
 
 
 #endif /* MONITOR_H */

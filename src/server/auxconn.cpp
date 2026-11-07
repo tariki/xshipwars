@@ -257,19 +257,19 @@ int AUXConSendStats(aux_connection_struct *ac)
 	sprintf(buf,
 "%s: %i %i\n\
 %s: %ld %ld %ld\n\
-%s: %ld %ld\n\
+%s: %lld %lld\n\
 %s: %s\n\
 %s: %i\n\
 %s: %i\n\
-%s: %ld\n",
+%s: %lld\n",
 		STAT_PFX_CONNECTIONS, total_con, total_guest_con,
 		STAT_PFX_MEMORY, m.total, m.con, m.obj,
-		STAT_PFX_NEXT, (next.unv_save - cur_systime),
-		    (next.stats_export - cur_systime),
+		STAT_PFX_NEXT, (long long)(next.unv_save - cur_systime),
+		    (long long)(next.stats_export - cur_systime),
 		STAT_PFX_TITLE, unv_head.title,
 		STAT_PFX_OBJECTS, total_objects,
 		STAT_PFX_PID, root_pid,
-		STAT_PFX_UPTIME, uptime
+		STAT_PFX_UPTIME, (long long)uptime
 	);
 
 

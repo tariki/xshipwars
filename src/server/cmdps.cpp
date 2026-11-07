@@ -64,10 +64,10 @@ int CmdPS(int condescriptor, const char *arg)
 
             /* Print line. */
             sprintf(sndbuf,
-		"-%6d  %4d  %6ld  %s",
+		"-%6d  %4d  %6lld  %s",
                 i,
                 1,
-                sh_ptr->act_int,
+                (long long)sh_ptr->act_int,
                 DBGetFormalNameStr(sh_ptr->run_owner)
             );
             NetSendLiveMessage(condescriptor, sndbuf);

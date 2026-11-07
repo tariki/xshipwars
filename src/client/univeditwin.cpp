@@ -83,8 +83,8 @@ const char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
 	    l = dt / 3600;
 	    sprintf(
                 s,
-		"%ld %s ago",
-		l,
+		"%lld %s ago",
+		(long long)l,
 		((l > 1) ? "hours" : "hour")
 	    );
 	}
@@ -95,8 +95,8 @@ const char *UnivEditWinTimeAgoStr(time_t cur, time_t last)
             if(l > 1)
                 sprintf(
                     s,  
-                    "%ld days ago",
-                    l
+                    "%lld days ago",
+                    (long long)l
                 );
             else
                 sprintf(

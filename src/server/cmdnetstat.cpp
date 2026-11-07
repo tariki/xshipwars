@@ -232,7 +232,7 @@ static void CmdNetstatPrintListening(int condescriptor)
             /* Interval. */
             strptr1 = &sndbuf[14];
             *strptr1 = '\0';
-            sprintf(num_str, "%ld", sysparm.int_new_connection_poll);
+            sprintf(num_str, "%lld", (long long)sysparm.int_new_connection_poll);
             strcat(strptr1, num_str);
             strcat(strptr1, SPACES);
 

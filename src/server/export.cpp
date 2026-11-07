@@ -60,9 +60,9 @@ int ExportConList(char *filename)
 		continue;
 
             fprintf(fp,
- "%s;%ld;%i;%i\n",
+ "%s;%lld;%i;%i\n",
 		DBGetFormalNameStr(con_ptr->object_num),
-                cur_systime - con_ptr->contime,
+                (long long)cur_systime - con_ptr->contime,
                 con_ptr->is_guest,
 		con_ptr->client_type
             );
@@ -97,8 +97,8 @@ int ExportEvents(
             return(-1);
 
 	fprintf(fp,
-	    "%ld;%i;%s\n",
-	    cur_systime,
+	    "%lld;%i;%s\n",
+	    (long long)cur_systime,
 	    type,
 	    ((data == NULL) ? "" : data)
 	);

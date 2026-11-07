@@ -404,10 +404,10 @@ int RCLoadFromFile(char *filename)
 		if(auto_interval_tune.interval < 1000)
 		{
                     fprintf(stderr,
- "%s: Line %i: Warning: Auto net interval tune interval %ld ms, is very short.\n",
+ "%s: Line %i: Warning: Auto net interval tune interval %lld ms, is very short.\n",
                         filename,
                         lines_read,
-                        auto_interval_tune.interval
+                        (long long)auto_interval_tune.interval
                     );
 		}
             }

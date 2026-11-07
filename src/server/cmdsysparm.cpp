@@ -36,13 +36,13 @@ static char *CMDSYSPARMFMTDTIME(time_t dt)
 	    dt = 0;
 
 	if(dt < 60)
-	    sprintf(s, "%ld s", dt);
+	    sprintf(s, "%lld s", (long long)dt);
 	else if(dt < 3600)
-	    sprintf(s, "%ld m", dt / 60);
+	    sprintf(s, "%lld m", (long long)(dt / 60));
         else if(dt < 86400)
-            sprintf(s, "%ld h", dt / 3600);
+            sprintf(s, "%lld h", (long long)(dt / 3600));
 	else
-            sprintf(s, "%ld d", dt / 86400);
+            sprintf(s, "%lld d", (long long)(dt / 86400));
 
 	s[256 - 1] = '\0';
 	return(s);
@@ -437,9 +437,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_aux_con_stats = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-		sysparm.int_aux_con_stats
+		(long long)sysparm.int_aux_con_stats
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -456,9 +456,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_memory_clean = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-                sysparm.int_memory_clean
+                (long long)sysparm.int_memory_clean
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -475,9 +475,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_new_connection_poll = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-                sysparm.int_new_connection_poll
+                (long long)sysparm.int_new_connection_poll
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -494,9 +494,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_object_values = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-                sysparm.int_object_values
+                (long long)sysparm.int_object_values
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -513,9 +513,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_os_stats = dt;	/* Seconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld s  (next: %s)",
+                "%s = %lld s  (next: %s)",
                 parm_name,
-                sysparm.int_os_stats,
+                (long long)sysparm.int_os_stats,
 		CMDSYSPARMFMTDTIME(next.os_stats - cur_systime)
             );
             NetSendLiveMessage(condescriptor, sndbuf);
@@ -533,9 +533,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_stats_export = dt;	/* Seconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld s  (next: %s)",
+                "%s = %lld s  (next: %s)",
                 parm_name,
-                sysparm.int_stats_export,
+                (long long)sysparm.int_stats_export,
 		CMDSYSPARMFMTDTIME(next.stats_export - cur_systime)
             );
             NetSendLiveMessage(condescriptor, sndbuf);
@@ -553,9 +553,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_system_check = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-                sysparm.int_system_check
+                (long long)sysparm.int_system_check
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -572,9 +572,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_unv_save = dt;	/* Seconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld s  (next: %s)",
+                "%s = %lld s  (next: %s)",
                 parm_name,
-                sysparm.int_unv_save,
+                (long long)sysparm.int_unv_save,
 		CMDSYSPARMFMTDTIME(next.unv_save - cur_systime)
             );
             NetSendLiveMessage(condescriptor, sndbuf);
@@ -592,9 +592,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.int_weapon_values = dt;	/* Milliseconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld ms",
+                "%s = %lld ms",
                 parm_name,
-                sysparm.int_weapon_values
+                (long long)sysparm.int_weapon_values
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }
@@ -691,9 +691,9 @@ int CmdSysparm(int condescriptor, const char *arg)
                 sysparm.login_timeout = dt;	/* Seconds. */
             }
             sprintf(sndbuf,
-                "%s = %ld s",
+                "%s = %lld s",
                 parm_name,
-                sysparm.login_timeout
+                (long long)sysparm.login_timeout
             );
             NetSendLiveMessage(condescriptor, sndbuf);
         }

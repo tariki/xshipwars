@@ -34,7 +34,7 @@ void strtoupper(char *s);
 void strtolower(char *s);
 char *strcatalloc(char *orig, const char *new_str);
 void substr(char *s, const char *token, const char *val);
-void strset(char *s, char c, int n);
+void strsetn(char *s, char c, int n);
 void strpad(char *s, int n);
 void straddflag(char *s, const char *flag, char operation, int len);
 
@@ -471,7 +471,7 @@ void substr(char *s, const char *token, const char *val)
  *	String s must have enough storage for n characters plus the
  *	null terminating character tacked on at the end.
  */
-void strset(char *s, char c, int n)
+void strsetn(char *s, char c, int n)
 {
 	int i;
 
@@ -488,13 +488,13 @@ void strset(char *s, char c, int n)
 }
 
 /*
- *	Same as strset(), except always sets the first n characters
+ *	Same as strsetn(), except always sets the first n characters
  *	of string s to the ' ' character. Tacks on a null terminating
  *	character at the end.
  */
 void strpad(char *s, int n)
 {
-	strset(s, ' ', n);
+	strsetn(s, ' ', n);
 
 	return;
 }
@@ -1389,32 +1389,32 @@ char *StringFormatTimePeriod(time_t seconds)
 
 	if(seconds < 60)
 	{
-	    sprintf(s, "%ld sec%s",
-		seconds,
+	    sprintf(s, "%lld sec%s",
+		(long long)seconds,
 		((seconds > 1) ? "s" : "")
 	    );
 	}
 	else if(seconds < 3600)
 	{
 	    seconds = seconds / 60;
-	    sprintf(s, "%ld min%s",
-		seconds,
+	    sprintf(s, "%lld min%s",
+		(long long)seconds,
 		((seconds > 1) ? "s" : "")
 	    );
 	}
 	else if(seconds < 86400)
 	{
 	    seconds = seconds / 3600;
-	    sprintf(s, "%ld hour%s",
-		seconds,
+	    sprintf(s, "%lld hour%s",
+		(long long)seconds,
 		((seconds > 1) ? "s" : "")
 	    );
 	}
 	else
 	{
 	    seconds = seconds / 86400;
-	    sprintf(s, "%ld day%s",
-		seconds,
+	    sprintf(s, "%lld day%s",
+		(long long)seconds,
 		((seconds > 1) ? "s" : "")
 	    );
 	}

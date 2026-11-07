@@ -265,7 +265,7 @@ extern isref_struct **ISRefLoadFromFile(
 
 
 /* In timming.c */
-extern "C" long MilliTime(void);
+extern "C" time_t MilliTime(void);
 
 
 #endif	/* UE_H */

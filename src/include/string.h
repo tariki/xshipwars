@@ -31,7 +31,7 @@ extern void strtoupper(char *s);
 extern void strtolower(char *s);
 extern char *strcatalloc(char *orig, const char *new_str);
 extern void substr(char *s, const char *token, const char *val);
-extern void strset(char *s, char c, int n);
+extern void strsetn(char *s, char c, int n);
 extern void strpad(char *s, int n);
 extern void straddflag(char *s, const char *flag, char operation, int len);
 
