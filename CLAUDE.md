@@ -26,7 +26,11 @@
 - ビルド: `scripts/build.sh <server|client|monitor|unvedit|all>` (ログは `build-logs/`。コンテナ専用。macOS 用は段階 1 で用意する)
 - ヘッドレス実行: `scripts/headless.sh start|shot|key|stop`（Xvfb :99）
 - スモークテスト: `scripts/smoke.sh`（server/monitor/client/unvedit を起動して主要動作を自動判定。変更後の確認に使う）。
-  `GUI=sdl scripts/smoke.sh` で SDL2 版。macOS（ホスト）では `scripts/smoke-macos.sh`（SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけ）
+  `GUI=sdl scripts/smoke.sh` で SDL2 版。macOS（ホスト）では `scripts/smoke-macos.sh`（SDL の dummy 映像ドライバで、画面に出さずに確かめられる項目だけ）。
+  Windows（ホスト）では `scripts/smoke-windows.sh`（MSYS2 の UCRT64 環境で実行。確かめる項目は macOS と同じ考え方）
+- 単体テスト: `scripts/unittest.sh [テスト名 ...]`（`tests/unit/<名前>_test.cpp`。すべての OS で動く。Windows では UCRT64 環境で実行）。
+  リンクするソースはテストファイル先頭の `// unittest-sources:` に書く。GUI に依存するファイルの関数は `// unittest-extract:` で取り出す。
+  OS で結果が変わりうる処理（パス、文字の符号、型のサイズ）を直したら、ここにテストを足す
 - データのインストール: `scripts/install-data.sh [-n] [インストール先]`（data/ と theme/ を client が読む配置にまとめる）
 - ホストの XQuartz に表示: `scripts/xquartz.sh [client] [monitor] [unvedit]`（事前準備はスクリプト冒頭のコメント参照）
 
@@ -140,7 +144,8 @@
     ターミナルから起動したときは親のコンソールに出力し、コンソールが無いときは `stderr` を一時ファイルに受けて、
     `main` が 0 以外を返したら `MessageBoxA` で表示する（SDL のダイアログは SDL の映像が初期化できないと出せない）
   - ファイル: `_fmode` を `_O_BINARY` にして、UNIX と同じく LF のまま読み書きする。シンボリックリンクは無いものとして扱う
-  - パス: 区切りは `/` のまま使う（`C:\dir` の `\` は区切りとして扱わない）。`C:/dir` のドライブ名は `disk.cpp` の
+  - パス: 区切りは `/` のまま使う（`C:\dir` の `\` は区切りとして扱わない）。設定ファイルでは `\` が元々エスケープ文字
+    （Linux でも同じ）なので、`\` を `/` に変換することはせず、設定ファイルのパスは `/` で書くよう README で案内する。`C:/dir` のドライブ名は `disk.cpp` の
     `PathDriveLen()` で読み飛ばし、その後ろを UNIX のパスと同じに扱う（親は `C:/`、`..` で `C:/` より上には行かない）。
     `getcwd` の結果の `\` は `/` に変換する。
     `HOME` と `LOGNAME` が無ければ `USERPROFILE` と `USERNAME` から設定する
