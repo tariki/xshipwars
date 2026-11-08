@@ -1,10 +1,10 @@
-# XShipWars — 現代の Linux / FreeBSD / macOS 向け移植版
+# XShipWars — 現代の Linux / FreeBSD / macOS / Windows 向け移植版
 
 [English](README.md) | 日本語
 
 XShipWars は、WolfPack Entertainment が 1999〜2001 年に開発した、X Window System 用のネットワーク対戦型
 宇宙船ゲームです（このリポジトリの元は バージョン 1.34.0）。このリポジトリは、それを最新の Linux
-（Debian trixie / gcc 14 / 64bit）と macOS でビルド・実行できるようにしたものです。
+（Debian trixie / gcc 14 / 64bit）と macOS、Windows でビルド・実行できるようにしたものです。
 ゲームの挙動・ネットワークプロトコル・データファイル形式は変えていません。
 
 元のソースは、Debian のスナップショット・アーカイブにある xshipwars のソースパッケージ 1.34.1-3
@@ -14,19 +14,19 @@ XShipWars は、WolfPack Entertainment が 1999〜2001 年に開発した、X Wi
 | プログラム | 内容 |
 |---|---|
 | `swserv` | サーバ。宇宙（ユニバース）を管理し、クライアントの接続を受け付ける（既定でポート 1701、監視用 1702） |
-| `xsw` | クライアント。サーバに接続して宇宙船を操縦する（Linux・FreeBSD では X11、macOS では SDL2 で表示） |
+| `xsw` | クライアント。サーバに接続して宇宙船を操縦する（Linux・FreeBSD では X11、macOS と Windows では SDL2 で表示） |
 | `monitor` | サーバの状態（接続数・オブジェクト数・ログ）を表示する監視ツール |
 | `unvedit` | ユニバースファイル（`.unv`）のエディタ |
 
-動作を確認した環境は、Dev Container 内の Debian trixie（arm64）と、macOS（Apple Silicon）です。Linux の表示先は
-Xvfb と macOS の XQuartz で確かめています。x86_64 では試していませんが、64bit 環境向けの修正（固定幅型、char の符号など）は
-両方に共通です。
+動作を確認した環境は、Dev Container 内の Debian trixie（arm64 と x86_64）、macOS（Apple Silicon）、
+Windows 11（x86_64）です。Linux の表示先は Xvfb と macOS の XQuartz で確かめています。
 
-**サポート対象は Linux・FreeBSD・macOS です。** FreeBSD 用の Makefile は Linux と同じ設定にそろえてありますが、
+**サポート対象は Linux・FreeBSD・macOS・Windows です。** FreeBSD 用の Makefile は Linux と同じ設定にそろえてありますが、
 FreeBSD の実機ではまだ試せていません。macOS では 4 つのプログラムがすべて動きます。client・monitor・unvedit は X11 ではなく
 SDL2 で表示します（XQuartz は不要。X11 の部品を SDL2 で再現する層を新しく作りました）。Intel Mac では試していません。
-元の配布物にあった AIX・HP-UX・Solaris 向けのビルド用ファイルとコード、それに Windows への移植の名残は削除しました
-（試せる環境が無く、保守できないため）。Windows では、WSL2 で Linux 版を動かすのが現実的です（未検証）。
+Windows でも 4 つのプログラムがすべて、WSL を使わずにそのまま動きます（macOS と同じ SDL2 の表示を使い、MSYS2 でビルドします）。
+元の配布物にあった AIX・HP-UX・Solaris 向けのビルド用ファイルとコードは削除しました（試せる環境が無く、保守できないため）。
+元の配布物には Windows への移植の名残もありましたが、それは使わずに作り直しています。
 
 ---
 
@@ -59,6 +59,24 @@ FluidSynth は SDL2_mixer と一緒に入ります。X11 や XQuartz は要り�
 brew install sdl2 sdl2_mixer pkg-config
 ```
 
+Windows（x86_64）では、[MSYS2](https://www.msys2.org/) を入れ、スタートメニューの「MSYS2 UCRT64」で開くシェルで
+次のパッケージを入れます。以後のビルドとインストールは、すべてこのシェルで行います。
+
+```sh
+pacman -S --needed make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-pkgconf \
+  mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_mixer mingw-w64-ucrt-x86_64-fluidsynth
+```
+
+ソースには 187 個のシンボリックリンクがあるので、clone する前に Windows の**開発者モード**をオンにします
+（設定 → システム →「開発者向け」。見つからないときは設定の検索欄に「開発者」と入力）。そのうえで、
+[Git for Windows](https://gitforwindows.org/) で次のように clone します（MSYS2 の git では試していません）。
+
+```sh
+git clone -c core.symlinks=true https://github.com/tariki/xshipwars.git
+```
+
+開発者モードが無効のまま clone すると、シンボリックリンクがパスを書いただけのテキストファイルになり、ビルドできません。
+
 ### ビルド
 
 ```sh
@@ -80,6 +98,13 @@ macOS では `Makefile.Darwin` を使います（`scripts/build.sh all` でも�
 
 ```sh
 for c in server client monitor unvedit; do make -C src/$c -f Makefile.Darwin; done
+```
+
+Windows では、MSYS2 UCRT64 のシェルで `Makefile.Windows` を使います。できあがるのは
+`src/<プログラム>/build-windows/` の下の `swserv.exe`・`xsw.exe`・`monitor.exe`・`unvedit.exe` です。
+
+```sh
+for c in server client monitor unvedit; do make -C src/$c -f Makefile.Windows; done
 ```
 
 ### インストール（システム全体）
@@ -107,18 +132,34 @@ sudo scripts/install-data.sh            # macOS では /usr/local/share/games/xs
 sudo chown -R $USER /usr/local/swserv
 ```
 
+Windows では `C:/xshipwars` の下に入れます（client・monitor・unvedit は `C:/xshipwars/bin`、データは
+`C:/xshipwars/share/games/xshipwars`、server は `C:/xshipwars/swserv`）。管理者権限は要りません。MSYS2 UCRT64 のシェルで実行します。
+
+```sh
+for c in client monitor unvedit server; do make -C src/$c -f Makefile.Windows install; done
+scripts/install-data.sh                 # Windows では C:/xshipwars/share/games/xshipwars に入る
+```
+
+- 実行ファイルの隣に、使う MSYS2 の DLL（SDL2、SDL2_mixer、背景音楽用の FluidSynth など）もコピーされるので、
+  インストールしたものは MSYS2 が無くても（エクスプローラーからでも）動きます。
+- `scripts/install-data.sh` は、client の `make install` の後に実行してください（client の `make install` は設定ファイルの
+  ひな形を入れ直し、`install-data.sh` がその `ToplevelDir` をインストール先に書き換えます）。
+
 インストール先は、プログラムに埋め込まれます（データや server を探す既定の場所になります）。`PREFIX` を変えるときは、
-ビルドとインストールの両方で同じ `PREFIX` を指定してください（変えてビルドし直すときは、先に `make -f Makefile.Darwin clean`）。
+ビルドとインストールの両方で同じ `PREFIX` を指定してください（変えてビルドし直すときは、先に `make -f Makefile.Darwin clean`。
+Windows では `Makefile.Windows`）。
 
 ### サーバを起動する
 
 ```sh
-cd /home/swserv          # macOS では /usr/local/swserv
+cd /home/swserv          # macOS では /usr/local/swserv、Windows では C:/xshipwars/swserv
 bin/swserv --fg etc/default.conf
 ```
 
-- `--fg` を付けるとフォアグラウンドで動きます。付けないと、バックグラウンドで動くデーモンになります。
-- 止めるときは Ctrl-C（または SIGTERM）を送ります。宇宙を `db/generic_out.unv` に保存してから終了します。
+- `--fg` を付けるとフォアグラウンドで動きます。付けないと、バックグラウンドで動くデーモンになります
+  （Windows では常にフォアグラウンドで、コンソールの窓の中で動きます）。
+- 止めるときは Ctrl-C（または SIGTERM）を送ります。宇宙を `db/generic_out.unv` に保存してから終了します
+  （Windows では、Ctrl-C のほか、server のコンソールの窓を閉じても保存してから終了します）。
 - 起動時に読むのは `db/generic_in.unv` です。前回の状態（作ったアカウントを含む）から続けるときは、起動前に
   `mv db/generic_out.unv db/generic_in.unv` で入れ替えます。入れ替えないと、前回の変更は失われます
   （同梱の `restart` は、これを行う csh のサンプルスクリプトです）。
@@ -131,8 +172,10 @@ bin/swserv --fg etc/default.conf
 /usr/games/xsw swserv://Guest:guest@localhost:1701  # URL を指定してすぐ接続
 ```
 
-- 初回起動時に、`/usr/share/games/xshipwars/etc/xshipwarsrc`（macOS では `/usr/local/share/...`）が `~/.shipwars/xshipwarsrc` にコピーされ、
-  以後はそれが使われます。設定は、client を正規に終了したとき（bridge ウィンドウを閉じる、または x キーで出る
+- Windows では `C:/xshipwars/bin/xsw.exe` です（エクスプローラーからダブルクリックでも起動できます）。
+- 初回起動時に、`/usr/share/games/xshipwars/etc/xshipwarsrc`（macOS では `/usr/local/share/...`、Windows では
+  `C:/xshipwars/share/...`）が `~/.shipwars/xshipwarsrc` にコピーされ、以後はそれが使われます
+  （Windows の `~` は `C:\Users\<ユーザー名>` です）。設定は、client を正規に終了したとき（bridge ウィンドウを閉じる、または x キーで出る
   「Exit?:」に y と答える）に保存されます。
 - 接続には、名前とパスワードが必要です（次の「ログインとアカウント」を参照）。
 - ブリッジ画面を右クリックすると、クイックメニューが開きます（接続、Refresh、Star Chart、Economy、Options など）。
@@ -194,6 +237,7 @@ macOS 版（SDL2）は、キーを Xorg の evdev 方式の番号に変換して
 ```
 
 macOS では `/usr/local/bin/monitor`・`/usr/local/bin/unvedit` と `/usr/local/swserv/db/generic_in.unv` です。
+Windows では `C:/xshipwars/bin/monitor.exe`・`C:/xshipwars/bin/unvedit.exe` と `C:/xshipwars/swserv/db/generic_in.unv` です。
 
 - monitor は、引数の順番に意味があります。名前とパスワードは client と同じ登録プレイヤーのもので、
   同梱の宇宙なら `-u Defiant x` で入れます。`-u` を省くと Guest でつなぎますが、その場合は統計だけが表示され、
@@ -231,6 +275,8 @@ done
 PREFIX=$P scripts/install-data.sh
 ```
 
+Windows でも macOS と同じく、ビルドから同じ `PREFIX` を指定します（`Makefile.Windows` を使い、実行ファイルは `$P/bin` に入ります）。
+
 ### macOS で遊ぶ
 
 macOS では、上の手順（必要なもの・ビルド・インストール）で、4 つのプログラムをそのまま Mac で動かせます。
@@ -241,6 +287,21 @@ client・monitor・unvedit は SDL2 で表示するので、XQuartz は要りま
   US 配列と違います。文字の入力（接続先の URL など）は、macOS のキーボードの設定どおりに入力できます。
 - client のクイックメニューの「Run Server...」は、`/usr/local/swserv` を開きます。
 - 背景音楽を鳴らすには、SoundFont を置きます（次の「サウンド」を参照）。
+
+### Windows で遊ぶ
+
+Windows では、上の手順（必要なもの・ビルド・インストール）で、4 つのプログラムをそのまま動かせます。WSL や X サーバは要りません。
+client・monitor・unvedit は macOS 版と同じ SDL2 で表示します。
+
+- client・monitor・unvedit は、起動してもコンソールの窓を開きません。起動に失敗したときは、理由をダイアログで表示します。
+  MSYS2 などのシェルから起動したときは、メッセージはそのシェルに出ます。
+- server はコンソールの窓の中で動きます。Ctrl-C を押すか、窓を閉じると、宇宙を保存してから終了します。
+  monitor の「サーバを止める」操作も同じように保存してから終了させます（画面からの操作は未確認）。
+- 設定ファイルのパスは `/` で書きます（例: `ToplevelDir = C:/xshipwars/share/games/xshipwars`）。設定ファイルでは `\` が
+  エスケープ文字なので（Linux 版でも同じ）、`C:\xshipwars` と書くと `C:xshipwars` と読まれてしまいます。
+- キーの割り当ては macOS 版と同じく、キーボード上の位置で決まり、同梱の値のまま使えます。
+- 背景音楽を鳴らすには、macOS と同じく SoundFont を `C:/xshipwars/share/games/xshipwars/sounds/soundfont.sf2` に置きます
+  （次の「サウンド」を参照。Windows での再生は未確認です。MIDI を扱う部分が読み込めることは確かめています）。
 
 ### サウンド
 
@@ -297,8 +358,8 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
   **手前に引くと推力が上がります**（Normal モード。元は libjsw の校正で反転させる前提だったと思われます）。
 - Linux では `/dev/input/event*` を読む権限が要ります（通常のデスクトップでは、ログイン中のユーザーに自動で付きます）。
   FreeBSD でも SDL が対応しているゲームパッドなら動くはずです（未確認）。
-- macOS の Docker（Dev Container）の中からは、ホストの USB 機器が見えないので使えません。macOS 版では SDL2 が対応している
-  ゲームパッドが使えるはずです（未確認）。
+- macOS の Docker（Dev Container）の中からは、ホストの USB 機器が見えないので使えません。macOS 版と Windows 版では、
+  SDL2 が対応しているゲームパッドが使えるはずです（未確認）。
 
 ### 既知の制限
 
@@ -311,6 +372,9 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 - macOS 版（SDL2）では、塗りつぶした円弧（スクロールバーの矢印の先など）の縁の数画素が、X11 版と少し違います。
   また、トップレベルのウィンドウどうしの重なり順の指定と、ダイアログを親ウィンドウに付ける指定（transient）は効きません。
 - macOS 版では、client のオプション画面のメモリ表示が 0 になり、server のプラグインは読み込まれません（FreeBSD と同じ）。
+- Windows 版も、SDL2 の表示については macOS 版と同じ制限があります。ほかに、server のプラグインは読み込まれず、
+  server のディスクの情報（`disk` コマンド）は空になり、unvedit の印刷は使えません。server の SIGHUP（設定の読み直し）など、
+  Windows に無いシグナルによる操作もできません。
 
 ---
 
@@ -327,30 +391,38 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 - Apple Silicon ホスト上では **arm64** で動きます。arm64 の Linux では `char` が符号なしなので注意してください（下記）。
 - macOS 版は、コンテナではなく macOS（ホスト）でビルドします。ホストとコンテナは同じ作業ツリーを使いますが、macOS 版の
   生成物は `build-darwin/` に作るので、Linux 版（ソースと同じ場所）とは混ざりません。
+- Windows 版は、Windows（ホスト）の MSYS2 UCRT64 でビルドします。生成物は `build-windows/` です。Windows の Docker Desktop でも
+  この Dev Container のイメージを作れます（x86_64 になります）。
 
 ### ディレクトリ構成
 
 | パス | 内容 |
 |---|---|
-| `src/server/`, `src/client/`, `src/monitor/`, `src/unvedit/` | 各プログラム。`Makefile.Linux`・`Makefile.FreeBSD`・`Makefile.Darwin` でビルドする |
+| `src/server/`, `src/client/`, `src/monitor/`, `src/unvedit/` | 各プログラム。`Makefile.Linux`・`Makefile.FreeBSD`・`Makefile.Darwin`・`Makefile.Windows` でビルドする |
+| `src/compat/win32/` | Windows 版の互換層（足りない POSIX の機能を補う）と、`Makefile.Windows` の共通部分 |
 | `src/include/`, `src/global/`, `src/widgets/` | 共通のヘッダ・ユーティリティ・独自 GUI ウィジェット。各プログラムの `.cpp` の多くはここへのシンボリックリンク |
 | `src/global/osw-x.cpp`, `src/global/osw-sdl.cpp` | GUI の層（OSW）の X11 版と SDL2 版。共通の宣言は `src/include/osw-api.h` |
 | `src/pconf/`, `src/*/platforms.ini` | 元の Makefile 生成ツール（現在は使っていない） |
 | `data/` | client データ（`etc/` のページ・OCS 名など、`images/` の client 用画像） |
 | `theme/` | グラフィックテーマ（`images/` の天体・船など、`sounds/`） |
 | `scripts/` | ビルド・実行・テスト用のスクリプト（下記） |
+| `tests/unit/` | 単体テスト（`scripts/unittest.sh` で実行） |
 | `docs/PORTING_NOTES.md` | 移植の記録。何が壊れていて、どう直し、何を確かめたか |
 | `CLAUDE.md` | 移植作業の方針（AI エージェント向けの指示を兼ねる） |
 | `build-logs/`, `run-logs/` | ビルドログ・実行時の作業ディレクトリ（git 管理外） |
 
 ### ビルドシステム
 
-- 各プログラムの `src/<component>/Makefile.Linux`（macOS では `Makefile.Darwin`）を直接使います。元の `pconf` による生成や
-  CMake 化は、まだ手を付けていません。
+- 各プログラムの `src/<component>/Makefile.Linux`（macOS では `Makefile.Darwin`、Windows では `Makefile.Windows`）を直接使います。
+  元の `pconf` による生成や CMake 化は、まだ手を付けていません。
+- Windows 版は、MinGW-w64（MSYS2 UCRT64）でビルドし、GUI は SDL2 版を使います。足りない POSIX の機能（ソケット、`fork`、
+  シグナル、`crypt` など）は `src/compat/win32/` の互換層で補い、各ソースの先頭に `-include compat.h` で読み込ませます。
+  互換層で補えないところだけ、ソースを `_WIN32` で分けています。
 - GUI の層は 2 つあります。`GUI=sdl` で SDL2 版（`osw-sdl.cpp`）、`GUI=x11` で X11 版（`osw-x.cpp`）を使います。
   既定は Linux・FreeBSD が X11 版、macOS が SDL2 版です。Linux の SDL2 版（生成物は `build-linux-sdl/`）は、macOS 版を
   コンテナで確かめるためのもので、macOS の XQuartz 用の X11 版の生成物は `build-darwin-x11/` です。
-- コンパイルオプションは `-O2 -g -Wall` が基本です。gcc 14 と macOS の clang の `-Wall` で、4 つとも**警告 0** です。
+- コンパイルオプションは `-O2 -g -Wall` が基本です。gcc 14 と macOS の clang、Windows の MinGW-w64 の gcc 16 の `-Wall` で、
+  4 つとも**警告 0** です。
   `-Wno-*`・`-fpermissive`・`-w` による一括抑止は使っていません。例外は、macOS の SDK が `sprintf` を非推奨にしている警告で、
   macOS だけ `-Wno-deprecated-declarations` で抑止しています（すべての呼び出しで出るため）。
 - 主な define:
@@ -362,7 +434,10 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
     SDL2_mixer の `pkg-config` から取るので、`HAVE_SDL_MIXER` を外すときは SDL2 のフラグを別に足す必要がある
   - YIFF / ESD 用の `HAVE_YIFF`・`HAVE_ESD` とそのコードは削除した
   - `OSW_SDL`: SDL2 版の GUI の層を使う（`GUI=sdl` のときに付く）
-  - `XSW_DATA_DIR`・`SWSERV_DIR`: プログラムに埋め込むデータと server の場所（`src/include/xsw-paths.h`。`Makefile.Darwin` が PREFIX から付ける）
+  - `XSW_DATA_DIR`・`SWSERV_DIR`: プログラムに埋め込むデータと server の場所（`src/include/xsw-paths.h`。`Makefile.Darwin` と
+    `Makefile.Windows` が PREFIX から付ける）
+  - `XSW_WIN32_GUI`（Windows の client・monitor・unvedit）: コンソールの窓を出さないプログラムにし、起動に失敗したときに
+    理由をダイアログで出す
 - **Makefile はヘッダの依存関係を追跡しません。** ヘッダを変えたら `make -f Makefile.Linux clean` してからビルドしてください。
 
 ### スクリプト
@@ -372,6 +447,8 @@ Sounds タブの「Test Sound」で、左・右・両方の順に音が鳴りま
 | `scripts/build.sh <server\|client\|monitor\|unvedit\|all> [make の引数]` | ビルド（Dev Container 内と macOS）。ログは `build-logs/<component>.log`（macOS では `build-logs/darwin/`）、最後にエラー数・警告数を表示 |
 | `scripts/smoke.sh` | スモークテスト（`GUI=sdl` で SDL2 版）。下記 |
 | `scripts/smoke-macos.sh` | macOS でのスモークテスト。下記 |
+| `scripts/smoke-windows.sh` | Windows でのスモークテスト（MSYS2 UCRT64 で実行）。下記 |
+| `scripts/unittest.sh [テスト名 ...]` | 単体テスト（すべての OS）。下記 |
 | `scripts/gen-osw-fonts.py` | SDL2 版に組み込むフォント（`src/include/osw-sdl-fonts.h`）を X の misc-fixed から作る |
 | `scripts/headless.sh start\|shot <png>\|key <keysym>\|stop` | Xvfb（:99）の起動、スクリーンショット、キー入力、停止 |
 | `scripts/install-data.sh [-n] [インストール先]` | データのインストール |
@@ -414,6 +491,15 @@ macOS では `scripts/smoke-macos.sh` を使います。窓を画面に出さな
 確かめるのは、データのインストール、server の起動と終了、monitor の接続、client のログインと効果音、server の保存での
 `EngineState = -1`、unvedit の読み込みと保存（終了時の緊急保存）です。キー操作と画面は、手で確かめてください。
 
+Windows では `scripts/smoke-windows.sh` を使います（MSYS2 UCRT64 のシェルで実行）。macOS と同じく SDL の dummy 映像ドライバで動かし、
+データのインストール、server の起動と終了（monitor と同じ経路で止めて、保存してから終わること）、monitor の接続、client のログインと
+効果音、server の保存での `EngineState = -1`、server の設定に `C:/...` のパスを書いて読めること、unvedit の起動を確かめます。
+
+`scripts/unittest.sh` は、`tests/unit/<名前>_test.cpp` を 1 つずつビルドして実行する単体テストです（Linux・FreeBSD・macOS・Windows）。
+パスの処理（`C:/...` のドライブ名を含む）や、client が初回起動時に設定ファイルを置く処理など、OS で結果が変わりうる関数を確かめます。
+リンクするソースはテストファイル先頭の `// unittest-sources:` に書き、GUI に依存するファイルの関数は `// unittest-extract:` で
+関数だけを取り出して使います。ビルドで警告が出ても FAIL にします。
+
 ヘッドレスで個別に調べるときのコツ:
 
 - ウィンドウマネージャが無いので、ゲーム中のキー入力の前に `xdotool windowfocus --sync <bridge のウィンドウ>` でフォーカスを与える
@@ -429,6 +515,9 @@ macOS では `scripts/smoke-macos.sh` を使います。窓を画面に出さな
 - **64bit**: long やポインタのサイズを前提にしない。ポインタを int に詰める箇所は `intptr_t` 経由にする。
 - **arm64 の char**: `char` は符号なしです。負の値（-1 など）を入れる変数は `signed char` にします
   （例: `engine_state`、client の `option.throttle_mode`）。`-Wtype-limits` を付けたビルドで洗い出せます。
+- **Windows の型**: `long` は 32bit（LLP64）で、`time_t` は 64bit です。`time_t` は `%lld` と `(long long)` で出力します
+  （10 進の文字列は変わらないので、プロトコルも変わりません）。
+- **パス**: Windows でも区切りは `/` です。`C:/dir` のドライブ名は、パスの関数が読み飛ばしてから UNIX と同じに扱います。
 - 警告を黙らせるだけのキャストはしない。例外は、const に対応していない libXpm の API に渡す 1 か所だけです。
 - macOS 版の GUI（SDL2）は、X11 版と同じ画面になるように作っています。フォントは X の misc-fixed を組み込み、色の換算
   （`rgbi:`）は X の値を測って再現し、キーは X のキーコードで扱います。Xvfb 上で X11 版と SDL2 版のスクリーンショットを
@@ -448,6 +537,8 @@ macOS では `scripts/smoke-macos.sh` を使います。窓を画面に出さな
   機能を増やすことになるので変えていない）
 - macOS 版: 塗りつぶした円弧の縁の画素を X サーバー（mi）と同じにすること、`.app` での配布、トップレベルの重なり順と
   transient の指定、複数ディスプレイでのダイアログの位置、メモリ表示（`free` コマンドが無い）、server のプラグイン
+- Windows 版: MSYS2 が無くても遊べる形（zip など）での配布、monitor の画面からの server の停止・client の「Run Server...」・
+  背景音楽の再生の確認、server のディスクの情報（`disk` コマンド）、unvedit の印刷、Linux 版との相互接続の確認
 - 背景音楽の `theme/sounds/aquarium.mid` に「Copyright © 1999 by Ramon Pajares Box - All Rights Reserved」という
   権利表示がある（曲は Saint-Saëns で、元の配布物にも入っていたファイル）。扱い（そのまま残す・差し替える）は未定
 

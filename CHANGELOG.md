@@ -7,6 +7,33 @@ All notable changes to this project are recorded in this file. The format follow
 Version numbers are those of this port. The game's own version (shown by the programs, and written into
 configuration and universe files) stays at the original XShipWars 1.34.0.
 
+## 0.3.0
+
+- Windows (x86_64) support. The server, client, monitor and unvedit run on Windows as they are, without WSL
+  - Built with MSYS2's UCRT64 (MinGW-w64) (`Makefile.Windows`). The client, monitor and unvedit are shown with SDL2,
+    as on macOS
+  - The POSIX features that Windows does not have (sockets, `fork`, signals, `crypt`, `regcomp` and so on) are supplied
+    by a new compatibility layer in `src/compat/win32/`. Passwords stored in universe files are checked the same as by
+    the Linux version
+  - Installed under `C:/xshipwars` (programs in `C:/xshipwars/bin`, data in `C:/xshipwars/share/games/xshipwars`, the
+    server in `C:/xshipwars/swserv`). The DLLs they use are installed with them, so the installed programs run without
+    MSYS2
+  - The client, monitor and unvedit open no console window. If one fails to start, it shows the reason in a dialog
+  - The server saves the universe before exiting when Ctrl-C is pressed and when its console window is closed. The same
+    when it is stopped from monitor
+  - Paths in configuration files are written with `/` (`C:/xshipwars/...`). Paths with a drive letter are handled
+    correctly, also when going to the parent directory and the like
+  - Added the Windows smoke test `scripts/smoke-windows.sh`
+- client: fixed the throttle hardly rising with the keyboard's ↑ / ↓ (a bug of the original). Because of how the
+  throttle's null zone was handled, on a machine that keeps the planned frame rate (a fast one) the throttle only went
+  back and forth between 0 and 0.002 unless Shift was held
+- Added unit tests, `scripts/unittest.sh` (`tests/unit/`). They check things such as the path functions on Linux,
+  FreeBSD, macOS and Windows
+- Fixed the warnings that gcc 16 gives (truncated string copies, unused variables and so on). `time_t` is now printed
+  in a way that does not depend on the size of `long` (the printed text is the same)
+- Added `.gitattributes`, so that line endings stay LF when cloning on Windows
+- Checked the Dev Container on x86_64 too (with Docker Desktop on Windows)
+
 ## 0.2.1
 
 - On macOS, the programs can now be quit with Command+Q and the Quit item of the application menu

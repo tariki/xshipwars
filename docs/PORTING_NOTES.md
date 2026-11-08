@@ -654,3 +654,20 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
     （arm64 では測っていない）。`char` の符号は関係しない（関係する変数は double と、0/1 しか入らない char）。
   - 不感帯を、推力を上げ下げするキーを押していない間だけにした。キーを離して 0 付近になったときに 0 にそろえる働きは残る。
     修正後は X11 版・SDL2 版とも 2 秒で推力 0.25 になる（0.002 × 約 1.08 × 約 115 フレーム）。
+- Windows のインストール（2026-11-08、段階 3）: `make -f Makefile.Windows install` は各プログラムの `Makefile.install.UNIX` を
+  そのまま使い（Linux・macOS と同じ配置）、`Makefile.inc` の `install-dlls` で MSYS2 の DLL を実行ファイルの隣にコピーする。
+  - `Makefile.install.UNIX` は `Makefile.inc` の後に読む。先に読むと、その `install` が `make` だけで実行される既定の目標になる。
+  - `ldd` は、リンクされた DLL しか表示しない。SDL2_mixer は MIDI のために `libfluidsynth-3.dll` を実行中に名前で読み込むので
+    （`objdump -p` の import には無く、`strings` で名前が見える）、これが漏れて、MSYS2 が無いと背景音楽が鳴らなくなっていた。
+    client の `RUNTIME_DLLS` に書き、その DLL と、それが使う 18 個の DLL（SDL3.dll、libportaudio.dll など）もコピーする。
+    コピー後、PATH に MSYS2 を含めずに `Mix_Init(MIX_INIT_MID)` が成功することを確かめた（DLL は 24 個）。
+  - client の初回起動（`~/.shipwars` を作って、設定ファイルのひな形をコピーする）が Windows で失敗していた。`xswinstall.cpp` の
+    `XSWDoInstallObject()` が、`rmkdir` と同じく先頭の 1 文字だけを飛ばしてディレクトリを作るので、最初に `C:` を作ろうとして
+    失敗していた。ドライブ名の修正のときに `/` との比較を探したが、`target + 1` の形だったので見落としていた。
+    `PathDriveLen()` で同じように直し、`tests/unit/install_test.cpp` を足した（修正前のコードでは失敗することを確かめた）。
+    それまでのテストは、どれも設定ファイルを先に置いていたので、この経路を通っていなかった。実際に `C:/xshipwars` へ
+    インストールし、空のホームで起動して見つけた。
+  - client の `make install` は設定ファイルのひな形を入れ直すので、`install-data.sh` はその後に実行する（Linux・macOS と同じ）。
+    順番が逆だと、ひな形の `ToplevelDir` が `/usr/share/games/xshipwars` のままになる。
+- `.gitattributes` で改行を LF に固定した。PowerShell の `Add-Content` で `.gitignore` に追記した 2 行が CRLF でコミットされていた
+  （`git ls-files --eol` で `i/mixed`）ので、あわせて直した。

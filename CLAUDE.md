@@ -127,8 +127,14 @@
   - 実装は `compat.cpp` にまとめ、各プログラムにリンクする
   - 互換層で吸収できないところだけ、ソースを `_WIN32` で分岐する。Linux・FreeBSD・macOS 側の処理は変えない
 - ビルド: `src/*/Makefile.Windows`（`Makefile.Darwin` が元）。生成物は `build-windows/`
-- 作業ツリーの条件: 187 個のシンボリックリンクがあるので、開発者モードを有効にして `core.symlinks=true`、
-  `core.autocrlf=false` で clone する。README にも書く
+- 作業ツリーの条件: 187 個のシンボリックリンクがあるので、開発者モードを有効にして `core.symlinks=true` で clone する
+  （Git for Windows で確かめた）。改行は `.gitattributes` で LF に固定している。README にも書く
+- インストール（段階 3 で決めた）: `make -f Makefile.Windows install` と `scripts/install-data.sh`。Linux・macOS と同じ
+  `Makefile.install.UNIX` を使い、既定の PREFIX は `C:/xshipwars`（client・monitor・unvedit は `bin`、データは
+  `share/games/xshipwars`、server は `swserv`。管理者権限は要らない。`Program Files` は空白を含み、server が自分の
+  ディレクトリに書き込むので使わない）。MSYS2 の DLL を実行ファイルの隣にコピーして、MSYS2 が無くても動くようにする
+  （`ldd` は実行中に名前で読み込まれる DLL を拾わないので、それは `RUNTIME_DLLS` に書く。SDL2_mixer の `libfluidsynth-3.dll`）。
+  zip などでの配布は後回し（macOS の `.app` と同じ）
 - 個別の方針:
   - ソケット: `int` のまま扱う。`WSAStartup` は互換層が `main` の前に呼ぶ。`close()` はファイルとソケットの両方に使われているので、
     互換層で判別する。`recv` などのエラーは `WSAGetLastError()` から `errno` に変換する
@@ -154,9 +160,9 @@
   - server のプラグインは、FreeBSD や macOS と同じく読み込まない
   - Windows の `long` は 32bit（LLP64）。`time_t` は 64bit で `long` と別の型になるので、`time_t` を `%ld` で扱う箇所は確かめる
 - 進める順番:
-  1. 互換層と `Makefile.Windows` を作り、client と unvedit を動かす。この段階の server は WSL か Linux で動かす
-  2. monitor と server を動かす。Windows 1 台で遊べることを確かめる
-  3. 配布とドキュメント。インストール先と DLL の扱いは、ここで決める
+  1. （済）互換層と `Makefile.Windows` を作り、client と unvedit を動かす
+  2. （済）monitor と server を動かす。Windows 1 台で遊べることを確かめる
+  3. 配布とドキュメント。インストール先と DLL の扱いは、ここで決める（上の「インストール」）
 - 確認: 既存のデータファイルで Linux 版とつなぎ、Linux の server に Windows の client、Windows の server に Linux の client の
   どちらでも遊べることを確かめる。変更後は Linux のビルドと `smoke.sh` が変わらず通ることを Dev Container で確かめる
 

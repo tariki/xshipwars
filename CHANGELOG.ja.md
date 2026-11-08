@@ -6,6 +6,26 @@
 版番号はこの移植版のものです。ゲーム本体の版（プログラムが表示する版、設定ファイル・宇宙ファイルに書かれる版）は
 元の XShipWars 1.34.0 のままです。
 
+## 0.3.0
+
+- Windows（x86_64）に対応。server・client・monitor・unvedit が、WSL を使わずに Windows でそのまま動く
+  - MSYS2 の UCRT64（MinGW-w64）でビルドする（`Makefile.Windows`）。client・monitor・unvedit は macOS と同じ SDL2 で表示する
+  - Windows に無い POSIX の機能（ソケット、`fork`、シグナル、`crypt`、`regcomp` など）は、新しく作った互換層
+    `src/compat/win32/` で補った。宇宙ファイルに保存されたパスワードは、Linux 版と同じに照合できる
+  - インストール先は `C:/xshipwars`（プログラムは `C:/xshipwars/bin`、データは `C:/xshipwars/share/games/xshipwars`、
+    server は `C:/xshipwars/swserv`）。使う DLL も一緒に入れるので、インストールしたものは MSYS2 が無くても動く
+  - client・monitor・unvedit はコンソールの窓を開かない。起動に失敗したときは理由をダイアログで表示する
+  - server は、Ctrl-C を押しても、コンソールの窓を閉じても、宇宙を保存してから終了する。monitor から止めたときも同じ
+  - 設定ファイルのパスは `/` で書く（`C:/xshipwars/...`）。ドライブ名の付いたパスを、親のディレクトリへの移動などでも正しく扱う
+  - Windows 用のスモークテスト `scripts/smoke-windows.sh` を追加
+- client: キーボードの ↑ / ↓ で推力がほとんど上がらない問題を修正（元からのバグ）。推力の不感帯の処理のため、フレームが
+  予定どおりの速さで回る（速い）マシンでは、Shift を押さないと推力が 0 と 0.002 の間を行き来するだけだった
+- 単体テストの仕組み `scripts/unittest.sh`（`tests/unit/`）を追加。パスの処理などを Linux・FreeBSD・macOS・Windows で確かめる
+- gcc 16 で出る警告を直した（文字列のコピーの切り詰め、使われない変数など）。`time_t` を出力する箇所を、`long` の大きさに
+  よらない書き方にした（出力される文字列は同じ）
+- `.gitattributes` を追加し、Windows で clone しても改行が LF のままになるようにした
+- Dev Container を x86_64 でも確かめた（Windows の Docker Desktop で）
+
 ## 0.2.1
 
 - macOS で、Command+Q とアプリのメニューの「終了」でプログラムを終了できるようにした
