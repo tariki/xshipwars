@@ -31,8 +31,9 @@ for b in src/server/build-windows/swserv.exe src/client/build-windows/xsw.exe \
   [ -x "$ROOT/$b" ] || { echo "ERROR: $b がありません。make -f Makefile.Windows を実行してください。" >&2; exit 2; }
 done
 
-# 待ち受けは実際に接続して調べる（待ち受け中のソケットが netstat に出ない環境があった）
-listening() { (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
+# 待ち受けは実際に接続して調べる（待ち受け中のソケットが netstat に出ない環境があった）。
+# 待ち受けていないポートへの接続が、拒否されずに応答の無いまま止まる環境もあったので、2 秒で打ち切る
+listening() { timeout 2 bash -c "exec 3<>/dev/tcp/127.0.0.1/$1" 2>/dev/null; }
 # (grep -q は一致すると読むのをやめるので、pipefail の下でパイプの途中に置くと失敗になる。出力を変数に受けてから調べる)
 connected() {  # ポート、Windows の PID
   local t; t="$(netstat -ano -p TCP | tr -d '\r')"
