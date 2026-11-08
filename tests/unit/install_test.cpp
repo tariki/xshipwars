@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>		/* What xswinstall.cpp includes for the */
+#include <unistd.h>		/* function taken from it (getcwd()). */
 
 #include "../../src/include/disk.h"
 #include "../../src/client/xswinstall.h"
@@ -44,7 +46,8 @@ static char *read_file(const char *path, char *buf, size_t size)
 
 int main(int argc, char *argv[])
 {
-	char src[1024], dir[1024], target[1024], buf[256];
+	char src[1024], dir[1024], buf[256];
+	char target[sizeof(dir) + 16];	/* dir and "/xshipwarsrc". */
 	FILE *fp;
 
 	if(argc < 2)
