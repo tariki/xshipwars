@@ -392,7 +392,13 @@ char *FBrowserGetJustPath(char *path)
 
 	strptr = strrchr(just_path, '/');
 	if(strptr != NULL)
-	    *strptr = '\0';
+	{
+	    /* Keep the toplevel, / (or C:/ on Windows). */
+	    if(strptr == (just_path + PathDriveLen(just_path)))
+		strptr[1] = '\0';
+	    else
+		*strptr = '\0';
+	}
 
 
 	/* Make sure we still have atleast toplevel. */
@@ -1233,8 +1239,8 @@ int FBrowserRefreshList(fbrowser_struct *fb)
             }
             else
             {
-                /* Skip parent if toplevel. */
-                if(!strcmp(tmp_path, "/") &&
+                /* Skip parent if toplevel (/, or C:/ on Windows). */
+                if(!strcmp(tmp_path + PathDriveLen(tmp_path), "/") &&
                    !strcmp(dent[i], "..")
                 )
                 {

@@ -24,6 +24,7 @@ extern "C" {
 
 extern int FILEHASEXTENSION(const char *filename);
 extern int ISPATHABSOLUTE(const char *path);
+extern int PathDriveLen(const char *path);	/* 2 for C:/dir on Windows, else 0. */
 extern int NUMDIRCONTENTS(const char *path);
 
 extern int COMPARE_PARENT_PATHS(const char *path, const char *parent);

@@ -81,6 +81,22 @@ int FILEHASEXTENSION(const char *filename)
 	    return(1);
 }
 
+/*
+ *	Length of the drive letter in front of an absolute path, as the
+ *	C: of C:/dir on Windows. The functions below treat the rest of the
+ *	path as they treat a UNIX path. Always 0 on UNIX.
+ */
+int PathDriveLen(const char *path)
+{
+#ifdef _WIN32
+	if(isalpha((unsigned char)path[0]) && (path[1] == ':') &&
+	   (path[2] == DIR_DELIMINATOR)
+	)
+	    return(2);
+#endif
+	return(0);
+}
+
 int ISPATHABSOLUTE(const char *path)
 {
 	if(path == NULL)
@@ -94,15 +110,10 @@ int ISPATHABSOLUTE(const char *path)
 #endif
 	    path++;
 
-#ifdef _WIN32
-	/* A drive letter, as in C:/dir. */
-	if(isalpha((unsigned char)path[0]) && (path[1] == ':') &&
-	   ((path[2] == '/') || (path[2] == '\\'))
-	)
-	    return(1);
-#endif
-
-	return((*path) == DIR_DELIMINATOR);
+	/*   C:/dir on Windows. Not C:\dir: the other path functions only
+	 *   know / as the separator.
+	 */
+	return(path[PathDriveLen(path)] == DIR_DELIMINATOR);
 }
 
 /*
@@ -178,9 +189,9 @@ int COMPARE_PARENT_PATHS(const char *path, const char *parent)
         len_parent = strlen(parent);
             
         /* Cannot compare if path is not absolute. */
-        if((*path) != DIR_DELIMINATOR)
+        if(path[PathDriveLen(path)] != DIR_DELIMINATOR)
             return(0);
-        if((*parent) != DIR_DELIMINATOR)
+        if(parent[PathDriveLen(parent)] != DIR_DELIMINATOR)
             return(0);
 
 
@@ -305,9 +316,10 @@ int rmkdir(const char *path, mode_t m)
 
 
         /* Get pointer to beginning of fullpath but skip
-         * first character since it's a DIR_DELIMINATOR.
+         * first character since it's a DIR_DELIMINATOR (and the
+	 * drive letter before it, which is not a directory).
          */
-	strptr = (char *)(fullpath + 1);
+	strptr = (char *)(fullpath + PathDriveLen(fullpath) + 1);
 	while(strptr != NULL)
 	{
 	    /* Seek to next deliminator, updating strptr. If there
@@ -715,7 +727,7 @@ void StripAbsolutePath(char *path)
         if(path == NULL)
             return;
 
-        if((*path) != DIR_DELIMINATOR)
+        if(path[PathDriveLen(path)] != DIR_DELIMINATOR)
             return;
 
         strptr1 = path;
@@ -841,7 +853,7 @@ char *PrefixPaths(const char *parent, const char *child)
             { strcpy(rtn_path, "/"); return(rtn_path); }
 
         /* If child is absolute, copy child and return. */
-        if((*child) == DIR_DELIMINATOR)
+        if(child[PathDriveLen(child)] == DIR_DELIMINATOR)
         {
             strncpy(rtn_path, child, PATH_MAX);
             rtn_path[PATH_MAX - 1] = '\0';
@@ -1050,7 +1062,7 @@ char *GetParentDir(const char *path)
 {
         int i;
         const char *strptr1;
-	char *strptr2;
+	char *strptr2, *root;
         static char rtn_path[PATH_MAX];
 
 
@@ -1073,6 +1085,9 @@ char *GetParentDir(const char *path)
         else
             rtn_path[PATH_MAX - 1] = '\0';
 
+	/* The parent of C:/dir is C:/, not C:. */
+	root = rtn_path + PathDriveLen(rtn_path);
+
 
         strptr2--;
         if(strptr2 < rtn_path)
@@ -1084,22 +1099,22 @@ char *GetParentDir(const char *path)
         }
 
         /* Removing the child. */
-        while((strptr2 > rtn_path) &&
+        while((strptr2 > root) &&
               ((*strptr2) != DIR_DELIMINATOR)
         )
             strptr2--;
 
-        if(strptr2 < rtn_path)
-            strptr2 = rtn_path;
+        if(strptr2 < root)
+            strptr2 = root;
 
         (*strptr2) = '\0';
 
 
         /* Make sure rtn_path contains atleast "/". */
-        if((*rtn_path) == '\0')
+        if((*root) == '\0')
         {
-            rtn_path[0] = DIR_DELIMINATOR;
-            rtn_path[1] = '\0';
+            root[0] = DIR_DELIMINATOR;
+            root[1] = '\0';
         }
 
         return(rtn_path);
@@ -1114,11 +1129,14 @@ char *GetParentDir(const char *path)
  */
 void SimplifyPath(char *path)
 {
-        char *strptr1, *strptr2, *strptr3;
+        char *strptr1, *strptr2, *strptr3, *root;
 
 
         if(path == NULL)
             return;
+
+	/* ".." does not go above the drive letter of C:/dir. */
+	root = path + PathDriveLen(path);
 
 	/* Look for a "/..". */
         strptr1 = strstr(path, "/..");
@@ -1133,13 +1151,13 @@ void SimplifyPath(char *path)
 
 	    /* Seek prev DIR_DELIMINATOR char or start. */
             strptr3 = strptr1 - 1;
-            while((strptr3 > path) &&
+            while((strptr3 > root) &&
                   ((*strptr3) != DIR_DELIMINATOR)
             )
                 strptr3--;
 
-            if(strptr3 < path)
-                strptr3 = path;
+            if(strptr3 < root)
+                strptr3 = root;
 
 	    /* Copy segment. */
             while(*strptr2 != '\0')
@@ -1156,10 +1174,10 @@ void SimplifyPath(char *path)
         }
 
 	/* Make sure path contains atleast a "/". */
-        if(*path == '\0')
+        if(*root == '\0')
         {
-            path[0] = DIR_DELIMINATOR;
-            path[1] = '\0';
+            root[0] = DIR_DELIMINATOR;
+            root[1] = '\0';
         }
 
         return;
