@@ -74,9 +74,10 @@ int XSWDoInstallObject(
 		}
 
 		/* Get pointer to beginning of target path but skip
-		 * first character since it's a '/'.
+		 * first character since it's a '/' (and the drive
+		 * letter before it, which is not a directory).
 		 */
-		strptr = target + 1;
+		strptr = target + PathDriveLen(target) + 1;
 		while(1)
 		{
 		    if(strptr == NULL)
