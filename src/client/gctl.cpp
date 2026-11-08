@@ -551,10 +551,17 @@ printf("Button %i: OFF\n", n);
 		    if(pks_y_accel < -1)
 		        pks_y_accel = -1;
                 }
-	        /* Throttle null zone (y), if was not 0. */
+	        /*   Throttle null zone (y), if was not 0. Not while the
+		 *   throttle is being changed: a step of 0.002 does not get
+		 *   out of the zone in two frames, so at the planned frame
+		 *   rate (time_compensation below 1.25) the throttle stayed
+		 *   between 0 and 0.002 for as long as the key was held.
+		 */
 	        if((pks_y_accel < 0.005) &&
                    (pks_y_accel > -0.005) &&
-                   (gctl[0].throttle != 0)
+                   (gctl[0].throttle != 0) &&
+		   !pks_throttle_inc &&
+		   !pks_throttle_dec
 	        )
 		    pks_y_accel = 0;
 
