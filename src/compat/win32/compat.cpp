@@ -12,7 +12,20 @@
 #include <ctype.h>
 #include <mmsystem.h>
 
+#ifdef XSW_WIN32_GUI
+/*   MessageBoxA() of user32, which NOUSER in compat.h leaves out (and
+ *   <winuser.h> cannot be included again). Not SDL's message box, which
+ *   cannot show when SDL's video failed to start.
+ */
+extern "C" __declspec(dllimport) int WINAPI MessageBoxA(
+	HWND hwnd, LPCSTR text, LPCSTR caption, UINT type
+);
+# define MB_OK		0x00000000
+# define MB_ICONERROR	0x00000010
+#endif
+
 /* The real functions, in this file only. */
+#undef main
 #undef socket
 #undef accept
 #undef connect
@@ -69,6 +82,74 @@ static void set_env_default(const char *name, const char *value)
 	}
 }
 
+#ifdef XSW_WIN32_GUI
+/*
+ *	The GUI programs have no console of their own. Their output goes
+ *	to the console that they were started from, if any. Started from
+ *	the Explorer there is none, so stderr is kept in a temporary file
+ *	(the D mode deletes it with the process) for main() below to show.
+ */
+static bool stderr_captured = false;
+
+static bool has_std_handle(DWORD n)
+{
+	HANDLE h = GetStdHandle(n);
+
+	return(
+	    (h != NULL) && (h != INVALID_HANDLE_VALUE) &&
+	    (GetFileType(h) != FILE_TYPE_UNKNOWN)
+	);
+}
+
+static void setup_gui_stdio(void)
+{
+	bool has_out = has_std_handle(STD_OUTPUT_HANDLE);
+	bool has_err = has_std_handle(STD_ERROR_HANDLE);
+	char dir[MAX_PATH], path[MAX_PATH];
+
+	if(AttachConsole(ATTACH_PARENT_PROCESS))
+	{
+	    if(!has_out)
+		freopen("CONOUT$", "w", stdout);
+	    if(!has_err)
+		freopen("CONOUT$", "w", stderr);
+	}
+	else if(!has_err &&
+	    GetTempPathA(sizeof(dir), dir) &&
+	    GetTempFileNameA(dir, "xsw", 0, path) &&
+	    (freopen(path, "w+D", stderr) != NULL)
+	)
+	{
+	    stderr_captured = true;
+	}
+}
+
+/* The program's main(), see compat.h. */
+extern int xsw_main(int argc, char *argv[]);
+
+int main(int argc, char *argv[])
+{
+	int status = xsw_main(argc, argv);
+
+	if((status != 0) && stderr_captured)
+	{
+	    char mesg[2048];
+	    size_t len;
+
+	    fflush(stderr);
+	    rewind(stderr);
+	    len = fread(mesg, 1, sizeof(mesg) - 1, stderr);
+	    mesg[len] = '\0';
+
+	    MessageBoxA(
+		NULL, (len > 0) ? mesg : "The program could not start.",
+		"XShipWars", MB_OK | MB_ICONERROR
+	    );
+	}
+	return(status);
+}
+#endif	/* XSW_WIN32_GUI */
+
 namespace {
 struct Win32Init
 {
@@ -81,6 +162,9 @@ struct Win32Init
 	    _fmode = _O_BINARY;
 	    set_env_default("HOME", getenv("USERPROFILE"));
 	    set_env_default("LOGNAME", getenv("USERNAME"));
+#ifdef XSW_WIN32_GUI
+	    setup_gui_stdio();
+#endif
 	}
 } win32_init;
 }
@@ -212,11 +296,21 @@ int xsw_select(int n, fd_set *r, fd_set *w, fd_set *e, struct timeval *t)
 
 
 /* Signals. */
+static HANDLE term_event = NULL;
+
 xsw_sighandler_t xsw_signal(int s, xsw_sighandler_t handler)
 {
 	switch(s)
 	{
 	  case SIGINT:
+	    /*   The C library would run the handler in another thread,
+	     *   at the same time as the main loop. console_ctrl() takes
+	     *   care of Ctrl+C in a process that polls.
+	     */
+	    if(term_event != NULL)
+		return(SIG_DFL);
+	    return(signal(s, handler));
+
 	  case SIGILL:
 	  case SIGFPE:
 	  case SIGSEGV:
@@ -229,11 +323,26 @@ xsw_sighandler_t xsw_signal(int s, xsw_sighandler_t handler)
 	}
 }
 
-static HANDLE term_event = NULL;
-
 static void term_event_name(char *buf, size_t size, pid_t pid)
 {
 	snprintf(buf, size, "Local\\xshipwars-term-%d", (int)pid);
+}
+
+/*
+ *	Runs in a thread of its own. Windows ends the process when this
+ *	returns from closing the console, logging off or shutting down, so
+ *	it does not return from those, which leaves the main loop time to
+ *	save. Windows only allows some seconds for that, and ends the
+ *	process anyway after them.
+ */
+static BOOL WINAPI console_ctrl(DWORD type)
+{
+	SetEvent(term_event);
+
+	if((type != CTRL_C_EVENT) && (type != CTRL_BREAK_EVENT))
+	    Sleep(INFINITE);
+
+	return(TRUE);
 }
 
 void Win32WatchTerm(void)
@@ -242,6 +351,8 @@ void Win32WatchTerm(void)
 
 	term_event_name(name, sizeof(name), GetCurrentProcessId());
 	term_event = CreateEventA(NULL, FALSE, FALSE, name);
+	if(term_event != NULL)
+	    SetConsoleCtrlHandler(console_ctrl, TRUE);
 }
 
 void Win32PollTerm(void)

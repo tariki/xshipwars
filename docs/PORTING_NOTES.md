@@ -613,3 +613,15 @@ X のコードは変数名・処理の順序を変えずに `global/osw-x.cpp` �
 - `pkg-config --cflags sdl2` は `-Dmain=SDL_main` を、`--libs` は `-lSDL2main -mwindows` を返す。コンソールのプログラムのままにするため `Makefile.Windows` で外している。
 - gcc 16 で新たに出た警告は、抑止せずに直した。`PrintWinGetPaperSizePixels()` は `pw` が NULL だと出力を書かずに戻る作りだったので、出力を必ず設定するようにした。代入だけで読まれていなかった変数（`sect_cur`・`m_deleted`）は消した。
 - 作業ツリーを `core.symlinks=false`・`core.autocrlf=true` から切り替えるとき、`git checkout-index -f -a` は変更なしとみなしたファイルを書き出さない。`.git/index` を消して `git reset` してから実行する。PowerShell 5.1 の `New-Item -ItemType SymbolicLink` は開発者モードでも管理者権限を要求する（`mklink` と git は動く）。
+- コンソール（2026-11-08）: GUI の 3 つは `-mwindows` でビルドし、互換層が `main` を包む（`compat.h` の `#define main xsw_main`）。
+  - エクスプローラーから起動したプログラムは標準ハンドルがすべて NULL で、`AttachConsole(ATTACH_PARENT_PROCESS)` も失敗する。
+    このとき `stderr` を `freopen(パス, "w+D", stderr)` で一時ファイルに向ける（`D` で、プロセスが終わると OS が消す）。
+  - `SDL_ShowSimpleMessageBox` は、SDL の映像の初期化に失敗した状態（`SDL_VIDEODRIVER` が使えないなど）では
+    `No message system available` で失敗する。起動失敗の表示には user32 の `MessageBoxA` を直接使う。
+    `compat.h` の `NOUSER` で `winuser.h` の中身が外れていて、もう一度インクルードしても読まれないので、宣言を自前で書いている。
+  - `SDL_MAIN_HANDLED` を定義しないと、SDL のヘッダーが `main` を `SDL_main` に置き換える。
+- server のコンソールを閉じる操作（`CTRL_CLOSE_EVENT`）: 制御ハンドラから戻ると Windows がプロセスを終わらせるので、
+  ハンドラは戻らずに待ち、メインループが保存して `exit` するのに任せる。Windows が待つのは数秒だけ。
+  付属のユニバース（約 20KB）では、通知から保存・正常終了まで 31ms だった。Windows Terminal がタブを閉じるときと同じく
+  `ClosePseudoConsole` で確かめた（`conhost.exe` で起動しても既定のターミナルに引き継がれ、窓を閉じる操作を送れなかった）。
+  Ctrl+C も同じ経路で、保存して正常終了した。

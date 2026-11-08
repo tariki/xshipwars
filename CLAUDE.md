@@ -134,7 +134,11 @@
   - シグナル: Windows に無いシグナルは定義だけして、届かないものとして扱う（server の `SIGHUP` などは使えない）。
     C ランタイムの `signal()` は未知の番号で異常終了するので、互換層のラッパーを通す
   - monitor からの server 停止: `SIGTERM` の代わりに名前付きイベントで通知し、server のメインループで `SIGTERM` の処理を呼ぶ
-    （`TerminateProcess` では宇宙データが保存されないため）
+    （`TerminateProcess` では宇宙データが保存されないため）。server の Ctrl+C とコンソールを閉じる操作も同じイベントで受ける
+    （C ランタイムの `SIGINT` はメインループと並行して別スレッドで動くので使わない）
+  - コンソール: server はコンソールのプログラム。client・monitor・unvedit は `-mwindows` でコンソール窓を出さない。
+    ターミナルから起動したときは親のコンソールに出力し、コンソールが無いときは `stderr` を一時ファイルに受けて、
+    `main` が 0 以外を返したら `MessageBoxA` で表示する（SDL のダイアログは SDL の映像が初期化できないと出せない）
   - ファイル: `_fmode` を `_O_BINARY` にして、UNIX と同じく LF のまま読み書きする。シンボリックリンクは無いものとして扱う
   - パス: 区切りは `/` のまま使う。`ISPATHABSOLUTE` はドライブ名を受け付ける。`getcwd` の結果の `\` は `/` に変換する。
     `HOME` と `LOGNAME` が無ければ `USERPROFILE` と `USERNAME` から設定する

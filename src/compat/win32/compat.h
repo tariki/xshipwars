@@ -166,6 +166,9 @@ extern xsw_sighandler_t xsw_signal(int s, xsw_sighandler_t handler);
  *	Win32WatchTerm(), which raises SIGTERM from Win32PollTerm() in its
  *	main loop, so that it can save before exiting as it does on UNIX.
  *	Without that event, the process is terminated without notice.
+ *	Win32WatchTerm() has to come before signal(SIGINT, ...). Ctrl+C and
+ *	closing the console then come through the same event, so SIGTERM
+ *	is what the process sees for them.
  */
 extern int xsw_kill(pid_t pid, int s);
 #define kill		xsw_kill
@@ -190,5 +193,14 @@ extern pid_t Win32Spawn(
 
 /* The DES crypt(3), for the passwords stored in the universe files. */
 extern char *crypt(const char *key, const char *salt);
+
+
+/*
+ *	The GUI programs have no console when started from the Explorer,
+ *	so compat.cpp wraps main() to show why they could not start.
+ */
+#ifdef XSW_WIN32_GUI
+# define main		xsw_main
+#endif
 
 #endif	/* XSW_WIN32_COMPAT_H */

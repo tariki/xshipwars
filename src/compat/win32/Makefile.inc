@@ -5,9 +5,11 @@
 #   Build in the UCRT64 environment of MSYS2. The calling Makefile sets
 #   CFLAGS, LIB and BIN_NAME and includes Makefile.srclist first.
 #
-#   The programs have their own main() and stay console programs, so the
-#   GUI programs leave out the parts of SDL2's flags that replace main()
-#   and hide the console (SDL_FILTER in their Makefiles).
+#   The GUI programs define XSW_WIN32_GUI and link with -mwindows, so that
+#   no console window opens with them (see compat.cpp). They have their
+#   own main(), so they leave out the parts of SDL2's flags that replace
+#   it (SDL_FILTER in their Makefiles). The server stays a console
+#   program.
 #
 #   Objects and the program are built in $(OBJDIR), so that they do not
 #   mix with the other builds in the same source tree.

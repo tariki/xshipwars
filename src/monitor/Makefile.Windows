@@ -8,8 +8,8 @@ SRC := $(subst osw-x.cpp,osw-sdl.cpp,$(SRC))
 
 BIN_NAME = monitor
 SDL_FILTER = -Dmain=SDL_main -lSDL2main -mwindows
-CFLAGS := -DOSW_SDL \
+CFLAGS := -DOSW_SDL -DXSW_WIN32_GUI -DSDL_MAIN_HANDLED \
 	$(filter-out $(SDL_FILTER),$(shell pkg-config --cflags sdl2))
-LIB := $(filter-out $(SDL_FILTER),$(shell pkg-config --libs sdl2))
+LIB := $(filter-out $(SDL_FILTER),$(shell pkg-config --libs sdl2)) -mwindows
 
 include ../compat/win32/Makefile.inc
