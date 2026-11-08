@@ -4,7 +4,8 @@
 #   scripts/install-data.sh [-n] [インストール先]
 #
 #   インストール先の既定は ${DESTDIR}${PREFIX}/share/games/xshipwars（PREFIX の既定は Linux・FreeBSD では /usr、
-#   macOS では /usr/local。client の Makefile.install.UNIX の XSW_DIR と同じ。client はこれを ToplevelDir として使う)
+#   macOS では /usr/local、Windows（MSYS2）では C:/xshipwars。client の Makefile.install.UNIX の XSW_DIR と同じ。
+#   client はこれを ToplevelDir として使う)
 #   -n  何をコピーするかを表示するだけで、書き込まない
 #
 # 配置する内容:
@@ -24,7 +25,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 dry=0
 if [ "${1:-}" = "-n" ]; then dry=1; shift; fi
-if [ "$(uname -s)" = "Darwin" ]; then def_prefix=/usr/local; else def_prefix=/usr; fi
+case "$(uname -s)" in
+  Darwin)       def_prefix=/usr/local ;;
+  MINGW*|MSYS*) def_prefix=C:/xshipwars ;;   # Windows のプログラムには /usr（MSYS2 の中）は見えない
+  *)            def_prefix=/usr ;;
+esac
 DEST="${1:-${DESTDIR:-}${PREFIX:-$def_prefix}/share/games/xshipwars}"
 
 # コピー元: "コピー元ディレクトリ:インストール先の相対パス"

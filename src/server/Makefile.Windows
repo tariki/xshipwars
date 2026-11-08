@@ -10,3 +10,7 @@ include Makefile.srclist
 BIN_NAME = swserv
 
 include ../compat/win32/Makefile.inc
+
+#   Installed as on UNIX, in $(PREFIX)/swserv (the DLLs in its bin).
+DLL_DIR = $(PREFIX)/swserv/bin
+include Makefile.install.UNIX

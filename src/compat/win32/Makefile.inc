@@ -48,3 +48,30 @@ all: $(BIN)
 
 clean:
 	rm -rf $(OBJDIR)
+
+
+#   Installation:
+#
+#   The calling Makefile includes its Makefile.install.UNIX after this
+#   file (so that "all" stays the default), which installs as on UNIX
+#   (programs in $(PREFIX)/bin, the server in $(PREFIX)/swserv). This adds
+#   the DLLs from MSYS2 that the program uses next to it (in $(DLL_DIR)),
+#   so that it runs without MSYS2 in the PATH.
+#
+#   ldd only lists the DLLs that the program is linked with. RUNTIME_DLLS
+#   names the ones that are loaded by name while it runs (SDL2_mixer loads
+#   libfluidsynth-3.dll for MIDI), which are copied with their own DLLs.
+MINGW_PREFIX ?= /ucrt64
+
+install: install-dlls
+
+install-dlls: $(BIN)
+	mkdir -p $(DLL_DIR)
+	for f in $(BIN) $(addprefix $(MINGW_PREFIX)/bin/,$(RUNTIME_DLLS)); do \
+	    echo "$$f" | grep -v '\.exe$$'; \
+	    ldd "$$f" | awk '$$3 ~ "^$(MINGW_PREFIX)/" {print $$3}'; \
+	done | sort -u | while read -r d; do \
+	    cp -u -v "$$d" "$(DLL_DIR)/"; \
+	done
+
+.PHONY: all clean install install-dlls

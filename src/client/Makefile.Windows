@@ -15,3 +15,10 @@ CFLAGS := -DOSW_SDL -DXSW_WIN32_GUI -DSDL_MAIN_HANDLED -DHAVE_SDL_MIXER -DJS_SUP
 LIB := $(filter-out $(SDL_FILTER),$(shell pkg-config --libs SDL2_mixer)) -mwindows
 
 include ../compat/win32/Makefile.inc
+
+#   Installed as on macOS: the program in $(PREFIX)/bin.
+GAMES_DIR = $(PREFIX)/bin
+DLL_DIR = $(GAMES_DIR)
+#   Loaded by SDL2_mixer to play MIDI (see Makefile.inc).
+RUNTIME_DLLS = libfluidsynth-3.dll
+include Makefile.install.UNIX

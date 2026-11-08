@@ -13,3 +13,8 @@ CFLAGS := -DOSW_SDL -DXSW_WIN32_GUI -DSDL_MAIN_HANDLED \
 LIB := $(filter-out $(SDL_FILTER),$(shell pkg-config --libs sdl2)) -mwindows
 
 include ../compat/win32/Makefile.inc
+
+#   Installed as on macOS: the program in $(PREFIX)/bin.
+GAMES_DIR = $(PREFIX)/bin
+DLL_DIR = $(GAMES_DIR)
+include Makefile.install.UNIX
